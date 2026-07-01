@@ -1,7 +1,7 @@
 {
   "dialogItems": [
     {
-			"isPathStart": true
+			"isPathStart": true,
       "itemName": "Startup.Dlg_HeartGadget.Dlg_HeartGadget.1989[=DisDialogTree type object]",
       "branchPaths": [
         {
