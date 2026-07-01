@@ -151,9 +151,7 @@ function buildDropdown(rowN , data , hashData) {
   // getting or building this drop-down menu
 	if (document.getElementById("select" + rowN) != null) {
 		var thisSelect = document.getElementById("select" + rowN);
-		if (rowN != 0) {
-			clearFurtherDropdowns(rowN);
-		};
+		clearFurtherDropdowns(rowN);
 		thisSelect.style.display = 'block'; //wip: other styles?
 	} else {
 		var thisSelect = document.createElement("select");
@@ -174,68 +172,52 @@ function buildDropdown(rowN , data , hashData) {
 	
 	};
 	
-	if (rowN != 0) {
-		// adding the default starting "option", which is blank and can't be selected again later
-	 var option = document.createElement("option");
-		option.disabled = true;
-		option.selected = true;
-	  if (rowN == 1) {
-		  option.text = "Dlg_HeartGadget";
-		} else {
-		  option.text = "";
-		};
-		option.value = -1;
-		thisSelect.appendChild(option);
-	};
-	
-		
-	// first row is different because it's the starting item
+	// adding the default starting "option", which is blank and can't be selected again later
+ var option = document.createElement("option");
+	option.disabled = true;
+	option.selected = true;
 	if (rowN == 0) {
-	  // creating the first row dropdown option, which is the itemName of the starting item
-	  var option = document.createElement("option");
-		option.text = data.dialogItems[0].itemName;
-		option.value = data.dialogItems[0].itemName;
-	  thisSelect.appendChild(option);
+		option.text = "Dlg_HeartGadget";
+	} else {
+		option.text = "";
+	};
+	option.value = -1;
+	thisSelect.appendChild(option);
 		
 	// creating all other row dropdown options, which is the branchPathName and branchPathValue items of the item's branchPaths item
+	// first row is different because it's actually still the starting item
+	if (rowN == 0) {
+		var thisItem = data.dialogItems[0]
 	} else {
-	// second row is different because it's actually still the starting item
-		if (rowN == 1) {
-			var thisItem = data.dialogItems[0]
-		} else {
-			var prevSelect = document.getElementById("select" + (rowN - 1));
-			console.log("prevSelect:");
-			console.log(prevSelect);
-			console.log(prevSelect.value);
-			// looking for the previous dropdown's value in the data array
-			var thisItem = findInData(data.dialogItems, prevSelect.value)
+		var prevSelect = document.getElementById("select" + (rowN - 1));
+		// looking for the previous dropdown's value in the data array
+		var thisItem = findInData(data.dialogItems, prevSelect.value)
+	};
+	
+	// actually creating the dropdown options
+	for (var n = 0; n < thisItem.branchPaths.length; n++) {
+		var option = document.createElement("option");
+		var thisBranch = thisItem.branchPaths[n]
+		option.text = thisBranch.branchPathName + ": " + thisBranch.branchPathValue;
+
+		// special: checkstoryflags
+		if (thisBranch.branchPathValue.lastIndexOf("DisConv_Check",0) === 0) {
+			var storyflagItem = findInData(data.dialogItems, thisBranch.branchPathValue)
+			option.text = option.text + " (checked SF: " + storyflagItem.checkedStoryFlag + ")"
+		};
+
+		// special: conditions
+		if (thisBranch.branchPathCondition != null) {
+			var conditionVal = thisBranch.branchPathCondition
+			if (thisItem.itemName.lastIndexOf("DisConv_Random",0) === 0) {
+				option.text = option.text + " (" + conditionVal + "% chance)"
+			} else {
+				option.text = option.text + " (if " + conditionVal + ")"
+			};
 		};
 		
-		// actually creating the dropdown options
-		for (var n = 0; n < thisItem.branchPaths.length; n++) {
-			var option = document.createElement("option");
-			var thisBranch = thisItem.branchPaths[n]
-			option.text = thisBranch.branchPathName + ": " + thisBranch.branchPathValue;
-
-			// special: checkstoryflags
-			if (thisBranch.branchPathValue.lastIndexOf("DisConv_Check",0) === 0) {
-		  	var storyflagItem = findInData(data.dialogItems, thisBranch.branchPathValue)
-				option.text = option.text + " (checked SF: " + storyflagItem.checkedStoryFlag + ")"
-			};
-
-			// special: conditions
-			if (thisBranch.branchPathCondition != null) {
-		  	var conditionVal = thisBranch.branchPathCondition
-				if (thisItem.itemName.lastIndexOf("DisConv_Random",0) === 0) {
-				  option.text = option.text + " (" + conditionVal + "% chance)"
-				} else {
-				  option.text = option.text + " (if " + conditionVal + ")"
-				};
-			};
-			
-			option.value = thisBranch.branchPathValue;
-			thisSelect.appendChild(option);
-		};
+		option.value = thisBranch.branchPathValue;
+		thisSelect.appendChild(option);
 	};
 	
 };
@@ -252,6 +234,5 @@ loadData().then(data => {
 		console.log(hashData);
 		
 		buildDropdown(0 , data , hashData);
-		buildDropdown(1 , data , hashData);
 	});
 });
