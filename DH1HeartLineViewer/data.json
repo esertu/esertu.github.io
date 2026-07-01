@@ -1,0 +1,45 @@
+{
+  "dialogItems": [
+    {
+			"isPathStart": true
+      "itemName": "Startup.Dlg_HeartGadget.Dlg_HeartGadget.1989[=DisDialogTree type object]",
+      "branchPaths": [
+        {
+          "branchPathName": "m_DialogHooks[119]",
+          "branchPathValue": "DisConv_DialogHook.1857"
+        },
+        {
+          "branchPathName": "m_DialogHooks[120]",
+          "branchPathValue": "DisConv_Hook_HeartTargeted.1858"
+        },
+        {
+          "branchPathName": "m_DialogHooks[121]",
+          "branchPathValue": "DisConv_Hook_HeartTargeted_2.1859"
+        }
+      ]
+    },
+    {
+      "itemName": "DisConv_DialogHook.1857",
+      "branchPaths": [
+        {
+          "branchPathName": "m_OutputLinks[0]",
+          "branchPathValue": "DisConv_CheckStoryFlag_1.1837"
+        }
+      ]
+    },
+    {
+      "itemName": "DisConv_CheckStoryFlag_1.1837",
+      "branchPaths": [
+        {
+          "branchPathName": "CheckStoryFlag result 1",
+          "branchPathValue": "DisConv_CheckStoryFlag_2.1842"
+        },
+        {
+          "branchPathName": "CheckStoryFlag result 2",
+          "branchPathValue": "DisConv_SequentialBranch_30.1919"
+        }
+      ],
+      "checkedStoryFlag": "SF_Global_InHubFriendly"
+    }
+  ]
+}
