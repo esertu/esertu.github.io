@@ -65,13 +65,18 @@ function buildInfoText() {
 	info.innerText += "\nDisDialogTree Dlg_HeartGadget.Dlg_HeartGadget has three conversation hooks which watch for inputs in order to fire dialogue."
 	info.innerText += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_DialogHook fires if this was a non-targeted, i.e. ambient, whisper."
 	info.innerText += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_Hook_HeartTargeted as well as DisConv_Hook_HeartTargeted_2 fire if this was a targeted whisper targeting an NPC. I'm not quite certain if the EDisDialogHook check is actually relevant, as both hooks have the exact same output branches - they both go to DisConv_SpeakerInStoryGroup. The following chain of checks first checks for unique NPCs, then, once all unique NPCs have been exhausted, for non-unique NPC groups. I get the feeling the devs initially wanted to check against the EDisDialogHook property to check whether unique or non-unique NPCs were being targeted but later decided to just run the same function in both cases."
-	info.innerText += "\nThe latter two hooks are also used to fire off rat and riverkrust lines if those creatures are targeted."
+	info.innerText += "\nThe latter two hooks are also used to fire off rat and riverkrust lines if those creatures are targeted." //wip: check if those are actually used
 	info.innerText += "\r\n"
-	info.innerText += "\nAbout some of the items:"
+	info.innerText += "\nOn some of the item classes in this tree:"
 	info.innerText += "\nDisConv_SequentialBranch: lines will always play sequentially, i.e. one after the other."
 	info.innerText += "\nDisConv_RandomBranch: game chooses one out of the available branches at random using the specified numbers as each branch's chance."
 	info.innerText += "\r\n"
-	info.innerText += "\nOne voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93: \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five."
+	info.innerText += "\nTechnical information:"
+	info.innerText += "\nThis site uses the UE Explorer naming convention of naming items \"[item name].[export table index]\", and of having zero-indexed items of a Class being named \"[Class]\" instead of \"[Class]_0\"."
+	info.innerText += "\nText saying \"Play_...\" under voiceline text is the name of the audio file belonging to that line."
+	info.innerText += "\r\n"
+	info.innerText += "\Other information:"
+	info.innerText += "\nOne voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five."
 	info.innerText += "\r\n"
 	info.innerText += "\r\n"
 	
@@ -147,6 +152,7 @@ function findInHashData(arrSearch,strSearch) {
 	};
 };
 
+//wip: fix [Null] branches
 function buildDropdown(rowN , data , hashData) {
   // getting or building this drop-down menu
 	if (document.getElementById("select" + rowN) != null) {
@@ -184,7 +190,7 @@ function buildDropdown(rowN , data , hashData) {
 	option.value = -1;
 	thisSelect.appendChild(option);
 		
-	// creating all other row dropdown options, which is the branchPathName and branchPathValue items of the item's branchPaths item
+	// creating all dropdown options, which is the branchPathName and branchPathValue items of the item's branchPaths item
 	// first row is different because it's actually still the starting item
 	if (rowN == 0) {
 		var thisItem = data.dialogItems[0]
@@ -198,7 +204,7 @@ function buildDropdown(rowN , data , hashData) {
 	for (var n = 0; n < thisItem.branchPaths.length; n++) {
 		var option = document.createElement("option");
 		var thisBranch = thisItem.branchPaths[n]
-		option.text = thisBranch.branchPathName + ": " + thisBranch.branchPathValue;
+		option.text = thisBranch.branchPathName + " → " + thisBranch.branchPathValue;
 
 		// special: checkstoryflags
 		if (thisBranch.branchPathValue.lastIndexOf("DisConv_Check",0) === 0) {
@@ -224,8 +230,8 @@ function buildDropdown(rowN , data , hashData) {
 
 
 //running everything
-//getting main JSON data
 buildInfoText();
+//getting main JSON data
 loadData().then(data => { 
   console.log(data);
 	
