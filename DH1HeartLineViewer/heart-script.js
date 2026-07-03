@@ -39,18 +39,21 @@ async function loadHashData() {
 function changeHandler(rowN , data , hashData) {
 	var thisSelect = document.getElementById("select" + rowN);
 	
-	if (document.getElementById("blurbList") != null) {
-		var blurbList = document.getElementById("blurbList");
-		blurbList.style.display = 'none';
+	// hiding the blurb display
+	if (document.getElementById("blurbDisplay") != null) {
+		var blurbDisplay = document.getElementById("blurbDisplay");
+		blurbDisplay.style.display = 'none';
 	};
 	
 	if (thisSelect.value != "") {
 		if (thisSelect.value.search("DisConv_Blurb") != -1) {
-			buildBlurblist(rowN + 1 , data , hashData);
+			buildBlurbDisplay(rowN + 1 , data , hashData);
 		} else {
 	    buildDropdown(rowN + 1 , data , hashData);
 	  };
+		
 	};
+	
 };
 
 function buildInfoText() {
@@ -73,9 +76,10 @@ function buildInfoText() {
 	info.innerText += "\r\n"
 	info.innerText += "\nTechnical information:"
 	info.innerText += "\nThis site uses the UE Explorer naming convention of naming items \"[item name].[export table index]\", and of having zero-indexed items of a Class being named \"[Class]\" instead of \"[Class]_0\"."
+	info.innerText += "\nThe drop-down menu items are formatted as [source] → [destination], with the destination being an object on the ExportTable and the source being a property of the object displayed as the destination in the previous dropdown."
 	info.innerText += "\nText saying \"Play_...\" under voiceline text is the name of the audio file belonging to that line."
 	info.innerText += "\r\n"
-	info.innerText += "\Other information:"
+	info.innerText += "\nOther information:"
 	info.innerText += "\nOne voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five."
 	info.innerText += "\r\n"
 	info.innerText += "\r\n"
@@ -83,17 +87,59 @@ function buildInfoText() {
 	
 };
 
-function buildBlurblist(rowN, data, hashData) {
+function changeHandlerChk(strOrigin) {
+	if (strOrigin == "expert") {
+		var thisCheck = document.getElementById("checkExpert");
+  } else { 
+	  if (strOrigin == "blurb") {
+		  var thisCheck = document.getElementById("checkBlurb");
+	  };
+	};
+	
+  checkValue = thisCheck.value;
+  console.log(strOrigin);
+  console.log(checkValue);
+};
+
+function buildCheckBoxExpert() {
+	var checkExpert = document.createElement("input");
+	checkExpert.id = 'checkExpert';
+	checkExpert.type = 'checkbox';
+	checkExpert.addEventListener("change", function() { 
+	  changeHandlerChk("expert") 
+		});
+	
+	var lblExpert = document.createElement("label");
+	lblExpert.appendChild(checkExpert);
+	lblExpert.appendChild(document.createTextNode("Expert"));
+  document.body.appendChild(lblExpert);
+};
+
+function buildCheckBoxBlurb() {
+	var checkBlurb = document.createElement("input");
+	checkBlurb.id = 'checkBlurb';
+	checkBlurb.type = 'checkbox';
+	checkBlurb.addEventListener("change", function() { 
+	  changeHandlerChk("blurb") 
+		});
+	
+	var lblBlurbDisplay = document.createElement("label");
+	lblBlurbDisplay.appendChild(checkBlurb);
+	lblBlurbDisplay.appendChild(document.createTextNode("BlurbDisplay"));
+  document.body.appendChild(lblBlurbDisplay);
+};
+
+function buildBlurbDisplay(rowN, data, hashData) {
 	// making sure there aren't any more dropdowns below the blurblist
 	clearFurtherDropdowns(rowN);
 	
 	// getting or building the blurblist element
-	if (document.getElementById("blurbList") != null) {
-		var blurbList = document.getElementById("blurbList");
+	if (document.getElementById("blurbDisplay") != null) {
+		var blurbDisplay = document.getElementById("blurbDisplay");
 	} else {
-		var blurbList = document.createElement("ul");
-		blurbList.id = "blurbList";
-		document.body.appendChild(blurbList);
+		var blurbDisplay = document.createElement("ul");
+		blurbDisplay.id = "blurbDisplay";
+		document.body.appendChild(blurbDisplay);
 	};
 	
 	//getting the blurb text
@@ -102,13 +148,13 @@ function buildBlurblist(rowN, data, hashData) {
 	var thisBlurbText = thisBlurb.branchPaths[0].branchPathValue
 	
 	// adding the blurb text to the blurblist
-	var blurbList = document.getElementById("blurbList")
-	//blurbList.innerHTML = "<li>" + thisBlurbText; // bullet point version
-  blurbList.innerHTML = "\"" + thisBlurbText + "\"";
+	var blurbDisplay = document.getElementById("blurbDisplay")
+	//blurbDisplay.innerHTML = "<li>" + thisBlurbText; // bullet point version
+  blurbDisplay.innerHTML = "\"" + thisBlurbText + "\"";
 	
 	// getting the hashName
-  blurbList.innerHTML += "<br>" + findInHashData(hashData.hashItems, thisBlurb.itemName).hashName
-  blurbList.style.display = 'block';
+  blurbDisplay.innerHTML += "<br>" + findInHashData(hashData.hashItems, thisBlurb.itemName).hashName
+  blurbDisplay.style.display = 'block';
 };
 
 
@@ -123,12 +169,13 @@ function clearFurtherDropdowns(rowN) {
 		};
 		
 		thisSelect.style.display = 'none';
+		
 		n = n + 1
 	};
 	
-	if (document.getElementById("blurbList") != null) {
-		var blurbList = document.getElementById("blurbList");
-    blurbList.style.display = 'none';
+	if (document.getElementById("blurbDisplay") != null) {
+		var blurbDisplay = document.getElementById("blurbDisplay");
+    blurbDisplay.style.display = 'none';
 	};
 };
 
@@ -164,8 +211,8 @@ function buildDropdown(rowN , data , hashData) {
 		thisSelect.id = "select" + rowN;
 		
 		//making sure the blurblist stays at the bottom of all the dropdown menus
-		if (document.getElementById("blurbList") != null) {
-  		document.body.insertBefore(thisSelect,document.getElementById("blurbList"));
+		if (document.getElementById("blurbDisplay") != null) {
+  		document.body.insertBefore(thisSelect,document.getElementById("blurbDisplay"));
 		} else {
   		document.body.appendChild(thisSelect);
 		};
@@ -204,23 +251,53 @@ function buildDropdown(rowN , data , hashData) {
 	for (var n = 0; n < thisItem.branchPaths.length; n++) {
 		var option = document.createElement("option");
 		var thisBranch = thisItem.branchPaths[n]
-		option.text = thisBranch.branchPathName + " → " + thisBranch.branchPathValue;
+		var thisBranchPathName = thisBranch.branchPathName
+		var expertText = thisBranchPathName + " → " + thisBranch.branchPathValue;
+		
+		// normal text 
+	  var normalText = "wip"
+		if (thisBranch.branchPathFriendlyName != null) {
+	  	normalText = thisBranch.branchPathFriendlyName;
+	  } else {
+			if (thisBranchPathName.search("m_OutputLinks") != -1) {
+	    	normalText = "Output link " + thisBranchPathName.slice(thisBranchPathName.search("\\[")+1,thisBranchPathName.search("\\]"));
+			} else {
+				if (thisBranchPathName.search("m_Branches") != -1) {
+					normalText = "Branch " + thisBranchPathName.slice(thisBranchPathName.search("\\[")+1,thisBranchPathName.search("\\]"));
+				} else {
+					normalText = thisBranchPathName;
+				};
+			};
+		};
+		
+		normalText = normalText + " → "
 
 		// special: checkstoryflags
 		if (thisBranch.branchPathValue.lastIndexOf("DisConv_Check",0) === 0) {
 			var storyflagItem = findInData(data.dialogItems, thisBranch.branchPathValue)
-			option.text = option.text + " (checked SF: " + storyflagItem.checkedStoryFlag + ")"
+			expertText = expertText + " (checked StoryFlag: " + storyflagItem.checkedStoryFlag + ")"
 		};
 
 		// special: conditions
 		if (thisBranch.branchPathCondition != null) {
 			var conditionVal = thisBranch.branchPathCondition
 			if (thisItem.itemName.lastIndexOf("DisConv_Random",0) === 0) {
-				option.text = option.text + " (" + conditionVal + "% chance)"
+				expertText = expertText + " (" + conditionVal + "% chance)"
 			} else {
-				option.text = option.text + " (if " + conditionVal + ")"
+				expertText = expertText + " (if " + conditionVal + ")"
 			};
 		};
+		
+		checkExpert = document.getElementById("checkExpert");
+		if (checkExpert.checked == true) {
+	  	option.text = expertText;
+		} else {
+	  	option.text = expertText;
+	  	//option.text = normalText;
+		};
+		
+		arrDisplayedExpert.push(expertText);
+		arrDisplayedNormal.push(normalText);
 		
 		option.value = thisBranch.branchPathValue;
 		thisSelect.appendChild(option);
@@ -228,9 +305,15 @@ function buildDropdown(rowN , data , hashData) {
 	
 };
 
+//storage array that store what's currently displayed
+var arrDisplayedExpert = new Array();
+var arrDisplayedNormal = new Array();
+arrDisplayedExpert.push("A");
 
 //running everything
 buildInfoText();
+buildCheckBoxExpert();
+buildCheckBoxBlurb();
 //getting main JSON data
 loadData().then(data => { 
   console.log(data);
