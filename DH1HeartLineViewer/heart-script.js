@@ -3,36 +3,36 @@
 
 // loading data from JSON
 async function loadData() {
-  try {
-    const response = await fetch('./data.json');
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
-    }
+	try {
+		const response = await fetch('./data.json');
+		
+		if (!response.ok) {
+			throw new Error(`HTTP error ${response.status}`);
+		}
 
-    const data = await response.json();
+		const data = await response.json();
 		return data
 
-  } catch (err) {
-    console.error('Failed to load data JSON:', err);
-  }
+	} catch (err) {
+		console.error('Failed to load data JSON:', err);
+	}
 };
 
 // loading hash data from JSON
 async function loadHashData() {
-  try {
-    const response = await fetch('./hashdata.json');
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
-    }
+	try {
+		const response = await fetch('./hashdata.json');
+		
+		if (!response.ok) {
+			throw new Error(`HTTP error ${response.status}`);
+		}
 
-    const hashData = await response.json();
+		const hashData = await response.json();
 		return hashData
 
-  } catch (err) {
-    console.error('Failed to load hashdata JSON:', err);
-  }
+	} catch (err) {
+		console.error('Failed to load hashdata JSON:', err);
+	}
 };
 
 // runs when change in drop-down menu occurs
@@ -49,8 +49,8 @@ function changeHandler(rowN , data , hashData) {
 		if (thisSelect.value.search("DisConv_Blurb") != -1) {
 			buildBlurbDisplay(rowN + 1 , data , hashData);
 		} else {
-	    buildDropdown(rowN + 1 , data , hashData);
-	  };
+			buildDropdown(rowN + 1 , data , hashData);
+		};
 		
 	};
 	
@@ -90,15 +90,15 @@ function buildInfoText() {
 function changeHandlerChk(strOrigin) {
 	if (strOrigin == "expert") {
 		var thisCheck = document.getElementById("checkExpert");
-  } else { 
-	  if (strOrigin == "blurb") {
-		  var thisCheck = document.getElementById("checkBlurb");
-	  };
+	} else { 
+		if (strOrigin == "blurb") {
+			var thisCheck = document.getElementById("checkBlurb");
+		};
 	};
 	
-  checkValue = thisCheck.value;
-  console.log(strOrigin);
-  console.log(checkValue);
+	checkValue = thisCheck.value;
+	console.log(strOrigin);
+	console.log(checkValue);
 };
 
 function buildCheckBoxExpert() {
@@ -106,13 +106,13 @@ function buildCheckBoxExpert() {
 	checkExpert.id = 'checkExpert';
 	checkExpert.type = 'checkbox';
 	checkExpert.addEventListener("change", function() { 
-	  changeHandlerChk("expert") 
+		changeHandlerChk("expert") 
 		});
 	
 	var lblExpert = document.createElement("label");
 	lblExpert.appendChild(checkExpert);
 	lblExpert.appendChild(document.createTextNode("Expert"));
-  document.body.appendChild(lblExpert);
+	document.body.appendChild(lblExpert);
 };
 
 function buildCheckBoxBlurb() {
@@ -120,13 +120,13 @@ function buildCheckBoxBlurb() {
 	checkBlurb.id = 'checkBlurb';
 	checkBlurb.type = 'checkbox';
 	checkBlurb.addEventListener("change", function() { 
-	  changeHandlerChk("blurb") 
+		changeHandlerChk("blurb") 
 		});
 	
 	var lblBlurbDisplay = document.createElement("label");
 	lblBlurbDisplay.appendChild(checkBlurb);
 	lblBlurbDisplay.appendChild(document.createTextNode("BlurbDisplay"));
-  document.body.appendChild(lblBlurbDisplay);
+	document.body.appendChild(lblBlurbDisplay);
 };
 
 function buildBlurbDisplay(rowN, data, hashData) {
@@ -150,11 +150,11 @@ function buildBlurbDisplay(rowN, data, hashData) {
 	// adding the blurb text to the blurblist
 	var blurbDisplay = document.getElementById("blurbDisplay")
 	//blurbDisplay.innerHTML = "<li>" + thisBlurbText; // bullet point version
-  blurbDisplay.innerHTML = "\"" + thisBlurbText + "\"";
+	blurbDisplay.innerHTML = "\"" + thisBlurbText + "\"";
 	
 	// getting the hashName
-  blurbDisplay.innerHTML += "<br>" + findInHashData(hashData.hashItems, thisBlurb.itemName).hashName
-  blurbDisplay.style.display = 'block';
+	blurbDisplay.innerHTML += "<br>" + findInHashData(hashData.hashItems, thisBlurb.itemName).hashName
+	blurbDisplay.style.display = 'block';
 };
 
 
@@ -175,7 +175,7 @@ function clearFurtherDropdowns(rowN) {
 	
 	if (document.getElementById("blurbDisplay") != null) {
 		var blurbDisplay = document.getElementById("blurbDisplay");
-    blurbDisplay.style.display = 'none';
+		blurbDisplay.style.display = 'none';
 	};
 };
 
@@ -201,7 +201,7 @@ function findInHashData(arrSearch,strSearch) {
 
 //wip: fix [Null] branches
 function buildDropdown(rowN , data , hashData) {
-  // getting or building this drop-down menu
+	// getting or building this drop-down menu
 	if (document.getElementById("select" + rowN) != null) {
 		var thisSelect = document.getElementById("select" + rowN);
 		clearFurtherDropdowns(rowN);
@@ -212,9 +212,9 @@ function buildDropdown(rowN , data , hashData) {
 		
 		//making sure the blurblist stays at the bottom of all the dropdown menus
 		if (document.getElementById("blurbDisplay") != null) {
-  		document.body.insertBefore(thisSelect,document.getElementById("blurbDisplay"));
+			document.body.insertBefore(thisSelect,document.getElementById("blurbDisplay"));
 		} else {
-  		document.body.appendChild(thisSelect);
+			document.body.appendChild(thisSelect);
 		};
 		thisSelect.style.display = 'block';
 		
@@ -255,12 +255,12 @@ function buildDropdown(rowN , data , hashData) {
 		var expertText = thisBranchPathName + " → " + thisBranch.branchPathValue;
 		
 		// normal text 
-	  var normalText = "wip"
+		var normalText = "wip"
 		if (thisBranch.branchPathFriendlyName != null) {
-	  	normalText = thisBranch.branchPathFriendlyName;
-	  } else {
+			normalText = thisBranch.branchPathFriendlyName;
+		} else {
 			if (thisBranchPathName.search("m_OutputLinks") != -1) {
-	    	normalText = "Output link " + thisBranchPathName.slice(thisBranchPathName.search("\\[")+1,thisBranchPathName.search("\\]"));
+				normalText = "Output link " + thisBranchPathName.slice(thisBranchPathName.search("\\[")+1,thisBranchPathName.search("\\]"));
 			} else {
 				if (thisBranchPathName.search("m_Branches") != -1) {
 					normalText = "Branch " + thisBranchPathName.slice(thisBranchPathName.search("\\[")+1,thisBranchPathName.search("\\]"));
@@ -274,8 +274,8 @@ function buildDropdown(rowN , data , hashData) {
 
 		// special: checkstoryflags
 		if (thisBranch.branchPathValue.lastIndexOf("DisConv_Check",0) === 0) {
-			var storyflagItem = findInData(data.dialogItems, thisBranch.branchPathValue)
-			expertText = expertText + " (checked StoryFlag: " + storyflagItem.checkedStoryFlag + ")"
+			var thisStoryFlag = thisBranch.checkedStoryFlag
+			expertText = expertText + " (checked StoryFlag: " + thisStoryFlag + ")"
 		};
 
 		// special: conditions
@@ -290,10 +290,10 @@ function buildDropdown(rowN , data , hashData) {
 		
 		checkExpert = document.getElementById("checkExpert");
 		if (checkExpert.checked == true) {
-	  	option.text = expertText;
+			option.text = expertText;
 		} else {
-	  	option.text = expertText;
-	  	//option.text = normalText;
+			option.text = expertText;
+			//option.text = normalText;
 		};
 		
 		arrDisplayedExpert.push(expertText);
@@ -316,13 +316,12 @@ buildCheckBoxExpert();
 buildCheckBoxBlurb();
 //getting main JSON data
 loadData().then(data => { 
-  console.log(data);
+	console.log(data);
 	
-  //getting hash JSON data
+	//getting hash JSON data
 	loadHashData().then(hashData => { 
 		console.log(hashData);
 		
 		buildDropdown(0 , data , hashData);
 	});
 });
-
