@@ -364,8 +364,8 @@ function createFriendlyConditionName(inputName, rowN) {
 					//"a Overseer" -> "an Overseer"
 					if (inputName.slice(30,31) == "A") {
 						// female Aristocrats (AristoFemale) don't need the n because they're "female Aristocrats" in display
-					  if (inputName.slice(30,32) != "Ar") {
-						  outputName = outputName + "n"
+						if (inputName.slice(30,32) != "Ar") {
+							outputName = outputName + "n"
 						};
 					} else {
 						if (inputName.slice(30,31) == "O") {
@@ -384,7 +384,7 @@ function createFriendlyConditionName(inputName, rowN) {
 					outputName = outputName + inputName.slice(30);
 					
 					if (inputName.slice(30,35) == "Guard") {
-						outputName = outputName.replace("Guard","  Guard")
+						outputName = outputName.replace("Guard","	Guard")
 					} else {
 						if (inputName.slice(30,37) == "WeeperF") {
 							outputName = outputName.replace("WeeperFemale","female Weeper")
