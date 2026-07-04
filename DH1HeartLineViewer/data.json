@@ -6,18 +6,18 @@
       "branchPaths": [
         {
           "branchPathName": "m_DialogHooks[119]",
-          "branchPathValue": "DisConv_DialogHook.1857"
-          "branchPathFriendlyName": "Non-targeted (ambient) whisper",
+          "branchPathValue": "DisConv_DialogHook.1857",
+          "branchPathFriendlyName": "Non-targeted (ambient) whisper"
         },
         {
           "branchPathName": "m_DialogHooks[120]",
-          "branchPathValue": "DisConv_Hook_HeartTargeted.1858"
-          "branchPathFriendlyName": "Whisper targeting a non-unique NPC",
+          "branchPathValue": "DisConv_Hook_HeartTargeted.1858",
+          "branchPathFriendlyName": "Whisper targeting a non-unique NPC"
         },
         {
           "branchPathName": "m_DialogHooks[121]",
-          "branchPathValue": "DisConv_Hook_HeartTargeted_2.1859"
-          "branchPathFriendlyName": "Whisper targeting a unique NPC",
+          "branchPathValue": "DisConv_Hook_HeartTargeted_2.1859",
+          "branchPathFriendlyName": "Whisper targeting a unique NPC"
         }
       ]
     },
@@ -8032,4 +8032,3 @@
     }
   ]
 }
-
