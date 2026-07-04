@@ -40,7 +40,7 @@ function changeHandler(type, rowN , data , hashData) {
 	console.log("")
 	console.log("running changeHandler for " + type + " in row " + rowN)
 	var thisSelect = document.getElementById("select" + rowN + type);
-	currentDepth = rowN
+	currentDepth = rowN;
 	
 	// hiding the blurb display
 	if (document.getElementById("blurbDisplay") != null) {
@@ -105,15 +105,17 @@ function changeHandlerChk(strOrigin) {
 		
 		var thisSelect
 		
+		console.log(currentDepth);
+		
 		if (checkValue) {
-			for (var n = 0; n <= currentDepth; n++) {
+			for (var n = 0; n <= currentDepth + 1; n++) {
 				thisSelect = document.getElementById("select" + n + "expert");
 				thisSelect.style.display = 'block';
 				thisSelect = document.getElementById("select" + n + "normal");
 				thisSelect.style.display = 'none';
 			};
 		} else {
-			for (var n = 0; n <= currentDepth; n++) {
+			for (var n = 0; n <= currentDepth + 1; n++) {
 				thisSelect = document.getElementById("select" + n + "expert");
 				thisSelect.style.display = 'none';
 				thisSelect = document.getElementById("select" + n + "normal");
