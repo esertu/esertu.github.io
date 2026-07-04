@@ -26,7 +26,8 @@
       "branchPaths": [
         {
           "branchPathName": "m_OutputLinks[0]",
-          "branchPathValue": "DisConv_CheckStoryFlag_1.1837"
+          "branchPathValue": "DisConv_CheckStoryFlag_1.1837",
+					"checkedStoryFlag": "SF_Global_InHubFriendly"
         }
       ]
     },
@@ -35,14 +36,14 @@
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_2.1842"
+          "branchPathValue": "DisConv_CheckStoryFlag_2.1842",
+					"checkedStoryFlag": "SF_Global_InOverseerOffice"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_30.1919"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InHubFriendly"
+      ]
     },
     {
       "itemName": "DisConv_Hook_HeartTargeted.1858",
@@ -496,17 +497,20 @@
         {
           "branchPathName": "m_OutputLinks[18]",
           "branchPathValue": "DisConv_CheckStoryFlag_33.1847",
-          "branchPathCondition": "DisSpeakerStoryGroup = Twk_ID_LydiaBoyle"
+          "branchPathCondition": "DisSpeakerStoryGroup = Twk_ID_LydiaBoyle",
+					"checkedStoryFlag": "PlayerKnowsLydia"
         },
         {
           "branchPathName": "m_OutputLinks[19]",
           "branchPathValue": "DisConv_CheckStoryFlag_36.1850",
-          "branchPathCondition": "DisSpeakerStoryGroup = Twk_ID_WaverlyBoyle"
+          "branchPathCondition": "DisSpeakerStoryGroup = Twk_ID_WaverlyBoyle",
+					"checkedStoryFlag": "PlayerKnowsWaverly"
         },
         {
           "branchPathName": "m_OutputLinks[20]",
           "branchPathValue": "DisConv_CheckStoryFlag_35.1849",
-          "branchPathCondition": "DisSpeakerStoryGroup = Twk_ID_EsmaBoyle"
+          "branchPathCondition": "DisSpeakerStoryGroup = Twk_ID_EsmaBoyle",
+					"checkedStoryFlag": "PlayerKnowsEsma"
         },
         {
           "branchPathName": "m_OutputLinks[21]",
@@ -2026,28 +2030,28 @@
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_12.1840"
+          "branchPathValue": "DisConv_CheckStoryFlag_12.1840",
+					"checkedStoryFlag": "PlayerKnowsWaverly"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_37.1926"
         }
-      ],
-      "checkedStoryFlag": "PlayerKnowsLydia"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_12.1840",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_11.1839"
+          "branchPathValue": "DisConv_CheckStoryFlag_11.1839",
+					"checkedStoryFlag": "PlayerKnowsEsma"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_37.1926"
         }
-      ],
-      "checkedStoryFlag": "PlayerKnowsWaverly"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_11.1839",
@@ -2060,36 +2064,35 @@
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_37.1926"
         }
-      ],
-      "checkedStoryFlag": "PlayerKnowsEsma"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_36.1850",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_34.1848"
+          "branchPathValue": "DisConv_CheckStoryFlag_34.1848",
+					"checkedStoryFlag": "PlayerKnowsLydia"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_24.1912"
         }
-      ],
-      "checkedStoryFlag": "PlayerKnowsWaverly"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_34.1848",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_32.1846"
+          "branchPathValue": "DisConv_CheckStoryFlag_32.1846",
+					"checkedStoryFlag": "PlayerKnowsEsma"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_24.1912"
         }
-      ],
-      "checkedStoryFlag": "PlayerKnowsLydia"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_32.1846",
@@ -2102,36 +2105,35 @@
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_24.1912"
         }
-      ],
-      "checkedStoryFlag": "PlayerKnowsEsma"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_35.1849",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_30.1844"
+          "branchPathValue": "DisConv_CheckStoryFlag_30.1844",
+					"checkedStoryFlag": "PlayerKnowsLydia"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_23.1911"
         }
-      ],
-      "checkedStoryFlag": "PlayerKnowsEsma"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_30.1844",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_31.1845"
+          "branchPathValue": "DisConv_CheckStoryFlag_31.1845",
+					"checkedStoryFlag": " PlayerKnowsWaverly"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_23.1911"
         }
-      ],
-      "checkedStoryFlag": "PlayerKnowsLydia"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_31.1845",
@@ -2144,8 +2146,7 @@
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_23.1911"
         }
-      ],
-      "checkedStoryFlag": " PlayerKnowsWaverly"
+      ]
     },
     {
       "itemName": "DisConv_SequentialBranch_37.1926",
@@ -6592,140 +6593,140 @@
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_3.1843"
+          "branchPathValue": "DisConv_CheckStoryFlag_3.1843",
+					"checkedStoryFlag": "SF_Global_InBrothel"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_36.1925"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InOverseerOffice"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_3.1843",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_4.1851"
+          "branchPathValue": "DisConv_CheckStoryFlag_4.1851",
+					"checkedStoryFlag": "SF_Global_InBridge"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_28.1916"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InBrothel"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_4.1851",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_9.1856"
+          "branchPathValue": "DisConv_CheckStoryFlag_9.1856",
+					"checkedStoryFlag": "SF_Global_InBoyleEstate"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_29.1917"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InBridge"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_9.1856",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_10.1838"
+          "branchPathValue": "DisConv_CheckStoryFlag_10.1838",
+					"checkedStoryFlag": "SF_Global_InDistillery"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_25.1913"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InBoyleEstate"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_10.1838",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_6.1853"
+          "branchPathValue": "DisConv_CheckStoryFlag_6.1853",
+					"checkedStoryFlag": "SF_Global_InTowerReturn"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_27.1915"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InDistillery"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_6.1853",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_7.1854"
+          "branchPathValue": "DisConv_CheckStoryFlag_7.1854",
+					"checkedStoryFlag": "SF_Global_InFloodedDistrict"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_73.1965"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InTowerReturn"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_7.1854",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_8.1855"
+          "branchPathValue": "DisConv_CheckStoryFlag_8.1855",
+					"checkedStoryFlag": "SF_Global_InHubEnemy"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_32.1921"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InFloodedDistrict"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_8.1855",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag.1836"
+          "branchPathValue": "DisConv_CheckStoryFlag.1836",
+					"checkedStoryFlag": "SF_Global_InOverseerOffice"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_33.1922"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InHubEnemy"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag.1836",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_14.1841"
+          "branchPathValue": "DisConv_CheckStoryFlag_14.1841",
+					"checkedStoryFlag": "SF_Global_InLighthouse"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_34.1923"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InOverseerOffice"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_14.1841",
       "branchPaths": [
         {
           "branchPathName": "StoryFlag is not set",
-          "branchPathValue": "DisConv_CheckStoryFlag_5.1852 "
+          "branchPathValue": "DisConv_CheckStoryFlag_5.1852",
+					"checkedStoryFlag": "SF_GlobalInOutsiderDream"
         },
         {
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_35.1924"
         }
-      ],
-      "checkedStoryFlag": "SF_Global_InLighthouse"
+      ]
     },
     {
       "itemName": "DisConv_CheckStoryFlag_5.1852 ",
@@ -6738,8 +6739,7 @@
           "branchPathName": "StoryFlag is set",
           "branchPathValue": "DisConv_SequentialBranch_31.1920"
         }
-      ],
-      "checkedStoryFlag": "SF_GlobalInOutsiderDream"
+      ]
     },
     {
       "itemName": "DisConv_SequentialBranch_30.1919",
