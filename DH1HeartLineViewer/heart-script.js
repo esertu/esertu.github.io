@@ -99,6 +99,8 @@ function changeHandlerChk(strOrigin) {
 	checkValue = thisCheck.value;
 	console.log(strOrigin);
 	console.log(checkValue);
+	console.log(arrDisplayedExpert);
+	console.log(arrDisplayedNormal);
 };
 
 function buildCheckBoxExpert() {
@@ -199,6 +201,89 @@ function findInHashData(arrSearch,strSearch) {
 	};
 };
 
+//extracting number from between two square brackets
+function numberFromBrackets(inputName) {
+	inputName = inputName.slice(inputName.search("\\[")+1,inputName.search("\\]"))
+	inputName = Number(inputName) //since we do math to this number later we need it as an explicit number
+	return(inputName);
+};
+
+//extracting number from between an underscore and a period, ie DisConv_Blurb_14.1398 -> 14
+function numberFromItem(inputName) {
+	if (inputName.search("_") == -1) {
+		inputName = 0
+	} else {
+		var inputName = inputName.slice(inputName.search("_")+1,inputName.search("."))
+		inputName = Number(inputName) //since we do math to this number later we need it as an explicit number
+	};
+	
+	return(inputName);
+};
+
+//wip: implement all classes 
+// creating a less filename-y more readable name for a class
+function createFriendlyName(inputName) {
+	var outputName = ""
+	
+	switch (inputName.slice(0,10)) {
+		//m_OutputLinks
+		case "m_OutputLi":
+			outputName = "Output link " + (numberFromBrackets(inputName) + 1);
+			break;
+			
+		//m_Branches
+		case "m_Branches":
+			outputName = "Branch " + (numberFromBrackets(inputName) + 1);
+			break;
+			
+		//DisConv_Blurb
+		case "DisConv_Bl":
+			outputName = "Voice line " + (numberFromItem(inputName) + 1);
+			break;
+			
+		//DisConv_RandomBranch
+		case "DisConv_Ra":
+			outputName = "Random choice";
+			break;
+			
+		//DisConv_SpeakerInStoryGroup
+		case "DisConv_Sp":
+			outputName = "Check identity of targeted NPC";
+			break;
+			
+		//DisConv_SequentialBranch
+		case "DisConv_Se":
+			outputName = "List of sequential lines";
+			break;
+			
+		//DisConv_CheckStoryFlag
+		case "DisConv_Ch":
+			outputName = "Check StoryFlag";
+			break;
+			
+		//StoryFlag state 1 / StoryFlag state 2
+		case "StoryFlag ":
+		  if (inputName.slice(-1) == "1") {
+				outputName = "StoryFlag is set";
+			} else {
+				outputName = "StoryFlag is not set";
+			};
+			break;
+			
+		//terminated branch
+		case "[Null]":
+			outputName = "[No lines]";
+			break;
+			
+		default:
+			outputName = inputName;
+			console.log("createFriendlyName:");
+			console.log(inputName);
+	};
+	
+	return(outputName)
+};
+
 //wip: fix [Null] branches
 function buildDropdown(rowN , data , hashData) {
 	// getting or building this drop-down menu
@@ -252,28 +337,23 @@ function buildDropdown(rowN , data , hashData) {
 		var option = document.createElement("option");
 		var thisBranch = thisItem.branchPaths[n]
 		var thisBranchPathName = thisBranch.branchPathName
+		var thisBranchPathValue = thisBranch.branchPathValue
 		var expertText = thisBranchPathName + " → " + thisBranch.branchPathValue;
 		
 		// normal text 
-		var normalText = "wip"
-		if (thisBranch.branchPathFriendlyName != null) {
-			normalText = thisBranch.branchPathFriendlyName;
+		var normalText = ""
+		if (thisBranch.friendlyName != null) {
+			normalText = thisBranch.friendlyName;
 		} else {
-			if (thisBranchPathName.search("m_OutputLinks") != -1) {
-				normalText = "Output link " + thisBranchPathName.slice(thisBranchPathName.search("\\[")+1,thisBranchPathName.search("\\]"));
-			} else {
-				if (thisBranchPathName.search("m_Branches") != -1) {
-					normalText = "Branch " + thisBranchPathName.slice(thisBranchPathName.search("\\[")+1,thisBranchPathName.search("\\]"));
-				} else {
-					normalText = thisBranchPathName;
-				};
-			};
+			normalText = createFriendlyName(thisBranchPathName);
 		};
 		
 		normalText = normalText + " → "
+		
+		normalText = normalText + createFriendlyName(thisBranchPathValue);
 
 		// special: checkstoryflags
-		if (thisBranch.branchPathValue.lastIndexOf("DisConv_Check",0) === 0) {
+		if (thisBranchPathValue.lastIndexOf("DisConv_Check",0) === 0) {
 			var thisStoryFlag = thisBranch.checkedStoryFlag
 			expertText = expertText + " (checked StoryFlag: " + thisStoryFlag + ")"
 		};
@@ -299,7 +379,7 @@ function buildDropdown(rowN , data , hashData) {
 		arrDisplayedExpert.push(expertText);
 		arrDisplayedNormal.push(normalText);
 		
-		option.value = thisBranch.branchPathValue;
+		option.value = thisBranchPathValue;
 		thisSelect.appendChild(option);
 	};
 	
@@ -308,7 +388,6 @@ function buildDropdown(rowN , data , hashData) {
 //storage array that store what's currently displayed
 var arrDisplayedExpert = new Array();
 var arrDisplayedNormal = new Array();
-arrDisplayedExpert.push("A");
 
 //running everything
 buildInfoText();

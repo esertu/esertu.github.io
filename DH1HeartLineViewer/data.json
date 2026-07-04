@@ -7,17 +7,17 @@
 				{
 					"branchPathName": "m_DialogHooks[119]",
 					"branchPathValue": "DisConv_DialogHook.1857",
-					"branchPathFriendlyName": "Non-targeted (ambient) whisper"
+					"friendlyName": "Non-targeted (ambient) whisper"
 				},
 				{
 					"branchPathName": "m_DialogHooks[120]",
 					"branchPathValue": "DisConv_Hook_HeartTargeted.1858",
-					"branchPathFriendlyName": "Whisper targeting a non-unique NPC"
+					"friendlyName": "Whisper targeting a non-unique NPC"
 				},
 				{
 					"branchPathName": "m_DialogHooks[121]",
 					"branchPathValue": "DisConv_Hook_HeartTargeted_2.1859",
-					"branchPathFriendlyName": "Whisper targeting a unique NPC"
+					"friendlyName": "Whisper targeting a unique NPC"
 				}
 			]
 		},
@@ -35,12 +35,12 @@
 			"itemName": "DisConv_CheckStoryFlag_1.1837",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_2.1842",
 					"checkedStoryFlag": "SF_Global_InOverseerOffice"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_30.1919"
 				}
 			]
@@ -2029,12 +2029,12 @@
 			"itemName": "DisConv_CheckStoryFlag_33.1847",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_12.1840",
 					"checkedStoryFlag": "PlayerKnowsWaverly"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_37.1926"
 				}
 			]
@@ -2043,12 +2043,12 @@
 			"itemName": "DisConv_CheckStoryFlag_12.1840",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_11.1839",
 					"checkedStoryFlag": "PlayerKnowsEsma"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_37.1926"
 				}
 			]
@@ -2057,11 +2057,11 @@
 			"itemName": "DisConv_CheckStoryFlag_11.1839",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "[Null]"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_37.1926"
 				}
 			]
@@ -2070,12 +2070,12 @@
 			"itemName": "DisConv_CheckStoryFlag_36.1850",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_34.1848",
 					"checkedStoryFlag": "PlayerKnowsLydia"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_24.1912"
 				}
 			]
@@ -2084,12 +2084,12 @@
 			"itemName": "DisConv_CheckStoryFlag_34.1848",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_32.1846",
 					"checkedStoryFlag": "PlayerKnowsEsma"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_24.1912"
 				}
 			]
@@ -2098,11 +2098,11 @@
 			"itemName": "DisConv_CheckStoryFlag_32.1846",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "[Null]"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_24.1912"
 				}
 			]
@@ -2111,12 +2111,12 @@
 			"itemName": "DisConv_CheckStoryFlag_35.1849",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_30.1844",
 					"checkedStoryFlag": "PlayerKnowsLydia"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_23.1911"
 				}
 			]
@@ -2125,12 +2125,12 @@
 			"itemName": "DisConv_CheckStoryFlag_30.1844",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_31.1845",
 					"checkedStoryFlag": " PlayerKnowsWaverly"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_23.1911"
 				}
 			]
@@ -2139,11 +2139,11 @@
 			"itemName": "DisConv_CheckStoryFlag_31.1845",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "[Null]"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_23.1911"
 				}
 			]
@@ -6592,12 +6592,12 @@
 			"itemName": "DisConv_CheckStoryFlag_2.1842",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_3.1843",
 					"checkedStoryFlag": "SF_Global_InBrothel"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_36.1925"
 				}
 			]
@@ -6606,12 +6606,12 @@
 			"itemName": "DisConv_CheckStoryFlag_3.1843",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_4.1851",
 					"checkedStoryFlag": "SF_Global_InBridge"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_28.1916"
 				}
 			]
@@ -6620,12 +6620,12 @@
 			"itemName": "DisConv_CheckStoryFlag_4.1851",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_9.1856",
 					"checkedStoryFlag": "SF_Global_InBoyleEstate"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_29.1917"
 				}
 			]
@@ -6634,12 +6634,12 @@
 			"itemName": "DisConv_CheckStoryFlag_9.1856",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_10.1838",
 					"checkedStoryFlag": "SF_Global_InDistillery"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_25.1913"
 				}
 			]
@@ -6648,12 +6648,12 @@
 			"itemName": "DisConv_CheckStoryFlag_10.1838",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_6.1853",
 					"checkedStoryFlag": "SF_Global_InTowerReturn"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_27.1915"
 				}
 			]
@@ -6662,12 +6662,12 @@
 			"itemName": "DisConv_CheckStoryFlag_6.1853",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_7.1854",
 					"checkedStoryFlag": "SF_Global_InFloodedDistrict"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_73.1965"
 				}
 			]
@@ -6676,12 +6676,12 @@
 			"itemName": "DisConv_CheckStoryFlag_7.1854",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_8.1855",
 					"checkedStoryFlag": "SF_Global_InHubEnemy"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_32.1921"
 				}
 			]
@@ -6690,12 +6690,12 @@
 			"itemName": "DisConv_CheckStoryFlag_8.1855",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag.1836",
 					"checkedStoryFlag": "SF_Global_InOverseerOffice"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_33.1922"
 				}
 			]
@@ -6704,12 +6704,12 @@
 			"itemName": "DisConv_CheckStoryFlag.1836",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_14.1841",
 					"checkedStoryFlag": "SF_Global_InLighthouse"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_34.1923"
 				}
 			]
@@ -6718,12 +6718,12 @@
 			"itemName": "DisConv_CheckStoryFlag_14.1841",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_5.1852",
 					"checkedStoryFlag": "SF_GlobalInOutsiderDream"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_35.1924"
 				}
 			]
@@ -6732,11 +6732,11 @@
 			"itemName": "DisConv_CheckStoryFlag_5.1852 ",
 			"branchPaths": [
 				{
-					"branchPathName": "StoryFlag is not set",
+					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_SequentialBranch_26.1914"
 				},
 				{
-					"branchPathName": "StoryFlag is set",
+					"branchPathName": "StoryFlag state 2",
 					"branchPathValue": "DisConv_SequentialBranch_31.1920"
 				}
 			]
