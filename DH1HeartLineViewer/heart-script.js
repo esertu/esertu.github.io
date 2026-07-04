@@ -77,7 +77,7 @@ function buildInfoText() {
 	info.innerText += "\nAbout the start of the tree:"
 	info.innerText += "\nDisDialogTree Dlg_HeartGadget.Dlg_HeartGadget has three conversation hooks which watch for inputs in order to fire dialogue."
 	info.innerText += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_DialogHook fires if this was a non-targeted, i.e. ambient, whisper."
-	info.innerText += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_Hook_HeartTargeted as well as DisConv_Hook_HeartTargeted_2 fire if this was a targeted whisper targeting an NPC. I'm not quite certain if the EDisDialogHook check is actually relevant, as both hooks have the exact same output branches - they both go to DisConv_SpeakerInStoryGroup. The following chain of checks first checks for unique NPCs, then, once all unique NPCs have been exhausted, for non-unique NPC groups. I get the feeling the devs initially wanted to check against the EDisDialogHook property to check whether unique or non-unique NPCs were being targeted but later decided to just run the same function in both cases."
+	info.innerText += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_Hook_HeartTargeted as well as DisConv_Hook_HeartTargeted_2 fire if this was a targeted whisper targeting an NPC. I'm not quite certain if the EDisDialogHook check is actually relevant, as both hooks have the exact same output branches - when targeting any human NPC they both go to DisConv_SpeakerInStoryGroup. The two HeartTargeted events ensure that rat and river krust lines play whether you're targeting an unique or non-unique NPC (which kind of implies the devs wanted to keep the possibility of adding unique rats/river krusts to the game). The following chain of checks first checks for unique NPCs, then, once all unique NPCs have been exhausted, for non-unique NPC groups. I get the feeling the devs initially wanted to check against the EDisDialogHook property to check whether unique or non-unique NPCs were being targeted but later decided to just run the same function in both cases."
 	info.innerText += "\nThe latter two hooks are also used to fire off rat and riverkrust lines if those creatures are targeted." //wip: check if those are actually used
 	info.innerText += "\r\n"
 	info.innerText += "\nOn some of the item classes in this tree:"
@@ -91,6 +91,7 @@ function buildInfoText() {
 	info.innerText += "\r\n"
 	info.innerText += "\nOther information:"
 	info.innerText += "\nOne voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five."
+	info.innerText += "\nOverseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions."
 	info.innerText += "\r\n"
 	info.innerText += "\r\n"
 	
@@ -259,10 +260,11 @@ function numberFromItem(inputName) {
 	if (inputName.search("_") == -1) {
 		inputName = 0
 	} else {
-		var inputName = inputName.slice(inputName.search("_")+1,inputName.search("."))
+		inputName = inputName.slice(inputName.search("_")+1)
+		inputName = inputName.slice(inputName.search("_")+1)
+		inputName = inputName.slice(0,inputName.search("\\."))
 		inputName = Number(inputName) //since we do math to this number later we need it as an explicit number
 	};
-	
 	return(inputName);
 };
 
@@ -284,12 +286,13 @@ function createFriendlyName(inputName) {
 			
 		//DisConv_Blurb
 		case "DisConv_Bl":
-			outputName = "Voice line " + (numberFromItem(inputName) + 1);
+			console.log(inputName);
+			outputName = "Voice line #" + (numberFromItem(inputName) + 1);
 			break;
 			
 		//DisConv_RandomBranch
 		case "DisConv_Ra":
-			outputName = "Random choice";
+			outputName = "Make a random choice";
 			break;
 			
 		//DisConv_SpeakerInStoryGroup
@@ -299,7 +302,7 @@ function createFriendlyName(inputName) {
 			
 		//DisConv_SequentialBranch
 		case "DisConv_Se":
-			outputName = "List of sequential lines";
+			outputName = "Play list of sequential lines";
 			break;
 			
 		//DisConv_CheckStoryFlag
@@ -310,9 +313,9 @@ function createFriendlyName(inputName) {
 		//StoryFlag state 1 / StoryFlag state 2
 		case "StoryFlag ":
 			if (inputName.slice(-1) == "1") {
-				outputName = "StoryFlag is set";
-			} else {
 				outputName = "StoryFlag is not set";
+			} else {
+				outputName = "StoryFlag is set";
 			};
 			break;
 			
@@ -330,32 +333,102 @@ function createFriendlyName(inputName) {
 	return(outputName)
 };
 
-function createFriendlyConditionName(inputName) {
+function createFriendlyConditionName(inputName, rowN) {
 	switch (inputName.slice(0,10)) {
 		//m_AssociatedTypes
 		case "m_Associat":
-			outputName = "(if type of NPC is "
+			outputName = "Targeted NPC is a "
 			//DisGameCrowdAgentSkeletalRat
 			if (inputName.slice(-3) == "Rat") {
-				outputName = outputName + "Rats)";
+				outputName = outputName + "rat";
 			//DisRiverKrust
 			} else {
-				outputName = outputName + "River Krusts)";
+				outputName = outputName + "river krust";
 			};
 			break;
 			
 		//EDisDialogHook //wip
 		case "EDisDialog":
-			outputName = inputName + "<<<< wip";
+			outputName = "Targeted NPC is neither of the above";
 			break;
 			
 		//DisSpeakerStoryGroup //wip
 		case "DisSpeaker":
 			// "DisSpeakerStoryGroup = Twk_ID_Calista"
 			if (inputName.slice(0,30) == "DisSpeakerStoryGroup = Twk_ID_") {
-				outputName = inputName.slice(30);
+				if (rowN != 3) {
+					outputName = "Targeted NPC is " + inputName.slice(30);
+				} else {
+					outputName = "Targeted NPC is a";
+					
+					//"a Overseer" -> "an Overseer"
+					if (inputName.slice(30,31) == "A") {
+						// female Aristocrats (AristoFemale) don't need the n because they're "female Aristocrats" in display
+					  if (inputName.slice(30,32) != "Ar") {
+						  outputName = outputName + "n"
+						};
+					} else {
+						if (inputName.slice(30,31) == "O") {
+							outputName = outputName + "n"
+						} else {
+							if (inputName.slice(30,31) == "E") {
+								outputName = outputName + "n"
+							};
+						};
+					};
+					
+					outputName = outputName + " ";
+					
+					// adding the determined name to the base phrase
+					// wip: replace female and male
+					outputName = outputName + inputName.slice(30);
+					
+					if (inputName.slice(30,35) == "Guard") {
+						outputName = outputName.replace("Guard","  Guard")
+					} else {
+						if (inputName.slice(30,37) == "WeeperF") {
+							outputName = outputName.replace("WeeperFemale","female Weeper")
+						} else {
+							if (inputName.slice(30,37) == "WeeperM") {
+								outputName = outputName.replace("WeeperMale","male Weeper")
+							} else {
+								if (inputName.slice(30,37) == "AristoF") {
+									outputName = outputName.replace("AristoFemale","female Aristocrat")
+								} else {
+									if (inputName.slice(30,37) == "AristoM") {
+										outputName = outputName.replace("AristoMale","male Aristocrat")
+									} else {
+										if (inputName.slice(30,37) == "MiddleM") {
+											outputName = outputName.replace("MiddleMale","male Middle class citizen")
+										} else {
+										if (inputName.slice(30,37) == "MiddleF") {
+											outputName = outputName.replace("MiddleFemale","female Middle class citizen")
+										};
+										};
+									};
+								};
+							};
+						};
+					};
+					
+					// removing "s" from group names (ie "Overseers" -> "Overseer"
+					if (outputName.slice(-1) == "s") {
+						outputName = outputName.slice(0,-1);
+					};
+					
+					// adding clarifier about the two groups for Overseers
+					if (outputName.slice(-4) == "seer") {
+						outputName = outputName + " (1st group)"
+					};
+				};
+				
 			} else {
-				outputName = inputName + "<<<< wip";
+				
+				if (inputName == "DisSpeakerStoryGroup = SG_Ovrsr_Overseers_Twk") {
+					outputName = "Targeted NPC is an Overseer (2nd group)";
+				} else {
+					outputName = "Targeted NPC is none of the above";
+				};
 			};
 			break;
 			
@@ -445,23 +518,43 @@ function buildDropdown(rowN , data , hashData) {
 		var thisBranchPathValue = thisBranch.branchPathValue
 		var expertText = thisBranchPathName + " → " + thisBranch.branchPathValue;
 		
-		// normal text 
+		// normal text gets rather complicated behind the scenes to display something that's both short and hopefully understandable to the average layperson
 		var normalText = ""
 		if (thisBranch.friendlyName != null) {
 			normalText = thisBranch.friendlyName;
 		} else {
 			normalText = createFriendlyName(thisBranchPathName);
 		};
-		
-		normalText = normalText + " → "
-		
-		normalText = normalText + createFriendlyName(thisBranchPathValue);
 
 		// special: checkstoryflags
-		if (thisBranchPathValue.lastIndexOf("DisConv_Check",0) === 0) {
+		if (thisBranchPathValue.lastIndexOf("DisConv_Check",0) != 0) {
+			// don't need destination description in row 0 as it's already described by the origin
+			if (rowN > 0) {
+				normalText = normalText + " → "
+				normalText = normalText + createFriendlyName(thisBranchPathValue);
+			};
+		} else {
+			
 			var thisStoryFlag = thisBranch.checkedStoryFlag;
 			expertText = expertText + " (checked StoryFlag: " + thisStoryFlag + ")";
-			normalText = normalText + " (checked StoryFlag: " + thisStoryFlag + ")";
+			
+			//wip: deal with the boyles
+			//deleting the "SF_Global" for the normal text
+			thisStoryFlag = thisStoryFlag.slice("SF_Global".length)
+			//StoryFlag for OutsiderDream is "SF_GlobalIn", other SFs begin with "SF_Global_In" :|
+			if (thisStoryFlag.slice(0,1) == "_") {
+				thisStoryFlag = thisStoryFlag.slice(1);
+				
+				thisStoryFlag = "Is player in " + thisStoryFlag.slice(2) + "?";
+			};
+			
+			if (rowN == 1) {
+				normalText = "Check StoryFlag: " + thisStoryFlag;
+			} else {
+				normalText = normalText + " → "
+				normalText = normalText + "Check StoryFlag: " + thisStoryFlag;
+			};
+			
 		};
 
 		// special: conditions
@@ -473,7 +566,8 @@ function buildDropdown(rowN , data , hashData) {
 			} else {
 				//wip
 				expertText = expertText + " (if " + conditionVal + ")";
-				normalText = normalText + " " + createFriendlyConditionName(conditionVal);
+				
+				normalText = createFriendlyConditionName(conditionVal, rowN);
 			};
 		};
 		
