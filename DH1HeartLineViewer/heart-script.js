@@ -37,8 +37,6 @@ async function loadHashData() {
 
 // runs when change in drop-down menu occurs
 function changeHandler(type, rowN , data , hashData) {
-	console.log("")
-	console.log("running changeHandler for " + type + " in row " + rowN)
 	var thisSelect = document.getElementById("select" + rowN + type);
 	currentDepth = rowN;
 	
@@ -56,12 +54,13 @@ function changeHandler(type, rowN , data , hashData) {
 	};
 	
 	if (thisSelect.value != "") {
+	  arrDisplayed.push(document.getElementById("select" + rowN + "normal").value);
+		
 		if (thisSelect.value.search("DisConv_Blurb") != -1) {
 			buildBlurbDisplay(rowN + 1 , data , hashData);
 		} else {
 			buildDropdown(rowN + 1 , data , hashData);
 		};
-		
 	};
 	
 };
@@ -99,14 +98,11 @@ function buildInfoText() {
 };
 
 function changeHandlerChk(strOrigin) {
-	console.log("changeHandlerChk for " + strOrigin);
 	if (strOrigin == "expert") {
 		var thisCheck = document.getElementById("checkExpert");
 		checkValue = thisCheck.checked;
 		
 		var thisSelect
-		
-		console.log(currentDepth);
 		
 		if (checkValue) {
 			for (var n = 0; n <= currentDepth + 1; n++) {
@@ -131,8 +127,6 @@ function changeHandlerChk(strOrigin) {
 	};
 	
 	checkValue = thisCheck.checked;
-	console.log(checkValue);
-	console.log("");
 };
 
 function buildCheckBoxExpert() {
@@ -197,7 +191,6 @@ function clearFurtherDropdowns(rowN) {
 	var n = 0
 	while (document.getElementById("select" + (rowN + n) + "expert") != null) {
 		for (var i = 0; i <= 1; i++) {
-			console.log(i);
 			// clearing dropdown of its children
 			if (i == 0) {
 				var type = "expert";
@@ -205,11 +198,8 @@ function clearFurtherDropdowns(rowN) {
 				var type = "normal";
 			};
 			
-			console.log(type);
-			
 			var thisSelect = document.getElementById("select" + (rowN + n) + type);
 			if (thisSelect != null) {
-				console.log("running clearFurtherDropdowns for row " + (rowN + n) + " " + type);
 				while (thisSelect.firstChild) {
 					thisSelect.firstChild.remove()
 				};
@@ -218,9 +208,10 @@ function clearFurtherDropdowns(rowN) {
 			};
 			
 		};
+		
+		arrDisplayed.pop()
 		n = n + 1
 	};
-	
 	
 	if (document.getElementById("blurbDisplay") != null) {
 		var blurbDisplay = document.getElementById("blurbDisplay");
@@ -270,13 +261,33 @@ function numberFromItem(inputName) {
 
 //wip: implement all classes 
 // creating a less filename-y more readable name for a class
-function createFriendlyName(inputName) {
+function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 	var outputName = ""
 	
 	switch (inputName.slice(0,10)) {
 		//m_OutputLinks
 		case "m_OutputLi":
-			outputName = "Output link " + (numberFromBrackets(inputName) + 1);
+		  console.log(thisBranchPathValue);
+			
+			//DisConv_CheckStoryFlag
+			if (thisBranchPathValue.slice(0,22) == "DisConv_CheckStoryFlag") {
+				outputName = "";
+			} else {
+				outputName = (numberFromBrackets(inputName) + 1);
+				if (outputName == 1) {
+					outputName = "1st time";
+				} else {
+					if (outputName == 2) {
+						outputName = "2nd time";
+					} else {
+						if (outputName == 3) {
+							outputName = "3rd time";
+						} else {
+							outputName = outputName + "st time";
+						};
+					};
+				};
+			};
 			break;
 			
 		//m_Branches
@@ -286,7 +297,6 @@ function createFriendlyName(inputName) {
 			
 		//DisConv_Blurb
 		case "DisConv_Bl":
-			console.log(inputName);
 			outputName = "Voice line #" + (numberFromItem(inputName) + 1);
 			break;
 			
@@ -307,16 +317,64 @@ function createFriendlyName(inputName) {
 			
 		//DisConv_CheckStoryFlag
 		case "DisConv_Ch":
-			outputName = "Check StoryFlag";
+			outputName = "Check";
 			break;
 			
 		//StoryFlag state 1 / StoryFlag state 2
 		case "StoryFlag ":
-			if (inputName.slice(-1) == "1") {
-				outputName = "StoryFlag is not set";
+		  console.log("-- STORYFLAG --");
+			// "Is the player in the High Overseer's Office?" -> "Player is not in the High Overseer's Office"
+			var prevVal = arrDisplayed[rowN - 2]
+			
+			//console.log(arrDisplayed);
+			//console.log(rowN);
+			console.log(document.getElementById("select" + (rowN - 1) + "normal"));
+			console.log(document.getElementById("select" + (rowN - 1) + "normal").selectedIndex);
+			console.log(document.getElementById("select" + (rowN - 1) + "normal").children[document.getElementById("select" + (rowN - 1) + "normal").selectedIndex]);
+			
+			//console.log(arrDisplayed);
+			
+			if (prevVal.slice(0,27) == "DisConv_SpeakerInStoryGroup") {
+				console.log(inputName);
+				outputName = document.getElementById("select" + (rowN - 1) + "normal").children[document.getElementById("select" + (rowN - 1) + "normal").selectedIndex].label; //wip: change the other one to this too
+				
+				outputName = outputName.slice(outputName.search("Check:")+7)
+				outputName = outputName.replace("Does the p","P")
+				outputName = outputName.replace("?","")
+				if (inputName.slice(-1) == "1") {
+				  outputName = outputName.replace("know","doesn\'t know")
+				} else {
+					outputName = outputName.replace("know","knows")
+				};
+				
+			  console.log(outputName);
+				
+				//outputName = findInData(data.dialogItems, prevVal);
+			  //console.log(outputName);
+				
+				//for (var n = 0; n < prevVal.branchPaths.length; n++) {
+				//};
+				
+				
 			} else {
-				outputName = "StoryFlag is set";
+				outputName = findInData(data.dialogItems, prevVal);
+				//console.log(outputName);
+				
+				outputName = outputName.branchPaths[0].checkedStoryFlagFriendly;
+				//console.log(outputName);
+				
+				outputName = outputName.replace("Is the p","P");
+				
+				outputName = outputName.replace("?", "");
+				if (inputName.slice(-1) == "1") {
+					//outputName = "False";
+					outputName = outputName.replace("Player", "Player is not");
+				} else {
+					//outputName = "True";
+					outputName = outputName.replace("Player", "Player is");
+				};
 			};
+			
 			break;
 			
 		//terminated branch
@@ -472,8 +530,6 @@ function buildThisDropdown(type, rowN , data , hashData) {
 
 //wip: fix [Null] branches
 function buildDropdown(rowN , data , hashData) {
-	console.log("")
-	console.log("running buildDropdown for " + rowN)
 	// getting or building this drop-down menu
 	var thisSelectNormal = buildThisDropdown("normal", rowN , data , hashData)
 	var thisSelectExpert = buildThisDropdown("expert", rowN , data , hashData)
@@ -523,36 +579,31 @@ function buildDropdown(rowN , data , hashData) {
 		if (thisBranch.friendlyName != null) {
 			normalText = thisBranch.friendlyName;
 		} else {
-			normalText = createFriendlyName(thisBranchPathName);
+			normalText = createFriendlyName(thisBranchPathName, rowN , data , thisBranchPathValue);
 		};
 
 		// special: checkstoryflags
 		if (thisBranchPathValue.lastIndexOf("DisConv_Check",0) != 0) {
 			// don't need destination description in row 0 as it's already described by the origin
 			if (rowN > 0) {
-				normalText = normalText + " → "
-				normalText = normalText + createFriendlyName(thisBranchPathValue);
+				if (thisBranch.branchPathCondition == null) {
+					normalText = normalText + " → ";
+					normalText = normalText + createFriendlyName(thisBranchPathValue, rowN , data);
+				} else {
+					normalText = createFriendlyName(thisBranchPathValue, rowN , data , thisBranchPathValue);
+				};
 			};
 		} else {
 			
 			var thisStoryFlag = thisBranch.checkedStoryFlag;
 			expertText = expertText + " (checked StoryFlag: " + thisStoryFlag + ")";
 			
-			//wip: deal with the boyles
-			//deleting the "SF_Global" for the normal text
-			thisStoryFlag = thisStoryFlag.slice("SF_Global".length)
-			//StoryFlag for OutsiderDream is "SF_GlobalIn", other SFs begin with "SF_Global_In" :|
-			if (thisStoryFlag.slice(0,1) == "_") {
-				thisStoryFlag = thisStoryFlag.slice(1);
-				
-				thisStoryFlag = "Is player in " + thisStoryFlag.slice(2) + "?";
-			};
-			
+			var thisStoryFlag = thisBranch.checkedStoryFlagFriendly;
 			if (rowN == 1) {
-				normalText = "Check StoryFlag: " + thisStoryFlag;
+				normalText = "Check: " + thisStoryFlag;
 			} else {
 				normalText = normalText + " → "
-				normalText = normalText + "Check StoryFlag: " + thisStoryFlag;
+				normalText = normalText + "Check: " + thisStoryFlag;
 			};
 			
 		};
@@ -562,12 +613,17 @@ function buildDropdown(rowN , data , hashData) {
 			var conditionVal = thisBranch.branchPathCondition;
 			if (thisItem.itemName.lastIndexOf("DisConv_Random",0) === 0) {
 				expertText = expertText + " (" + conditionVal + "% chance)";
-				normalText = normalText + " (" + conditionVal + "% chance)";
+				normalText = conditionVal + "% chance → " + normalText;
 			} else {
 				//wip
 				expertText = expertText + " (if " + conditionVal + ")";
 				
-				normalText = createFriendlyConditionName(conditionVal, rowN);
+				console.log(normalText);
+				if (normalText.slice(0,3) == " → ") {
+		  		normalText = createFriendlyConditionName(conditionVal, rowN) + normalText;
+				} else {
+		  		normalText = createFriendlyConditionName(conditionVal, rowN) + " → " + normalText;
+				};
 			};
 		};
 		
@@ -592,6 +648,7 @@ function buildDropdown(rowN , data , hashData) {
 	};
 };
 
+var arrDisplayed = new Array();
 var currentDepth = 0;
 //running everything
 buildInfoText();

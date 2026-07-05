@@ -27,7 +27,8 @@
 				{
 					"branchPathName": "m_OutputLinks[0]",
 					"branchPathValue": "DisConv_CheckStoryFlag_1.1837",
-					"checkedStoryFlag": "SF_Global_InHubFriendly"
+					"checkedStoryFlag": "SF_Global_InHubFriendly",
+					"checkedStoryFlagFriendly": "Is the player in the Hound Pits Pub outside of The Loyalists?"
 				}
 			]
 		},
@@ -37,7 +38,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_2.1842",
-					"checkedStoryFlag": "SF_Global_InOverseerOffice"
+					"checkedStoryFlag": "SF_Global_InOverseerOffice",
+					"checkedStoryFlagFriendly": "Is the player in the High Overseer's Office?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -498,19 +500,22 @@
 					"branchPathName": "m_OutputLinks[18]",
 					"branchPathValue": "DisConv_CheckStoryFlag_33.1847",
 					"branchPathCondition": "DisSpeakerStoryGroup = Twk_ID_LydiaBoyle",
-					"checkedStoryFlag": "PlayerKnowsLydia"
+					"checkedStoryFlag": "PlayerKnowsLydia",
+					"checkedStoryFlagFriendly": "Does the player know Lydia's identity?"
 				},
 				{
 					"branchPathName": "m_OutputLinks[19]",
 					"branchPathValue": "DisConv_CheckStoryFlag_36.1850",
 					"branchPathCondition": "DisSpeakerStoryGroup = Twk_ID_WaverlyBoyle",
-					"checkedStoryFlag": "PlayerKnowsWaverly"
+					"checkedStoryFlag": "PlayerKnowsWaverly",
+					"checkedStoryFlagFriendly": "Does the player know Waverly's identity?"
 				},
 				{
 					"branchPathName": "m_OutputLinks[20]",
 					"branchPathValue": "DisConv_CheckStoryFlag_35.1849",
 					"branchPathCondition": "DisSpeakerStoryGroup = Twk_ID_EsmaBoyle",
-					"checkedStoryFlag": "PlayerKnowsEsma"
+					"checkedStoryFlag": "PlayerKnowsEsma",
+					"checkedStoryFlagFriendly": "Does the player know Esma's identity?"
 				},
 				{
 					"branchPathName": "m_OutputLinks[21]",
@@ -2031,7 +2036,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_12.1840",
-					"checkedStoryFlag": "PlayerKnowsWaverly"
+					"checkedStoryFlag": "PlayerKnowsWaverly",
+					"checkedStoryFlagFriendly": "Does the player know Waverly's identity?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -2045,7 +2051,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_11.1839",
-					"checkedStoryFlag": "PlayerKnowsEsma"
+					"checkedStoryFlag": "PlayerKnowsEsma",
+					"checkedStoryFlagFriendly": "Does the player know Esma's identity?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -2072,7 +2079,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_34.1848",
-					"checkedStoryFlag": "PlayerKnowsLydia"
+					"checkedStoryFlag": "PlayerKnowsLydia",
+					"checkedStoryFlagFriendly": "Does the player know Lydia's identity?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -2086,7 +2094,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_32.1846",
-					"checkedStoryFlag": "PlayerKnowsEsma"
+					"checkedStoryFlag": "PlayerKnowsEsma",
+					"checkedStoryFlagFriendly": "Does the player know Esma's identity?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -2113,7 +2122,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_30.1844",
-					"checkedStoryFlag": "PlayerKnowsLydia"
+					"checkedStoryFlag": "PlayerKnowsLydia",
+					"checkedStoryFlagFriendly": "Does the player know Lydia's identity?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -2127,7 +2137,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_31.1845",
-					"checkedStoryFlag": " PlayerKnowsWaverly"
+					"checkedStoryFlag": " PlayerKnowsWaverly",
+					"checkedStoryFlagFriendly": "Does the player know Waverly's identity?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -6594,7 +6605,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_3.1843",
-					"checkedStoryFlag": "SF_Global_InBrothel"
+					"checkedStoryFlag": "SF_Global_InBrothel",
+					"checkedStoryFlagFriendly": "Is the player in the Golden Cat?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -6608,7 +6620,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_4.1851",
-					"checkedStoryFlag": "SF_Global_InBridge"
+					"checkedStoryFlag": "SF_Global_InBridge",
+					"checkedStoryFlagFriendly": "Is the player on Kaldwin's Bridge?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -6622,7 +6635,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_9.1856",
-					"checkedStoryFlag": "SF_Global_InBoyleEstate"
+					"checkedStoryFlag": "SF_Global_InBoyleEstate",
+					"checkedStoryFlagFriendly": "Is the player in the Boyle Estate?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -6636,7 +6650,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_10.1838",
-					"checkedStoryFlag": "SF_Global_InDistillery"
+					"checkedStoryFlag": "SF_Global_InDistillery",
+					"checkedStoryFlagFriendly": "Is the player in the Dunwall Whiskey Distillery?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -6650,7 +6665,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_6.1853",
-					"checkedStoryFlag": "SF_Global_InTowerReturn"
+					"checkedStoryFlag": "SF_Global_InTowerReturn",
+					"checkedStoryFlagFriendly": "Is the player in Dunwall Tower during Return to the Tower?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -6664,7 +6680,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_7.1854",
-					"checkedStoryFlag": "SF_Global_InFloodedDistrict"
+					"checkedStoryFlag": "SF_Global_InFloodedDistrict",
+					"checkedStoryFlagFriendly": "Is the player in the Flooded District?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -6678,7 +6695,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_8.1855",
-					"checkedStoryFlag": "SF_Global_InHubEnemy"
+					"checkedStoryFlag": "SF_Global_InHubEnemy",
+					"checkedStoryFlagFriendly": "Is the player in the Hound Pits Pub during The Loyalists?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -6692,7 +6710,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag.1836",
-					"checkedStoryFlag": "SF_Global_InOverseerOffice"
+					"checkedStoryFlag": "SF_Global_InOverseerOffice",
+					"checkedStoryFlagFriendly": "Is the player in the High Overseer's Office?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -6706,7 +6725,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_14.1841",
-					"checkedStoryFlag": "SF_Global_InLighthouse"
+					"checkedStoryFlag": "SF_Global_InLighthouse",
+					"checkedStoryFlagFriendly": "Is the player on Kingsparrow Island?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
@@ -6720,7 +6740,8 @@
 				{
 					"branchPathName": "StoryFlag state 1",
 					"branchPathValue": "DisConv_CheckStoryFlag_5.1852",
-					"checkedStoryFlag": "SF_GlobalInOutsiderDream"
+					"checkedStoryFlag": "SF_GlobalInOutsiderDream",
+					"checkedStoryFlagFriendly": "Is the player in the Void?"
 				},
 				{
 					"branchPathName": "StoryFlag state 2",
