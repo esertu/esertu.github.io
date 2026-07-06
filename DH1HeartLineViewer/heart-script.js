@@ -54,7 +54,8 @@ function changeHandler(type, rowN , data , hashData) {
 	};
 	
 	if (thisSelect.value != "") {
-		arrDisplayed.push(document.getElementById("select" + rowN + "normal").value);
+		thisSelect = document.getElementById("select" + rowN + "normal");
+		arrDisplayed.push(thisSelect.children[thisSelect.selectedIndex]);
 		
 		if (thisSelect.value.search("DisConv_Blurb") != -1) {
 			buildBlurbDisplay(rowN + 1 , data , hashData);
@@ -249,12 +250,16 @@ function numberFromBrackets(inputName) {
 //extracting number from between an underscore and a period, ie DisConv_Blurb_14.1398 -> 14
 function numberFromItem(inputName) {
 	if (inputName.search("_") == -1) {
-		inputName = 0
+		inputName = 0;
 	} else {
 		inputName = inputName.slice(inputName.search("_")+1)
-		inputName = inputName.slice(inputName.search("_")+1)
-		inputName = inputName.slice(0,inputName.search("\\."))
-		inputName = Number(inputName) //since we do math to this number later we need it as an explicit number
+		if (inputName.search("_") == -1) {
+			inputName = 0;
+		} else {
+			inputName = inputName.slice(inputName.search("_")+1)
+			inputName = inputName.slice(0,inputName.search("\\."))
+			inputName = Number(inputName) //since we do math to this number later we need it as an explicit number
+		};
 	};
 	return(inputName);
 };
@@ -327,54 +332,40 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 		//StoryFlag state 1 / StoryFlag state 2
 		case "StoryFlag ":
 			console.log("-- STORYFLAG --");
-			// "Is the player in the High Overseer's Office?" -> "Player is not in the High Overseer's Office"
-			var prevVal = arrDisplayed[rowN - 2]
+			//wip: arrDisplayed for Boyle branches doesn't work correctly leading to error
+			var prevVal = arrDisplayed[(arrDisplayed.length - 1)];
+			console.log(prevVal);
+			var prevVal = prevVal.label;
+			console.log(prevVal);
 			
-			//console.log(arrDisplayed);
-			//console.log(rowN);
-			console.log(document.getElementById("select" + (rowN - 1) + "normal"));
-			console.log(document.getElementById("select" + (rowN - 1) + "normal").selectedIndex);
-			console.log(document.getElementById("select" + (rowN - 1) + "normal").children[document.getElementById("select" + (rowN - 1) + "normal").selectedIndex]);
+			//"Check: Is the player in the Golden Cat?" -> "Is the player in the Golden Cat"
+			outputName = prevVal.slice(prevVal.search("Check: ")+7)
+			outputName = outputName.replace("?","")
 			
-			//console.log(arrDisplayed);
-			
-			if (prevVal.slice(0,27) == "DisConv_SpeakerInStoryGroup") {
-				console.log(inputName);
-				outputName = document.getElementById("select" + (rowN - 1) + "normal").children[document.getElementById("select" + (rowN - 1) + "normal").selectedIndex].label; //wip: change the other one to this too
+			// "Does the player know Lydia's identity?" -> "Player knows Lydia's identity"
+			if (prevVal.search("know") != -1) {
+				// "Does the player know Lydia's identity" -> "Player know Lydia's identity"
+				outputName = outputName.replace("Does the p", "P") 
 				
-				outputName = outputName.slice(outputName.search("Check:")+7)
-				outputName = outputName.replace("Does the p","P")
-				outputName = outputName.replace("?","")
+				// "Player know Lydia's identity" -> "Player knows Lydia's identity" / "Player doesn't know Lydia's identity"
 				if (inputName.slice(-1) == "1") {
 					outputName = outputName.replace("know","doesn\'t know")
 				} else {
 					outputName = outputName.replace("know","knows")
 				};
 				
-				console.log(outputName);
-				
-				//outputName = findInData(data.dialogItems, prevVal);
-				//console.log(outputName);
-				
-				//for (var n = 0; n < prevVal.branchPaths.length; n++) {
-				//};
-				
+			// "Is the player in the High Overseer's Office" -> "Player is not in the High Overseer's Office"
 			} else {
-				outputName = findInData(data.dialogItems, prevVal);
-				//console.log(outputName);
+				// "Is the player in the High Overseer's Office" -> "Player in the High Overseer's Office"
+				outputName = outputName.replace("Is the p", "P") 
 				
-				outputName = outputName.branchPaths[0].checkedStoryFlagFriendly;
-				//console.log(outputName);
-				
-				outputName = outputName.replace("Is the p","P");
-				
-				outputName = outputName.replace("?", "");
+				// "Player in the High Overseer's Office" -> "Player is in the High Overseer's Office" / "Player is not in the High Overseer's Office"
 				if (inputName.slice(-1) == "1") {
-					//outputName = "False";
-					outputName = outputName.replace("Player", "Player is not");
+					outputName = outputName.replace(" in "," is not in ")
+					outputName = outputName.replace(" on "," is not on ")
 				} else {
-					//outputName = "True";
-					outputName = outputName.replace("Player", "Player is");
+					outputName = outputName.replace(" in "," is in ")
+					outputName = outputName.replace(" on "," is on ")
 				};
 			};
 			
@@ -419,6 +410,11 @@ function createFriendlyConditionName(inputName, rowN) {
 			if (inputName.slice(0,30) == "DisSpeakerStoryGroup = Twk_ID_") {
 				if (rowN != 3) {
 					outputName = "Targeted NPC is " + inputName.slice(30);
+					outputName = outputName.replace("Lord","Lord ");
+					outputName = outputName.replace("Boyle"," Boyle");
+					outputName = outputName.replace("SlackJaw","Slackjaw");
+					
+					
 				} else {
 					outputName = "Targeted NPC is a";
 					
@@ -563,8 +559,12 @@ function buildDropdown(rowN , data , hashData) {
 	} else {
 		var prevSelect = document.getElementById("select" + (rowN - 1) + "expert");
 		// looking for the previous dropdown's value in the data array
-		var thisItem = findInData(data.dialogItems, prevSelect.value)
+		var thisItem = findInData(data.dialogItems, prevSelect.value);
+		console.log(prevSelect);
+		console.log(prevSelect.value);
 	};
+	
+	console.log(thisItem);
 	
 	// actually creating the dropdown options
 	for (var n = 0; n < thisItem.branchPaths.length; n++) {
