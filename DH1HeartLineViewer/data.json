@@ -28,7 +28,7 @@
 					"branchPathName": "m_OutputLinks[0]",
 					"branchPathValue": "DisConv_CheckStoryFlag_1.1837",
 					"checkedStoryFlag": "SF_Global_InHubFriendly",
-					"checkedStoryFlagFriendly": "Is the player in the Hound Pits Pub outside of The Loyalists?"
+					"checkedStoryFlagFriendly": "Is the player in the Hound Pits Pub not during The Loyalists?"
 				}
 			]
 		},
@@ -6750,7 +6750,7 @@
 			]
 		},
 		{
-			"itemName": "DisConv_CheckStoryFlag_5.1852 ",
+			"itemName": "DisConv_CheckStoryFlag_5.1852",
 			"branchPaths": [
 				{
 					"branchPathName": "StoryFlag state 1",
