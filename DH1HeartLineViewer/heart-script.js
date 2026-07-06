@@ -414,7 +414,6 @@ function createFriendlyConditionName(inputName, rowN) {
 					outputName = outputName.replace("Boyle"," Boyle");
 					outputName = outputName.replace("SlackJaw","Slackjaw");
 					
-					
 				} else {
 					outputName = "Targeted NPC is a";
 					
