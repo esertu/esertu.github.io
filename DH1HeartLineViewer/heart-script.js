@@ -359,7 +359,6 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 				//for (var n = 0; n < prevVal.branchPaths.length; n++) {
 				//};
 				
-				
 			} else {
 				outputName = findInData(data.dialogItems, prevVal);
 				//console.log(outputName);
