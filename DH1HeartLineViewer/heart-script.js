@@ -54,7 +54,7 @@ function changeHandler(type, rowN , data , hashData) {
 	};
 	
 	if (thisSelect.value != "") {
-	  arrDisplayed.push(document.getElementById("select" + rowN + "normal").value);
+		arrDisplayed.push(document.getElementById("select" + rowN + "normal").value);
 		
 		if (thisSelect.value.search("DisConv_Blurb") != -1) {
 			buildBlurbDisplay(rowN + 1 , data , hashData);
@@ -90,7 +90,7 @@ function buildInfoText() {
 	info.innerText += "\r\n"
 	info.innerText += "\nOther information:"
 	info.innerText += "\nOne voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five."
-	info.innerText += "\nOverseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions."
+	info.innerText += "\nOverseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions. Since I couldn't determine the actual function of the two groups in the release version of the game I simply named them \"1st\" (Twk_ID) and \"2nd\" (SG_Ovrsr) group after the order they appear in the SpeakerInStoryGroup check."
 	info.innerText += "\r\n"
 	info.innerText += "\r\n"
 	
@@ -267,26 +267,30 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 	switch (inputName.slice(0,10)) {
 		//m_OutputLinks
 		case "m_OutputLi":
-		  console.log(thisBranchPathValue);
+			console.log(thisBranchPathValue);
 			
 			//DisConv_CheckStoryFlag
 			if (thisBranchPathValue.slice(0,22) == "DisConv_CheckStoryFlag") {
 				outputName = "";
 			} else {
 				outputName = (numberFromBrackets(inputName) + 1);
-				if (outputName == 1) {
-					outputName = "1st time";
-				} else {
-					if (outputName == 2) {
-						outputName = "2nd time";
-					} else {
-						if (outputName == 3) {
-							outputName = "3rd time";
-						} else {
-							outputName = outputName + "st time";
-						};
-					};
+				switch (outputName) {
+					case 1:
+						outputName = "1st";
+						break
+						
+					case 2:
+						outputName = "2nd";
+						break
+						
+					case 3:
+						outputName = "3rd";
+						break
+						
+					default:
+						outputName = outputName + "st";
 				};
+				outputName = outputName + " time";
 			};
 			break;
 			
@@ -312,7 +316,7 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 			
 		//DisConv_SequentialBranch
 		case "DisConv_Se":
-			outputName = "Play list of sequential lines";
+			outputName = "Play list of sequential items";
 			break;
 			
 		//DisConv_CheckStoryFlag
@@ -322,7 +326,7 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 			
 		//StoryFlag state 1 / StoryFlag state 2
 		case "StoryFlag ":
-		  console.log("-- STORYFLAG --");
+			console.log("-- STORYFLAG --");
 			// "Is the player in the High Overseer's Office?" -> "Player is not in the High Overseer's Office"
 			var prevVal = arrDisplayed[rowN - 2]
 			
@@ -342,15 +346,15 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 				outputName = outputName.replace("Does the p","P")
 				outputName = outputName.replace("?","")
 				if (inputName.slice(-1) == "1") {
-				  outputName = outputName.replace("know","doesn\'t know")
+					outputName = outputName.replace("know","doesn\'t know")
 				} else {
 					outputName = outputName.replace("know","knows")
 				};
 				
-			  console.log(outputName);
+				console.log(outputName);
 				
 				//outputName = findInData(data.dialogItems, prevVal);
-			  //console.log(outputName);
+				//console.log(outputName);
 				
 				//for (var n = 0; n < prevVal.branchPaths.length; n++) {
 				//};
@@ -407,7 +411,7 @@ function createFriendlyConditionName(inputName, rowN) {
 			
 		//EDisDialogHook //wip
 		case "EDisDialog":
-			outputName = "Targeted NPC is neither of the above";
+			outputName = "Targeted NPC is none of the above";
 			break;
 			
 		//DisSpeakerStoryGroup //wip
@@ -421,7 +425,7 @@ function createFriendlyConditionName(inputName, rowN) {
 					
 					//"a Overseer" -> "an Overseer"
 					if (inputName.slice(30,31) == "A") {
-						// female Aristocrats (AristoFemale) don't need the n because they're "female Aristocrats" in display
+						// female Aristocrats (AristoFemale) don't need the n because they're "a[!] female Aristocrat" in display
 						if (inputName.slice(30,32) != "Ar") {
 							outputName = outputName + "n"
 						};
@@ -438,35 +442,30 @@ function createFriendlyConditionName(inputName, rowN) {
 					outputName = outputName + " ";
 					
 					// adding the determined name to the base phrase
-					// wip: replace female and male
+					// "DisSpeakerStoryGroup = Twk_ID_AristoFemale" -> "AristoFemale"
 					outputName = outputName + inputName.slice(30);
 					
-					if (inputName.slice(30,35) == "Guard") {
-						outputName = outputName.replace("Guard","	Guard")
-					} else {
-						if (inputName.slice(30,37) == "WeeperF") {
-							outputName = outputName.replace("WeeperFemale","female Weeper")
-						} else {
-							if (inputName.slice(30,37) == "WeeperM") {
-								outputName = outputName.replace("WeeperMale","male Weeper")
-							} else {
-								if (inputName.slice(30,37) == "AristoF") {
-									outputName = outputName.replace("AristoFemale","female Aristocrat")
-								} else {
-									if (inputName.slice(30,37) == "AristoM") {
-										outputName = outputName.replace("AristoMale","male Aristocrat")
-									} else {
-										if (inputName.slice(30,37) == "MiddleM") {
-											outputName = outputName.replace("MiddleMale","male Middle class citizen")
-										} else {
-										if (inputName.slice(30,37) == "MiddleF") {
-											outputName = outputName.replace("MiddleFemale","female Middle class citizen")
-										};
-										};
-									};
-								};
-							};
+					// "CityGuard" -> "City Guard"
+					outputName = outputName.replace("Guard","	Guard");
+					
+					// handling "Male" and "Female" by moving it from the end of the string to the start, ie ("Twk_ID_AristoFemale" ->) "AristoFemale" -> "female Aristo"
+					if (inputName.slice(-3) == "ale") {
+						var NPCType = inputName.slice(30,36); //ie Aristo
+						
+						//writing out full names from shortened ones
+						switch (NPCType) {
+							case "Aristo":
+								NPCType = "Aristocrat";
+								break
+							case "Middle":
+								NPCType = "Middle class citizen";
+								break
 						};
+						
+						var NPCGender = inputName.slice(36); //ie Female
+						NPCGender = NPCGender.replace("F","f").replace("M","m") //ie Female -> female
+						
+						outputName = outputName = outputName.slice(0,18) + NPCGender + " " + NPCType; //ie "female Aristocrat"
 					};
 					
 					// removing "s" from group names (ie "Overseers" -> "Overseer"
@@ -483,6 +482,7 @@ function createFriendlyConditionName(inputName, rowN) {
 			} else {
 				
 				if (inputName == "DisSpeakerStoryGroup = SG_Ovrsr_Overseers_Twk") {
+					// adding clarifier about the two groups for Overseers
 					outputName = "Targeted NPC is an Overseer (2nd group)";
 				} else {
 					outputName = "Targeted NPC is none of the above";
@@ -620,9 +620,9 @@ function buildDropdown(rowN , data , hashData) {
 				
 				console.log(normalText);
 				if (normalText.slice(0,3) == " → ") {
-		  		normalText = createFriendlyConditionName(conditionVal, rowN) + normalText;
+					normalText = createFriendlyConditionName(conditionVal, rowN) + normalText;
 				} else {
-		  		normalText = createFriendlyConditionName(conditionVal, rowN) + " → " + normalText;
+					normalText = createFriendlyConditionName(conditionVal, rowN) + " → " + normalText;
 				};
 			};
 		};
