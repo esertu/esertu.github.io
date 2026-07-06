@@ -54,16 +54,37 @@ function changeHandler(type, rowN , data , hashData) {
 	};
 	
 	if (thisSelect.value != "") {
-		thisSelect = document.getElementById("select" + rowN + "normal");
-		arrDisplayed.push(thisSelect.children[thisSelect.selectedIndex]);
 		
 		if (thisSelect.value.search("DisConv_Blurb") != -1) {
-			buildBlurbDisplay(rowN + 1 , data , hashData);
+			buildBlurbDisplay(rowN + 1 , data , hashData, false);
 		} else {
+			updateArrDisplayed(rowN);
 			buildDropdown(rowN + 1 , data , hashData);
 		};
 	};
 	
+};
+
+function updateArrDisplayed(rowN) {
+	console.log("~~~~ updateArrDisplayed at rowN " + rowN + " ~~~~")
+	console.log("arrDisplayed at start is:");
+	console.log(arrDisplayed);
+	console.log(arrDisplayed.length);
+	var currentLength = arrDisplayed.length
+	for (var i = rowN; i <= currentLength; i++) {
+		console.log("popping index number " + i);
+		arrDisplayed.pop();
+	};
+	
+	console.log("arrDisplayed after pop for " + rowN + " is now:");
+	console.log(arrDisplayed);
+	
+	thisSelectNormal = document.getElementById("select" + rowN + "normal");
+	arrDisplayed.push(thisSelectNormal.children[thisSelectNormal.selectedIndex].label);
+	
+	console.log("arrDisplayed after push is now:");
+	console.log(arrDisplayed);
+	console.log("");
 };
 
 function buildInfoText() {
@@ -158,7 +179,7 @@ function buildCheckBoxBlurb() {
 	document.body.appendChild(lblBlurbDisplay);
 };
 
-function buildBlurbDisplay(rowN, data, hashData) {
+function buildBlurbDisplay(rowN, data, hashData , empty) {
 	// making sure there aren't any more dropdowns below the blurblist
 	clearFurtherDropdowns(rowN);
 	
@@ -171,18 +192,25 @@ function buildBlurbDisplay(rowN, data, hashData) {
 		document.body.appendChild(blurbDisplay);
 	};
 	
-	//getting the blurb text
-	var thisSelect = document.getElementById("select" + (rowN - 1) + "expert");
-	var thisBlurb = findInData(data.dialogItems,thisSelect.value)
-	var thisBlurbText = thisBlurb.branchPaths[0].branchPathValue
-	
-	// adding the blurb text to the blurblist
 	var blurbDisplay = document.getElementById("blurbDisplay")
-	//blurbDisplay.innerHTML = "<li>" + thisBlurbText; // bullet point version
-	blurbDisplay.innerHTML = "\"" + thisBlurbText + "\"";
 	
-	// getting the hashName
-	blurbDisplay.innerHTML += "<br>" + findInHashData(hashData.hashItems, thisBlurb.itemName).hashName
+	if (empty == true) {
+		blurbDisplay.innerHTML = "[Branch terminates here]";
+	} else {
+	
+		//getting the blurb text
+		var thisSelect = document.getElementById("select" + (rowN - 1) + "expert");
+		var thisBlurb = findInData(data.dialogItems,thisSelect.value)
+		var thisBlurbText = thisBlurb.branchPaths[0].branchPathValue
+		
+		// adding the blurb text to the blurblist
+		//blurbDisplay.innerHTML = "<li>" + thisBlurbText; // bullet point version
+		blurbDisplay.innerHTML = "\"" + thisBlurbText + "\"";
+		
+		// getting the hashName
+		blurbDisplay.innerHTML += "<br>" + findInHashData(hashData.hashItems, thisBlurb.itemName).hashName
+	};
+	
 	blurbDisplay.style.display = 'block';
 };
 
@@ -210,7 +238,6 @@ function clearFurtherDropdowns(rowN) {
 			
 		};
 		
-		arrDisplayed.pop()
 		n = n + 1
 	};
 	
@@ -272,8 +299,6 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 	switch (inputName.slice(0,10)) {
 		//m_OutputLinks
 		case "m_OutputLi":
-			console.log(thisBranchPathValue);
-			
 			//DisConv_CheckStoryFlag
 			if (thisBranchPathValue.slice(0,22) == "DisConv_CheckStoryFlag") {
 				outputName = "";
@@ -293,7 +318,7 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 						break
 						
 					default:
-						outputName = outputName + "st";
+						outputName = outputName + "th";
 				};
 				outputName = outputName + " time";
 			};
@@ -331,12 +356,8 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 			
 		//StoryFlag state 1 / StoryFlag state 2
 		case "StoryFlag ":
-			console.log("-- STORYFLAG --");
 			//wip: arrDisplayed for Boyle branches doesn't work correctly leading to error
 			var prevVal = arrDisplayed[(arrDisplayed.length - 1)];
-			console.log(prevVal);
-			var prevVal = prevVal.label;
-			console.log(prevVal);
 			
 			//"Check: Is the player in the Golden Cat?" -> "Is the player in the Golden Cat"
 			outputName = prevVal.slice(prevVal.search("Check: ")+7)
@@ -413,6 +434,8 @@ function createFriendlyConditionName(inputName, rowN) {
 					outputName = outputName.replace("Lord","Lord ");
 					outputName = outputName.replace("Boyle"," Boyle");
 					outputName = outputName.replace("SlackJaw","Slackjaw");
+					outputName = outputName.replace("Granny","Granny ");
+					outputName = outputName.replace("Madam","Madame Prudence");
 					
 				} else {
 					outputName = "Targeted NPC is a";
@@ -555,94 +578,101 @@ function buildDropdown(rowN , data , hashData) {
 	// first row is different because it's actually still the starting item
 	if (rowN == 0) {
 		var thisItem = data.dialogItems[0]
+		prevSelectVal = null
 	} else {
 		var prevSelect = document.getElementById("select" + (rowN - 1) + "expert");
+		prevSelectVal = prevSelect.value
 		// looking for the previous dropdown's value in the data array
-		var thisItem = findInData(data.dialogItems, prevSelect.value);
-		console.log(prevSelect);
-		console.log(prevSelect.value);
+		var thisItem = findInData(data.dialogItems, prevSelectVal);
 	};
 	
-	console.log(thisItem);
+	if (prevSelectVal == "[Null]") {
+		buildBlurbDisplay(rowN + 1 , data , hashData, true);
+	} else {
 	
-	// actually creating the dropdown options
-	for (var n = 0; n < thisItem.branchPaths.length; n++) {
-		var thisBranch = thisItem.branchPaths[n]
-		var thisBranchPathName = thisBranch.branchPathName
-		var thisBranchPathValue = thisBranch.branchPathValue
-		var expertText = thisBranchPathName + " → " + thisBranch.branchPathValue;
-		
-		// normal text gets rather complicated behind the scenes to display something that's both short and hopefully understandable to the average layperson
-		var normalText = ""
-		if (thisBranch.friendlyName != null) {
-			normalText = thisBranch.friendlyName;
-		} else {
-			normalText = createFriendlyName(thisBranchPathName, rowN , data , thisBranchPathValue);
-		};
+		// actually creating the dropdown options
+		for (var n = 0; n < thisItem.branchPaths.length; n++) {
+			var thisBranch = thisItem.branchPaths[n]
+			var thisBranchPathName = thisBranch.branchPathName
+			var thisBranchPathValue = thisBranch.branchPathValue
+			var expertText = thisBranchPathName + " → " + thisBranch.branchPathValue;
+			
+			// normal text gets rather complicated behind the scenes to display something that's both short and hopefully understandable to the average layperson
+			var normalText = ""
+			if (thisBranch.friendlyName != null) {
+				normalText = thisBranch.friendlyName;
+			} else {
+				normalText = createFriendlyName(thisBranchPathName, rowN , data , thisBranchPathValue);
+			};
 
-		// special: checkstoryflags
-		if (thisBranchPathValue.lastIndexOf("DisConv_Check",0) != 0) {
-			// don't need destination description in row 0 as it's already described by the origin
-			if (rowN > 0) {
-				if (thisBranch.branchPathCondition == null) {
-					normalText = normalText + " → ";
-					normalText = normalText + createFriendlyName(thisBranchPathValue, rowN , data);
-				} else {
-					normalText = createFriendlyName(thisBranchPathValue, rowN , data , thisBranchPathValue);
+			// special: checkstoryflags
+			if (thisBranchPathValue.lastIndexOf("DisConv_Check",0) != 0) {
+				// don't need destination description in row 0 as it's already described by the origin
+				if (rowN > 0) {
+					if (thisBranch.branchPathCondition == null) {
+						normalText = normalText + " → ";
+						normalText = normalText + createFriendlyName(thisBranchPathValue, rowN , data);
+					} else {
+						normalText = createFriendlyName(thisBranchPathValue, rowN , data , thisBranchPathValue);
+					};
 				};
-			};
-		} else {
-			
-			var thisStoryFlag = thisBranch.checkedStoryFlag;
-			expertText = expertText + " (checked StoryFlag: " + thisStoryFlag + ")";
-			
-			var thisStoryFlag = thisBranch.checkedStoryFlagFriendly;
-			if (rowN == 1) {
-				normalText = "Check: " + thisStoryFlag;
 			} else {
-				normalText = normalText + " → "
-				normalText = normalText + "Check: " + thisStoryFlag;
-			};
-			
-		};
-
-		// special: conditions
-		if (thisBranch.branchPathCondition != null) {
-			var conditionVal = thisBranch.branchPathCondition;
-			if (thisItem.itemName.lastIndexOf("DisConv_Random",0) === 0) {
-				expertText = expertText + " (" + conditionVal + "% chance)";
-				normalText = conditionVal + "% chance → " + normalText;
-			} else {
-				//wip
-				expertText = expertText + " (if " + conditionVal + ")";
 				
-				console.log(normalText);
-				if (normalText.slice(0,3) == " → ") {
-					normalText = createFriendlyConditionName(conditionVal, rowN) + normalText;
+				var thisStoryFlag = thisBranch.checkedStoryFlag;
+				expertText = expertText + " (checked StoryFlag: " + thisStoryFlag + ")";
+				
+				var thisStoryFlag = thisBranch.checkedStoryFlagFriendly;
+				if (rowN == 1) {
+					normalText = "Check: " + thisStoryFlag;
 				} else {
-					normalText = createFriendlyConditionName(conditionVal, rowN) + " → " + normalText;
+					normalText = normalText + " → "
+					normalText = normalText + "Check: " + thisStoryFlag;
+				};
+				
+			};
+
+			// special: conditions
+			if (thisBranch.branchPathCondition != null) {
+				var conditionVal = thisBranch.branchPathCondition;
+				if (thisItem.itemName.lastIndexOf("DisConv_Random",0) === 0) {
+					expertText = expertText + " (" + conditionVal + "% chance)";
+					normalText = conditionVal + "% chance → " + normalText;
+				} else {
+					//wip
+					expertText = expertText + " (if " + conditionVal + ")";
+					
+					if (normalText.slice(0,3) == " → ") {
+						normalText = createFriendlyConditionName(conditionVal, rowN) + normalText;
+					} else {
+						normalText = createFriendlyConditionName(conditionVal, rowN) + " → " + normalText;
+					};
 				};
 			};
+			
+			
+			var optionExpert = document.createElement("option");
+			optionExpert.text = expertText;
+			optionExpert.value = thisBranchPathValue;
+			thisSelectExpert.appendChild(optionExpert);
+			
+			var optionNormal = document.createElement("option");
+			optionNormal.text = normalText;
+			optionNormal.value = thisBranchPathValue;
+			thisSelectNormal.appendChild(optionNormal);
 		};
-		
-		
-		var optionExpert = document.createElement("option");
-		optionExpert.text = expertText;
-		optionExpert.value = thisBranchPathValue;
-		thisSelectExpert.appendChild(optionExpert);
-		
-		var optionNormal = document.createElement("option");
-		optionNormal.text = normalText;
-		optionNormal.value = thisBranchPathValue;
-		thisSelectNormal.appendChild(optionNormal);
 	};
 	
-	if (document.getElementById("checkExpert").checked) {
-		thisSelectExpert.style.display = 'block';
+	if (prevSelectVal == "[Null]") {
+		thisSelectExpert.style.display = 'none';
 		thisSelectNormal.style.display = 'none';
 	} else {
-		thisSelectExpert.style.display = 'none';
-		thisSelectNormal.style.display = 'block';
+		if (document.getElementById("checkExpert").checked) {
+			thisSelectExpert.style.display = 'block';
+			thisSelectNormal.style.display = 'none';
+		} else {
+			thisSelectExpert.style.display = 'none';
+			thisSelectNormal.style.display = 'block';
+		};
 	};
 };
 
