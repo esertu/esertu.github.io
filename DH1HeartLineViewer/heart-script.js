@@ -41,9 +41,16 @@ function changeHandler(type, rowN , data , hashData) {
 	currentDepth = rowN;
 	
 	// hiding the blurb display
-	if (document.getElementById("blurbDisplay") != null) {
-		var blurbDisplay = document.getElementById("blurbDisplay");
-		blurbDisplay.style.display = 'none';
+	if (document.getElementById("blurbDisplaySingle") != null) {
+		var blurbDisplaySingle = document.getElementById("blurbDisplaySingle");
+		blurbDisplaySingle.style.display = 'none';
+	};
+	
+	if (document.getElementById("blurbDisplayFull") != null) {
+		var blurbDisplayFull = document.getElementById("blurbDisplayFull");
+		blurbDisplayFull.style.display = 'none';
+		var blurbDisplayFullContd = document.getElementById("blurbDisplayFullContd");
+		blurbDisplayFullContd.style.display = 'none';
 	};
 	
 	// making sure the other, hidden dropdown updates too
@@ -55,8 +62,14 @@ function changeHandler(type, rowN , data , hashData) {
 	
 	if (thisSelect.value != "") {
 		
-		if (thisSelect.value.search("DisConv_Blurb") != -1) {
-			buildBlurbDisplay(rowN + 1 , data , hashData, false);
+		if (thisSelect.value.search("DisConv_Blurb") != -1 || thisSelect.value.search("Branch") != -1) {
+			if (thisSelect.value.search("DisConv_Blurb") != -1) {
+				buildBlurbDisplay(rowN + 1 , data , hashData, false, "blurb");
+			} else {
+				buildBlurbDisplay(rowN + 1 , data , hashData, false, "branch");
+				updateArrDisplayed(rowN);
+				buildDropdown(rowN + 1 , data , hashData);
+			};
 		} else {
 			updateArrDisplayed(rowN);
 			buildDropdown(rowN + 1 , data , hashData);
@@ -66,65 +79,20 @@ function changeHandler(type, rowN , data , hashData) {
 };
 
 function updateArrDisplayed(rowN) {
-	console.log("~~~~ updateArrDisplayed at rowN " + rowN + " ~~~~")
-	console.log("arrDisplayed at start is:");
-	console.log(arrDisplayed);
-	console.log(arrDisplayed.length);
 	var currentLength = arrDisplayed.length
 	for (var i = rowN; i <= currentLength; i++) {
-		console.log("popping index number " + i);
 		arrDisplayed.pop();
 	};
 	
-	console.log("arrDisplayed after pop for " + rowN + " is now:");
-	console.log(arrDisplayed);
-	
 	thisSelectNormal = document.getElementById("select" + rowN + "normal");
 	arrDisplayed.push(thisSelectNormal.children[thisSelectNormal.selectedIndex].label);
-	
-	console.log("arrDisplayed after push is now:");
-	console.log(arrDisplayed);
-	console.log("");
 };
 
-function buildInfoText() {
-	//info text
-	var info = document.createElement("div");
-	info.id = "info";
-	document.body.appendChild(info);
-	
-	info.innerText = "The starting point of all Heart lines is the DisDialogTree type object Dlg_HeartGadget.Dlg_HeartGadget in Startup.upk"
-	info.innerText += "\r\n"
-	info.innerText += "\nAbout the start of the tree:"
-	info.innerText += "\nDisDialogTree Dlg_HeartGadget.Dlg_HeartGadget has three conversation hooks which watch for inputs in order to fire dialogue."
-	info.innerText += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_DialogHook fires if this was a non-targeted, i.e. ambient, whisper."
-	info.innerText += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_Hook_HeartTargeted as well as DisConv_Hook_HeartTargeted_2 fire if this was a targeted whisper targeting an NPC. I'm not quite certain if the EDisDialogHook check is actually relevant, as both hooks have the exact same output branches - when targeting any human NPC they both go to DisConv_SpeakerInStoryGroup. The two HeartTargeted events ensure that rat and river krust lines play whether you're targeting an unique or non-unique NPC (which kind of implies the devs wanted to keep the possibility of adding unique rats/river krusts to the game). The following chain of checks first checks for unique NPCs, then, once all unique NPCs have been exhausted, for non-unique NPC groups. I get the feeling the devs initially wanted to check against the EDisDialogHook property to check whether unique or non-unique NPCs were being targeted but later decided to just run the same function in both cases."
-	info.innerText += "\nThe latter two hooks are also used to fire off rat and riverkrust lines if those creatures are targeted." //wip: check if those are actually used
-	info.innerText += "\r\n"
-	info.innerText += "\nOn some of the item classes in this tree:"
-	info.innerText += "\nDisConv_SequentialBranch: lines will always play sequentially, i.e. one after the other."
-	info.innerText += "\nDisConv_RandomBranch: game chooses one out of the available branches at random using the specified numbers as each branch's chance."
-	info.innerText += "\r\n"
-	info.innerText += "\nTechnical information:"
-	info.innerText += "\nThis site uses the UE Explorer naming convention of naming items \"[item name].[export table index]\", and of having zero-indexed items of a Class being named \"[Class]\" instead of \"[Class]_0\"."
-	info.innerText += "\nThe drop-down menu items are formatted as [source] → [destination], with the destination being an object on the ExportTable and the source being a property of the object displayed as the destination in the previous dropdown."
-	info.innerText += "\nText saying \"Play_...\" under voiceline text is the name of the audio file belonging to that line."
-	info.innerText += "\r\n"
-	info.innerText += "\nOther information:"
-	info.innerText += "\nOne voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five."
-	info.innerText += "\nOverseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions. Since I couldn't determine the actual function of the two groups in the release version of the game I simply named them \"1st\" (Twk_ID) and \"2nd\" (SG_Ovrsr) group after the order they appear in the SpeakerInStoryGroup check."
-	info.innerText += "\r\n"
-	info.innerText += "\r\n"
-	
-	
-};
 
 function changeHandlerChk(strOrigin) {
 	if (strOrigin == "expert") {
 		var thisCheck = document.getElementById("checkExpert");
-		checkValue = thisCheck.checked;
-		
-		var thisSelect
+		var checkValue = thisCheck.checked;
 		
 		if (checkValue) {
 			for (var n = 0; n <= currentDepth + 1; n++) {
@@ -145,10 +113,38 @@ function changeHandlerChk(strOrigin) {
 	} else { 
 		if (strOrigin == "blurb") {
 			var thisCheck = document.getElementById("checkBlurb");
+			var checkValue = thisCheck.checked;
+			
+			var blurbDisplaySingle = document.getElementById("blurbDisplaySingle");
+			var blurbDisplayFull = document.getElementById("blurbDisplayFull");
+			var blurbDisplayFullContd = document.getElementById("blurbDisplayFullContd");
+			
+			
+			if (checkValue) {
+				if (blurbDisplaySingle != null) {
+					blurbDisplaySingle.style.display = 'none';
+					blurbDisplayFull.style.display = 'list-item';
+					blurbDisplayFullContd.style.display = 'list-item';
+					
+					document.getElementById("select" + (currentDepth - 1) + "normal").display = 'none';
+					document.getElementById("select" + (currentDepth - 1) + "expert").display = 'none';
+				};
+			} else {
+				if (blurbDisplaySingle != null) {
+					blurbDisplaySingle.style.display = 'block';
+					blurbDisplayFull.style.display = 'none';
+					blurbDisplayFullContd.style.display = 'none';
+					
+					if (document.getElementById("checkExpert").checked) {
+					  document.getElementById("select" + currentDepth + "expert").display = 'block';
+					} else {
+					  document.getElementById("select" + currentDepth + "normal").display = 'block';
+					};
+				};
+			};
 		};
 	};
 	
-	checkValue = thisCheck.checked;
 };
 
 function buildCheckBoxExpert() {
@@ -175,44 +171,180 @@ function buildCheckBoxBlurb() {
 	
 	var lblBlurbDisplay = document.createElement("label");
 	lblBlurbDisplay.appendChild(checkBlurb);
-	lblBlurbDisplay.appendChild(document.createTextNode("BlurbDisplay"));
+	lblBlurbDisplay.appendChild(document.createTextNode("Display lines as list instead of as single lines"));
 	document.body.appendChild(lblBlurbDisplay);
 };
 
-function buildBlurbDisplay(rowN, data, hashData , empty) {
+function buildBlurbDisplay(rowN, data, hashData , empty , mode) {
 	// making sure there aren't any more dropdowns below the blurblist
 	clearFurtherDropdowns(rowN);
 	
-	// getting or building the blurblist element
-	if (document.getElementById("blurbDisplay") != null) {
-		var blurbDisplay = document.getElementById("blurbDisplay");
+	// getting or building the blurblist elements
+	if (document.getElementById("blurbDisplaySingle") != null) {
+		var blurbDisplaySingle = document.getElementById("blurbDisplaySingle");
+		
 	} else {
-		var blurbDisplay = document.createElement("ul");
-		blurbDisplay.id = "blurbDisplay";
-		document.body.appendChild(blurbDisplay);
+		var blurbDisplaySingle = document.createElement("ul");
+		blurbDisplaySingle.id = "blurbDisplaySingle";
+		document.body.appendChild(blurbDisplaySingle);
 	};
 	
-	var blurbDisplay = document.getElementById("blurbDisplay")
+	if (document.getElementById("blurbDisplayFull") != null) {
+		var blurbDisplayFull = document.getElementById("blurbDisplayFull");
+		var blurbDisplayFullContd = document.getElementById("blurbDisplayFullContd");
+		
+	} else {
+		var blurbDisplayFull = document.createElement("ol");
+		blurbDisplayFull.id = "blurbDisplayFull";
+		document.body.appendChild(blurbDisplayFull);
+		
+		var blurbDisplayFullContd = document.createElement("ol");
+		blurbDisplayFullContd.id = "blurbDisplayFullContd";
+		document.body.appendChild(blurbDisplayFullContd);
+	};
 	
+	//wip: branch
 	if (empty == true) {
-		blurbDisplay.innerHTML = "[Branch terminates here]";
+		blurbDisplaySingle.innerHTML = "[Branch terminates here]";
+		blurbDisplayFull.innerHTML = "[Branch terminates here]";
 	} else {
-	
-		//getting the blurb text
+		
 		var thisSelect = document.getElementById("select" + (rowN - 1) + "expert");
-		var thisBlurb = findInData(data.dialogItems,thisSelect.value)
-		var thisBlurbText = thisBlurb.branchPaths[0].branchPathValue
+		console.log("thisSelect.value: ");
+		console.log(thisSelect.value);
 		
-		// adding the blurb text to the blurblist
-		//blurbDisplay.innerHTML = "<li>" + thisBlurbText; // bullet point version
-		blurbDisplay.innerHTML = "\"" + thisBlurbText + "\"";
+		//getting the blurb text
+		var thisBlurb = findInData(data.dialogItems,thisSelect.value);
+		if (thisSelect.value.search("Branch") == -1) {
+			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "single");
+		} else {
+			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "branch");
+		};
 		
-		// getting the hashName
-		blurbDisplay.innerHTML += "<br>" + findInHashData(hashData.hashItems, thisBlurb.itemName).hashName
+		var newText = ""
+		var thisBlurbDisplayFull = blurbDisplayFull
+		for (var n = 0; n < thisBlurbText.length; n++) {
+			// adding the blurb text to the blurblist
+			
+			if (thisBlurbText.length == 1) {
+				//blurbDisplaySingle.innerHTML = "<li>" + thisBlurbText; // bullet point version
+				blurbDisplaySingle.innerHTML = "\"" + thisBlurbText[n] + "\"";
+				
+				// getting the hashName
+				blurbDisplaySingle.innerHTML += "<br>" + thisBlurbHash[n];
+			} else {
+				
+				if (n == 0) {
+					thisBlurbDisplayFull.innerHTML = "";
+				};
+				
+				if (thisBlurbHash[n] != "") {
+					thisBlurbDisplayFull.innerHTML += "<li>" +"\"" + thisBlurbText[n] + "\"";
+					thisBlurbDisplayFull.innerHTML += "\n\"" + thisBlurbHash[n] + "\"" + "</li>";
+					
+				} else {
+					thisBlurbDisplayFull = blurbDisplayFullContd;
+					thisBlurbDisplayFull.innerHTML = "";
+					thisBlurbDisplayFull.innerHTML += "<li>" +"\"" + thisBlurbText[n] + "\"";
+					thisBlurbDisplayFull.innerHTML += "</ul><ol>";
+				};
+			};
+		};
+		
+		
 	};
 	
-	blurbDisplay.style.display = 'block';
+	if (document.getElementById("checkBlurb").checked) {
+		blurbDisplayFull.style.display = 'list-item';
+		blurbDisplayFullContd.style.display = 'list-item';
+		blurbDisplaySingle.style.display = 'none';
+	} else {
+		blurbDisplaySingle.style.display = 'block';
+		blurbDisplayFull.style.display = 'none';
+		blurbDisplayFullContd.style.display = 'none';
+	};
 };
+
+function numToText(intIn) {
+	switch (intIn) {
+		case 1:
+			outTxt = "1st";
+			break
+			
+		case 2:
+			outTxt = "2nd";
+			break
+			
+		case 3:
+			outTxt = "3rd";
+			break
+			
+		default:
+			outTxt = intIn + "th";
+	};
+	outTxt = outTxt + " time";
+	
+	return(outTxt);
+};
+
+function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
+	var thisBPaths = thisBlurb.branchPaths
+	console.log("thisBPaths:");
+	console.log(thisBPaths);
+	
+	var arrTexts = new Array();
+	var arrHashes = new Array();
+	
+	for (var n = 0; n < thisBPaths.length; n++) {
+		var thisText = thisBPaths[n].branchPathValue;
+		var thisHash = findInHashData(hashData.hashItems, thisBlurb.itemName);
+		
+		if (mode != "single") {
+			var thisName = thisBPaths[n].branchPathValue;
+			var thisItem = findInData(data.dialogItems, thisName);
+			
+			thisText = thisItem.branchPaths[0].branchPathValue;
+			thisHash = findInHashData(hashData.hashItems, thisName);
+			
+			//wip: further Branch
+			if (thisName.search("Branch") == -1) {
+				thisHash = thisHash.hashName;
+				
+				arrTexts.push(thisText);
+				arrHashes.push(thisHash);
+			} else {
+					console.log("Additional branch at " + thisName);
+					var additionalBranch = findInData(data.dialogItems, thisName);
+					console.log(additionalBranch);
+					
+					var [additionalTexts , additionalHashes] = getBlurbTextAndHash(additionalBranch , hashData , data , "branch");
+					console.log(additionalTexts);
+					console.log(additionalHashes);
+					
+					arrTexts.push(thisName);
+					arrHashes.push("");
+					
+					for (var i = 0; i < additionalTexts.length; i++) {
+						arrTexts.push(additionalTexts[i]);
+						arrHashes.push(additionalHashes[i]);
+					};
+				
+			};
+			
+		};
+		
+		if (mode == "single") {
+			thisHash = thisHash.hashName;
+			
+			arrTexts.push(thisText);
+			arrHashes.push(thisHash);
+		};
+		
+	};
+	
+	return([arrTexts, arrHashes])
+};
+
 
 
 // clearing all further dropdowns as well as removing the blurblist from view when an earlier dropdown is changed
@@ -241,9 +373,16 @@ function clearFurtherDropdowns(rowN) {
 		n = n + 1
 	};
 	
-	if (document.getElementById("blurbDisplay") != null) {
-		var blurbDisplay = document.getElementById("blurbDisplay");
-		blurbDisplay.style.display = 'none';
+	if (document.getElementById("blurbDisplaySingle") != null) {
+		var blurbDisplaySingle = document.getElementById("blurbDisplaySingle");
+		blurbDisplaySingle.style.display = 'none';
+	};
+	
+	if (document.getElementById("blurbDisplayFull") != null) {
+		var blurbDisplayFull = document.getElementById("blurbDisplayFull");
+		blurbDisplayFull.style.display = 'none';
+		var blurbDisplayFullContd = document.getElementById("blurbDisplayFullContd");
+		blurbDisplayFullContd.style.display = 'none';
 	};
 };
 
@@ -265,6 +404,8 @@ function findInHashData(arrSearch,strSearch) {
 			break
 		};
 	};
+	
+	return(null);
 };
 
 //extracting number from between two square brackets
@@ -304,23 +445,7 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 				outputName = "";
 			} else {
 				outputName = (numberFromBrackets(inputName) + 1);
-				switch (outputName) {
-					case 1:
-						outputName = "1st";
-						break
-						
-					case 2:
-						outputName = "2nd";
-						break
-						
-					case 3:
-						outputName = "3rd";
-						break
-						
-					default:
-						outputName = outputName + "th";
-				};
-				outputName = outputName + " time";
+				outputName = numToText(outputName);
 			};
 			break;
 			
@@ -528,8 +653,8 @@ function buildThisDropdown(type, rowN , data , hashData) {
 		thisSelect.id = thisDropdownID;
 		
 		//making sure the blurblist stays at the bottom of all the dropdown menus
-		if (document.getElementById("blurbDisplay") != null) {
-			document.body.insertBefore(thisSelect,document.getElementById("blurbDisplay"));
+		if (document.getElementById("blurbDisplaySingle") != null) {
+			document.body.insertBefore(thisSelect,document.getElementById("blurbDisplaySingle"));
 		} else {
 			document.body.appendChild(thisSelect);
 		};
@@ -587,7 +712,7 @@ function buildDropdown(rowN , data , hashData) {
 	};
 	
 	if (prevSelectVal == "[Null]") {
-		buildBlurbDisplay(rowN + 1 , data , hashData, true);
+		buildBlurbDisplay(rowN + 1 , data , hashData, true , "blurb");
 	} else {
 	
 		// actually creating the dropdown options
@@ -676,10 +801,63 @@ function buildDropdown(rowN , data , hashData) {
 	};
 };
 
+
+
+
+function changeHandlerColl(collName){
+	console.log(collName);
+};
+
+// inspired by https://stackoverflow.com/a/27698406 and https://medium.com/@jordanfinners/creating-a-collapsible-section-with-nothing-but-html-199f04f13377
+function buildCollapsible(collName) {
+	var collContent = ""
+	
+	switch (collName) {
+	  case "Start":
+			collContent = "The starting point of all Heart lines is the DisDialogTree type object Dlg_HeartGadget.Dlg_HeartGadget in Startup.upk"
+			collContent += "\nDisDialogTree Dlg_HeartGadget.Dlg_HeartGadget has three conversation hooks which watch for inputs in order to fire dialogue."
+			collContent += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_DialogHook fires if this was a non-targeted, i.e. ambient, whisper."
+			collContent += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_Hook_HeartTargeted as well as DisConv_Hook_HeartTargeted_2 fire if this was a targeted whisper targeting an NPC. I'm not quite certain if the EDisDialogHook check is actually relevant, as both hooks have the exact same output branches - when targeting any human NPC they both go to DisConv_SpeakerInStoryGroup. The two HeartTargeted events ensure that rat and river krust lines play whether you're targeting an unique or non-unique NPC (which kind of implies the devs wanted to keep the possibility of adding unique rats/river krusts to the game). The following chain of checks first checks for unique NPCs, then, once all unique NPCs have been exhausted, for non-unique NPC groups. I get the feeling the devs initially wanted to check against the EDisDialogHook property to check whether unique or non-unique NPCs were being targeted but later decided to just run the same function in both cases."
+			collContent += "\nThe latter two hooks are also used to fire off rat and riverkrust lines if those creatures are targeted." //wip: check if those are actually used
+			break;
+			
+		case "Classes":
+			collContent = "\nDisConv_SequentialBranch: lines will always play sequentially, i.e. one after the other."
+			collContent += "\nDisConv_RandomBranch: game chooses one out of the available branches at random using the specified numbers as each branch's chance."
+			break;
+			
+		case "Technical":
+			collContent = "\nThis site uses the UE Explorer naming convention of naming items \"[item name].[export table index]\", and of having zero-indexed items of a Class being named \"[Class]\" instead of \"[Class]_0\"."
+			collContent += "\nThe drop-down menu items are formatted as [source] → [destination], with the destination being an object on the ExportTable and the source being a property of the object displayed as the destination in the previous dropdown."
+			collContent += "\nText saying \"Play_...\" under voiceline text is the name of the audio file belonging to that line."
+			break;
+	
+		case "Other":
+			collContent = "\nOne voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five."
+			collContent += "\nOverseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions. Since I couldn't determine the actual function of the two groups in the release version of the game I simply named them \"1st\" (Twk_ID) and \"2nd\" (SG_Ovrsr) group after the order they appear in the SpeakerInStoryGroup check."
+			break;
+	};
+	
+	var coll = document.createElement("details");
+	coll.innerHTML = "<summary>" + collName + "</summary>";
+	coll.innerHTML += collContent;
+	document.body.appendChild(coll);
+	
+	coll.addEventListener("toggle", function() { 
+		changeHandlerColl(collName);
+		});
+};
+
+buildCollapsible("Start");
+buildCollapsible("Classes");
+buildCollapsible("Technical");
+buildCollapsible("Other");
+
+
+
 var arrDisplayed = new Array();
 var currentDepth = 0;
 //running everything
-buildInfoText();
 buildCheckBoxExpert();
 buildCheckBoxBlurb();
 //getting main JSON data
