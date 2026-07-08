@@ -66,65 +66,20 @@ function changeHandler(type, rowN , data , hashData) {
 };
 
 function updateArrDisplayed(rowN) {
-	console.log("~~~~ updateArrDisplayed at rowN " + rowN + " ~~~~")
-	console.log("arrDisplayed at start is:");
-	console.log(arrDisplayed);
-	console.log(arrDisplayed.length);
 	var currentLength = arrDisplayed.length
 	for (var i = rowN; i <= currentLength; i++) {
-		console.log("popping index number " + i);
 		arrDisplayed.pop();
 	};
 	
-	console.log("arrDisplayed after pop for " + rowN + " is now:");
-	console.log(arrDisplayed);
-	
 	thisSelectNormal = document.getElementById("select" + rowN + "normal");
 	arrDisplayed.push(thisSelectNormal.children[thisSelectNormal.selectedIndex].label);
-	
-	console.log("arrDisplayed after push is now:");
-	console.log(arrDisplayed);
-	console.log("");
 };
 
-function buildInfoText() {
-	//info text
-	var info = document.createElement("div");
-	info.id = "info";
-	document.body.appendChild(info);
-	
-	info.innerText = "The starting point of all Heart lines is the DisDialogTree type object Dlg_HeartGadget.Dlg_HeartGadget in Startup.upk"
-	info.innerText += "\r\n"
-	info.innerText += "\nAbout the start of the tree:"
-	info.innerText += "\nDisDialogTree Dlg_HeartGadget.Dlg_HeartGadget has three conversation hooks which watch for inputs in order to fire dialogue."
-	info.innerText += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_DialogHook fires if this was a non-targeted, i.e. ambient, whisper."
-	info.innerText += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_Hook_HeartTargeted as well as DisConv_Hook_HeartTargeted_2 fire if this was a targeted whisper targeting an NPC. I'm not quite certain if the EDisDialogHook check is actually relevant, as both hooks have the exact same output branches - when targeting any human NPC they both go to DisConv_SpeakerInStoryGroup. The two HeartTargeted events ensure that rat and river krust lines play whether you're targeting an unique or non-unique NPC (which kind of implies the devs wanted to keep the possibility of adding unique rats/river krusts to the game). The following chain of checks first checks for unique NPCs, then, once all unique NPCs have been exhausted, for non-unique NPC groups. I get the feeling the devs initially wanted to check against the EDisDialogHook property to check whether unique or non-unique NPCs were being targeted but later decided to just run the same function in both cases."
-	info.innerText += "\nThe latter two hooks are also used to fire off rat and riverkrust lines if those creatures are targeted." //wip: check if those are actually used
-	info.innerText += "\r\n"
-	info.innerText += "\nOn some of the item classes in this tree:"
-	info.innerText += "\nDisConv_SequentialBranch: lines will always play sequentially, i.e. one after the other."
-	info.innerText += "\nDisConv_RandomBranch: game chooses one out of the available branches at random using the specified numbers as each branch's chance."
-	info.innerText += "\r\n"
-	info.innerText += "\nTechnical information:"
-	info.innerText += "\nThis site uses the UE Explorer naming convention of naming items \"[item name].[export table index]\", and of having zero-indexed items of a Class being named \"[Class]\" instead of \"[Class]_0\"."
-	info.innerText += "\nThe drop-down menu items are formatted as [source] → [destination], with the destination being an object on the ExportTable and the source being a property of the object displayed as the destination in the previous dropdown."
-	info.innerText += "\nText saying \"Play_...\" under voiceline text is the name of the audio file belonging to that line."
-	info.innerText += "\r\n"
-	info.innerText += "\nOther information:"
-	info.innerText += "\nOne voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five."
-	info.innerText += "\nOverseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions. Since I couldn't determine the actual function of the two groups in the release version of the game I simply named them \"1st\" (Twk_ID) and \"2nd\" (SG_Ovrsr) group after the order they appear in the SpeakerInStoryGroup check."
-	info.innerText += "\r\n"
-	info.innerText += "\r\n"
-	
-	
-};
 
 function changeHandlerChk(strOrigin) {
 	if (strOrigin == "expert") {
 		var thisCheck = document.getElementById("checkExpert");
-		checkValue = thisCheck.checked;
-		
-		var thisSelect
+		var checkValue = thisCheck.checked;
 		
 		if (checkValue) {
 			for (var n = 0; n <= currentDepth + 1; n++) {
@@ -676,10 +631,63 @@ function buildDropdown(rowN , data , hashData) {
 	};
 };
 
+
+
+
+function changeHandlerColl(collName){
+	console.log(collName);
+};
+
+// inspired by https://stackoverflow.com/a/27698406 and https://medium.com/@jordanfinners/creating-a-collapsible-section-with-nothing-but-html-199f04f13377
+function buildCollapsible(collName) {
+	var collContent = ""
+	
+	switch (collName) {
+	  case "Start":
+			collContent = "The starting point of all Heart lines is the DisDialogTree type object Dlg_HeartGadget.Dlg_HeartGadget in Startup.upk"
+			collContent += "\nDisDialogTree Dlg_HeartGadget.Dlg_HeartGadget has three conversation hooks which watch for inputs in order to fire dialogue."
+			collContent += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_DialogHook fires if this was a non-targeted, i.e. ambient, whisper."
+			collContent += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_Hook_HeartTargeted as well as DisConv_Hook_HeartTargeted_2 fire if this was a targeted whisper targeting an NPC. I'm not quite certain if the EDisDialogHook check is actually relevant, as both hooks have the exact same output branches - when targeting any human NPC they both go to DisConv_SpeakerInStoryGroup. The two HeartTargeted events ensure that rat and river krust lines play whether you're targeting an unique or non-unique NPC (which kind of implies the devs wanted to keep the possibility of adding unique rats/river krusts to the game). The following chain of checks first checks for unique NPCs, then, once all unique NPCs have been exhausted, for non-unique NPC groups. I get the feeling the devs initially wanted to check against the EDisDialogHook property to check whether unique or non-unique NPCs were being targeted but later decided to just run the same function in both cases."
+			collContent += "\nThe latter two hooks are also used to fire off rat and riverkrust lines if those creatures are targeted." //wip: check if those are actually used
+			break;
+			
+		case "Classes":
+			collContent = "\nDisConv_SequentialBranch: lines will always play sequentially, i.e. one after the other."
+			collContent += "\nDisConv_RandomBranch: game chooses one out of the available branches at random using the specified numbers as each branch's chance."
+			break;
+			
+		case "Technical":
+			collContent = "\nThis site uses the UE Explorer naming convention of naming items \"[item name].[export table index]\", and of having zero-indexed items of a Class being named \"[Class]\" instead of \"[Class]_0\"."
+			collContent += "\nThe drop-down menu items are formatted as [source] → [destination], with the destination being an object on the ExportTable and the source being a property of the object displayed as the destination in the previous dropdown."
+			collContent += "\nText saying \"Play_...\" under voiceline text is the name of the audio file belonging to that line."
+			break;
+	
+		case "Other":
+			collContent = "\nOne voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five."
+			collContent += "\nOverseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions. Since I couldn't determine the actual function of the two groups in the release version of the game I simply named them \"1st\" (Twk_ID) and \"2nd\" (SG_Ovrsr) group after the order they appear in the SpeakerInStoryGroup check."
+			break;
+	};
+	
+	var coll = document.createElement("details");
+	coll.innerHTML = "<summary>" + collName + "</summary>";
+	coll.innerHTML += collContent;
+	document.body.appendChild(coll);
+	
+	coll.addEventListener("toggle", function() { 
+		changeHandlerColl(collName);
+		});
+};
+
+buildCollapsible("Start");
+buildCollapsible("Classes");
+buildCollapsible("Technical");
+buildCollapsible("Other");
+
+
+
 var arrDisplayed = new Array();
 var currentDepth = 0;
 //running everything
-buildInfoText();
 buildCheckBoxExpert();
 buildCheckBoxBlurb();
 //getting main JSON data
