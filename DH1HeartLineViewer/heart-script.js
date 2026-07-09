@@ -35,36 +35,6 @@ async function loadHashData() {
 	}
 };
 
-// set the visibility of a thing to something (ie "none", "block", "list-item" etc.) if that thing exists. If blnCreateNew is true, then create the thing first if it doesn't exist.
-//wip: use this more
-function setVisibility(thingName, thingVisibility, blnCreateNew) {
-	thisThing = getOrBuildThing(thingName, "", blnCreateNew);
-	
-	if (thisThing != null) {
-		thisThing.style.display = thingVisibility;
-	};
-};
-
-// either fetch the reference to an element already on the page or build a new element and add it to the page. If blnCreateNew is false, do not build a new element and instead return null if the element does not already exist.
-//wip: use this more
-function getOrBuildThing(thingName, thingType, blnCreateNew) {
-	
-	if (document.getElementById(thingName) != null) {
-		return(document.getElementById(thingName));
-		
-	} else {
-		if (blnCreateNew) {
-			var newThing = document.createElement(thingType);
-			newThing.id = thingName;
-			document.body.appendChild(newThing);
-			return(newThing)
-		} else {
-			return(null);
-		};
-	};
-	
-};
-
 // runs when change in drop-down menu occurs
 function changeHandler(type, rowN , data , hashData) {
 	var thisSelect = document.getElementById("select" + rowN + type);
@@ -103,16 +73,6 @@ function changeHandler(type, rowN , data , hashData) {
 		};
 	};
 	
-};
-
-function updateArrDisplayed(rowN) {
-	var currentLength = arrDisplayed.length
-	for (var i = rowN; i <= currentLength; i++) {
-		arrDisplayed.pop();
-	};
-	
-	thisSelectNormal = document.getElementById("select" + rowN + "normal");
-	arrDisplayed.push(thisSelectNormal.children[thisSelectNormal.selectedIndex].label);
 };
 
 
@@ -239,7 +199,46 @@ function changeBlurb() {
 	
 };
 
-var fullDisplayed = 0;
+
+// set the visibility of a thing to something (ie "none", "block", "list-item" etc.) if that thing exists. If blnCreateNew is true, then create the thing first if it doesn't exist.
+//wip: use this more
+function setVisibility(thingName, thingVisibility, blnCreateNew) {
+	thisThing = getOrBuildThing(thingName, "", blnCreateNew);
+	
+	if (thisThing != null) {
+		thisThing.style.display = thingVisibility;
+	};
+};
+
+// either fetch the reference to an element already on the page or build a new element and add it to the page. If blnCreateNew is false, do not build a new element and instead return null if the element does not already exist.
+//wip: use this more
+function getOrBuildThing(thingName, thingType, blnCreateNew) {
+	
+	if (document.getElementById(thingName) != null) {
+		return(document.getElementById(thingName));
+		
+	} else {
+		if (blnCreateNew) {
+			var newThing = document.createElement(thingType);
+			newThing.id = thingName;
+			document.body.appendChild(newThing);
+			return(newThing)
+		} else {
+			return(null);
+		};
+	};
+	
+};
+
+function updateArrDisplayed(rowN) {
+	var currentLength = arrDisplayed.length
+	for (var i = rowN; i <= currentLength; i++) {
+		arrDisplayed.pop();
+	};
+	
+	thisSelectNormal = document.getElementById("select" + rowN + "normal");
+	arrDisplayed.push(thisSelectNormal.children[thisSelectNormal.selectedIndex].label);
+};
 
 
 //wip: use this more
@@ -301,34 +300,6 @@ function applyBlurbs(htmlIn, mode) {
 	for (var n = 0; n < arrRelevant.length; n++) {
 		arrRelevant[n].innerHTML = htmlIn
 	};
-};
-
-function buildCheckBoxExpert() {
-	var checkExpert = document.createElement("input");
-	checkExpert.id = 'checkExpert';
-	checkExpert.type = 'checkbox';
-	checkExpert.addEventListener("change", function() { 
-		changeExpert() 
-		});
-	
-	var lblExpert = document.createElement("label");
-	lblExpert.appendChild(checkExpert);
-	lblExpert.appendChild(document.createTextNode("Expert"));
-	document.body.appendChild(lblExpert);
-};
-
-function buildCheckBoxBlurb() {
-	var checkList = document.createElement("input");
-	checkList.id = 'checkList';
-	checkList.type = 'checkbox';
-	checkList.addEventListener("change", function() { 
-		changeBlurb() 
-		});
-	
-	var lblBlurbDisplay = document.createElement("label");
-	lblBlurbDisplay.appendChild(checkList);
-	lblBlurbDisplay.appendChild(document.createTextNode("Display lines as list instead of as single lines"));
-	document.body.appendChild(lblBlurbDisplay);
 };
 
 function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
@@ -419,27 +390,6 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	};
 };
 
-function numToText(intIn) {
-	switch (intIn) {
-		case 1:
-			outTxt = "1st";
-			break
-			
-		case 2:
-			outTxt = "2nd";
-			break
-			
-		case 3:
-			outTxt = "3rd";
-			break
-			
-		default:
-			outTxt = intIn + "th";
-	};
-	outTxt = outTxt + " time";
-	
-	return(outTxt);
-};
 
 function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
 	var thisBPaths = thisBlurb.branchPaths
@@ -545,6 +495,28 @@ function findInHashData(arrSearch,strSearch) {
 	};
 	
 	return(null);
+};
+
+function numToText(intIn) {
+	switch (intIn) {
+		case 1:
+			outTxt = "1st";
+			break
+			
+		case 2:
+			outTxt = "2nd";
+			break
+			
+		case 3:
+			outTxt = "3rd";
+			break
+			
+		default:
+			outTxt = intIn + "th";
+	};
+	outTxt = outTxt + " time";
+	
+	return(outTxt);
 };
 
 //extracting number from between two square brackets
@@ -941,6 +913,34 @@ function buildDropdown(rowN , data , hashData) {
 
 
 
+function buildCheckBoxExpert() {
+	var checkExpert = document.createElement("input");
+	checkExpert.id = 'checkExpert';
+	checkExpert.type = 'checkbox';
+	checkExpert.addEventListener("change", function() { 
+		changeExpert() 
+		});
+	
+	var lblExpert = document.createElement("label");
+	lblExpert.appendChild(checkExpert);
+	lblExpert.appendChild(document.createTextNode("Expert"));
+	document.body.appendChild(lblExpert);
+};
+
+function buildCheckBoxBlurb() {
+	var checkList = document.createElement("input");
+	checkList.id = 'checkList';
+	checkList.type = 'checkbox';
+	checkList.addEventListener("change", function() { 
+		changeBlurb() 
+		});
+	
+	var lblBlurbDisplay = document.createElement("label");
+	lblBlurbDisplay.appendChild(checkList);
+	lblBlurbDisplay.appendChild(document.createTextNode("Display lines as list instead of as single lines"));
+	document.body.appendChild(lblBlurbDisplay);
+};
+
 function changeHandlerColl(collName){
 	console.log(collName);
 };
@@ -991,6 +991,7 @@ buildCollapsible("Technical");
 buildCollapsible("Other");
 
 
+var fullDisplayed = 0;
 var lastUpdated = 0;
 
 var arrDisplayed = new Array();
