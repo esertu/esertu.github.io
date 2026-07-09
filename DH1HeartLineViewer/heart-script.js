@@ -37,6 +37,7 @@ async function loadHashData() {
 
 // runs when change in drop-down menu occurs
 function changeHandler(type, rowN , data , hashData) {
+	console.log("changeHandler for rowN " + rowN);
 	var thisSelect = document.getElementById("select" + rowN + type);
 	currentDepth = rowN;
 	fullDisplayed = rowN;
@@ -52,6 +53,13 @@ function changeHandler(type, rowN , data , hashData) {
 		document.getElementById("select" + rowN + "expert").value = thisSelect.value;
 	} else {
 		document.getElementById("select" + rowN + "normal").value = thisSelect.value;
+	};
+	
+	var n = rowN + 1
+	while (document.getElementById("select" + n + "normal") != null) {
+		setVisibility("select" + n + "normal","none")
+		setVisibility("select" + n + "expert","none")
+		n = n + 1
 	};
 	
 	if (thisSelect.value != "") {
@@ -77,60 +85,67 @@ function changeHandler(type, rowN , data , hashData) {
 
 
 function changeExpert() {
+	console.log("changeExpert");
 	var checkExpert = document.getElementById("checkExpert");
 	checkExpert = checkExpert.checked;
 	var checkList = document.getElementById("checkList");
 	checkList = checkList.checked;
 	
+	var n = 0
 	if (checkExpert) {
-		for (var n = 0; n <= currentDepth + 1; n++) {
-			setVisibility("select" + n + "expert","block");
-			setVisibility("select" + n + "normal","none");
+		while (document.getElementById("select" + n + "normal") != null) {
+			if (document.getElementById("select" + n + "normal").style.display != "none") {
+				setVisibility("select" + n + "expert","block");
+				setVisibility("select" + n + "normal","none");
+			};
+			n = n + 1
 		};
 	} else {
-		for (var n = 0; n <= currentDepth + 1; n++) {
-			setVisibility("select" + n + "expert","none");
-			setVisibility("select" + n + "normal","block");
+		while (document.getElementById("select" + n + "normal") != null) {
+			if (document.getElementById("select" + n + "expert").style.display != "none") {
+				setVisibility("select" + n + "expert","none");
+				setVisibility("select" + n + "normal","block");
+			};
+			n = n + 1
 		};
 	};
 	
-	console.log("...");
 	
 	//instead of checking the arrays etc it's probably quicker to just check if anything relevant is visible right now
-	if (checkExpert) {
-		console.log("1");
-		if (checkList) {
-			if (document.getElementById("blurbDisplayFullNormal").style.display != "none") {
-				setVisibility("blurbDisplayFullNormal","none");
-				setVisibility("blurbDisplayFullExpert","list-item");
+	if (document.getElementById("blurbDisplaySingleNormal") != null) {
+		if (checkExpert) {
+			if (checkList) {
+				if (document.getElementById("blurbDisplayFullNormal").style.display != "none") {
+					setVisibility("blurbDisplayFullNormal","none");
+					setVisibility("blurbDisplayFullExpert","list-item");
+				};
+			} else {
+				if (document.getElementById("blurbDisplaySingleNormal").style.display != "none") {
+					setVisibility("blurbDisplaySingleNormal","none");
+					setVisibility("blurbDisplaySingleExpert","list-item");
+				};
 			};
+			
 		} else {
-			if (document.getElementById("blurbDisplaySingleNormal").style.display != "none") {
-				setVisibility("blurbDisplaySingleNormal","none");
-				setVisibility("blurbDisplaySingleExpert","list-item");
+			if (checkList) {
+				if (document.getElementById("blurbDisplayFullExpert").style.display != "none") {
+					setVisibility("blurbDisplayFullExpert","none");
+					setVisibility("blurbDisplayFullNormal","list-item");
+				};
+			} else {
+				if (document.getElementById("blurbDisplaySingleExpert").style.display != "none") {
+					setVisibility("blurbDisplaySingleNormal","list-item");
+					setVisibility("blurbDisplaySingleExpert","none");
+				};
 			};
 		};
-	} else {
-		if (checkList) {
-			if (document.getElementById("blurbDisplayFullNormal").style.display != "none") {
-				setVisibility("blurbDisplayFullNormal","none");
-				setVisibility("blurbDisplayFullExpert","list-item");
-			};
-		} else {
-			if (document.getElementById("blurbDisplaySingleExpert").style.display != "none") {
-				setVisibility("blurbDisplaySingleNormal","list-item");
-				setVisibility("blurbDisplaySingleExpert","none");
-			};
-		};
-		
-		
-		
 	};
 	
 };
 
 
 function changeBlurb() {
+	console.log("changeBlurb");
 	var checkList = document.getElementById("checkList");
 	
 	var n = 0
@@ -302,8 +317,10 @@ function applyBlurbs(htmlIn, mode) {
 	};
 };
 
+//wip: boyles dont function correctly right now
+
 function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
-	console.log("buildBlurbDisplay running....");
+	console.log("buildBlurbDisplay running for rowN " + rowN + " " + originator);
 	// making sure there aren't any more dropdowns below the blurblist
 	clearFurtherDropdowns(rowN);
 	
@@ -311,7 +328,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	var blurbDisplaySingleNormal = getOrBuildThing("blurbDisplaySingleNormal", "ul", true);
 	var blurbDisplaySingleExpert = getOrBuildThing("blurbDisplaySingleExpert", "ul", true);
 	var blurbDisplayFullNormal = getOrBuildThing("blurbDisplayFullNormal", "ol", true);
-	var blurbDisplayFullExpert = getOrBuildThing("blurbDisplayFullExpert", "ol");
+	var blurbDisplayFullExpert = getOrBuildThing("blurbDisplayFullExpert", "ol", true);
 	
 	//wip: branch
 	if (empty == true) {
@@ -370,10 +387,19 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 		
 	};
 	
+	// blurb visibility: hiding everything by default
+	setVisibility("blurbDisplaySingleNormal", "none");
+	setVisibility("blurbDisplaySingleExpert", "none");
+	setVisibility("blurbDisplayFullNormal", "none");
+	setVisibility("blurbDisplayFullExpert", "none");
+	
 	if (document.getElementById("checkList").checked) {
 		console.log("checkList is checked");
-		setVisibility("blurbDisplayFullNormal", "list-item");
-		setVisibility("blurbDisplaySingleNormal", "none");
+		if (document.getElementById("checkExpert").checked) {
+			setVisibility("blurbDisplayFullNormal", "list-item");
+		} else {
+			setVisibility("blurbDisplayFullExpert", "list-item");
+		};
 		
 	} else {
 		if (originator != "branch") {
@@ -382,11 +408,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 			} else {
 				setVisibility("blurbDisplaySingleNormal", "block");
 			};
-		} else {
-			setVisibility("blurbDisplaySingleNormal", "none");
-			setVisibility("blurbDisplaySingleExpert", "none");
 		};
-		setVisibility("blurbDisplayFullNormal", "none");
 	};
 };
 
