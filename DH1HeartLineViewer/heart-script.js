@@ -64,7 +64,7 @@ function changeHandler(type, rowN , data , hashData) {
 	
 	if (thisSelect.value != "") {
 		
-		if (thisSelect.value.search("DisConv_Blurb") != -1 || thisSelect.value.search("Branch") != -1) {
+		if (thisSelect.value.search("DisConv_Blurb") != -1 || thisSelect.value.search("SequentialBranch") != -1) {
 			if (thisSelect.value.search("DisConv_Blurb") != -1) {
 				buildBlurbDisplay(rowN + 1 , data , hashData, false, "blurb");
 			} else {
@@ -341,7 +341,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 		
 		//getting the blurb text
 		var thisBlurb = findInData(data.dialogItems,thisSelect.value);
-		if (thisSelect.value.search("Branch") == -1) {
+		if (thisSelect.value.search("SequentialBranch") == -1) {
 			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "single");
 		} else {
 			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "branch");
@@ -377,7 +377,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 			
 		};
 		
-		if (thisSelect.value.search("Branch") != -1) {
+		if (thisSelect.value.search("SequentialBranch") != -1) {
 			applyBlurbs(newTextNorm, "fullnormal");
 			applyBlurbs(newTextExp, "fullexpert");
 		} else {
@@ -431,7 +431,7 @@ function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
 			thisHash = findInHashData(hashData.hashItems, thisName);
 			
 			//wip: further Branch
-			if (thisName.search("Branch") == -1) {
+			if (thisName.search("SequentialBranch") == -1) {
 				thisHash = thisHash.hashName;
 				
 				arrTexts.push(thisText);
