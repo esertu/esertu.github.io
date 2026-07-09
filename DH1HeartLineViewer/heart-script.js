@@ -35,16 +35,47 @@ async function loadHashData() {
 	}
 };
 
+// set the visibility of a thing to something (ie "none", "block", "list-item" etc.) if that thing exists. If blnCreateNew is true, then create the thing first if it doesn't exist.
+//wip: use this more
+function setVisibility(thingName, thingVisibility, blnCreateNew) {
+	thisThing = getOrBuildThing(thingName, "", blnCreateNew);
+	
+	if (thisThing != null) {
+		thisThing.style.display = thingVisibility;
+	};
+};
+
+// either fetch the reference to an element already on the page or build a new element and add it to the page. If blnCreateNew is false, do not build a new element and instead return null if the element does not already exist.
+//wip: use this more
+function getOrBuildThing(thingName, thingType, blnCreateNew) {
+	
+	if (document.getElementById(thingName) != null) {
+		return(document.getElementById(thingName));
+		
+	} else {
+		if (blnCreateNew) {
+			var newThing = document.createElement(thingType);
+			newThing.id = thingName;
+			document.body.appendChild(newThing);
+			return(newThing)
+		} else {
+			return(null);
+		};
+	};
+	
+};
+
 // runs when change in drop-down menu occurs
 function changeHandler(type, rowN , data , hashData) {
 	var thisSelect = document.getElementById("select" + rowN + type);
 	currentDepth = rowN;
+	fullDisplayed = rowN;
 	
 	// hiding the blurb display
-	if (document.getElementById("blurbDisplay") != null) {
-		var blurbDisplay = document.getElementById("blurbDisplay");
-		blurbDisplay.style.display = 'none';
-	};
+	setVisibility("blurbDisplaySingleNormal", "none");
+	setVisibility("blurbDisplayFullNormal", "none");
+	setVisibility("blurbDisplaySingleExpert", "none");
+	setVisibility("blurbDisplayFullExpert", "none");
 	
 	// making sure the other, hidden dropdown updates too
 	if (type == "normal") {
@@ -55,8 +86,17 @@ function changeHandler(type, rowN , data , hashData) {
 	
 	if (thisSelect.value != "") {
 		
-		if (thisSelect.value.search("DisConv_Blurb") != -1) {
-			buildBlurbDisplay(rowN + 1 , data , hashData, false);
+		if (thisSelect.value.search("DisConv_Blurb") != -1 || thisSelect.value.search("Branch") != -1) {
+			if (thisSelect.value.search("DisConv_Blurb") != -1) {
+				buildBlurbDisplay(rowN + 1 , data , hashData, false, "blurb");
+			} else {
+				buildBlurbDisplay(rowN + 1 , data , hashData, false, "branch");
+				updateArrDisplayed(rowN);
+				//wip: move the build out of the if and instead add a function that hides/unhides elements
+				buildDropdown(rowN + 1 , data , hashData);
+				changeExpert();
+				changeBlurb();
+			};
 		} else {
 			updateArrDisplayed(rowN);
 			buildDropdown(rowN + 1 , data , hashData);
@@ -76,34 +116,191 @@ function updateArrDisplayed(rowN) {
 };
 
 
-function changeHandlerChk(strOrigin) {
-	if (strOrigin == "expert") {
-		var thisCheck = document.getElementById("checkExpert");
-		var checkValue = thisCheck.checked;
-		
-		if (checkValue) {
-			for (var n = 0; n <= currentDepth + 1; n++) {
-				thisSelect = document.getElementById("select" + n + "expert");
-				thisSelect.style.display = 'block';
-				thisSelect = document.getElementById("select" + n + "normal");
-				thisSelect.style.display = 'none';
-			};
-		} else {
-			for (var n = 0; n <= currentDepth + 1; n++) {
-				thisSelect = document.getElementById("select" + n + "expert");
-				thisSelect.style.display = 'none';
-				thisSelect = document.getElementById("select" + n + "normal");
-				thisSelect.style.display = 'block';
-			};
+function changeExpert() {
+	var checkExpert = document.getElementById("checkExpert");
+	checkExpert = checkExpert.checked;
+	var checkList = document.getElementById("checkList");
+	checkList = checkList.checked;
+	
+	if (checkExpert) {
+		for (var n = 0; n <= currentDepth + 1; n++) {
+			setVisibility("select" + n + "expert","block");
+			setVisibility("select" + n + "normal","none");
 		};
-		
-	} else { 
-		if (strOrigin == "blurb") {
-			var thisCheck = document.getElementById("checkBlurb");
+	} else {
+		for (var n = 0; n <= currentDepth + 1; n++) {
+			setVisibility("select" + n + "expert","none");
+			setVisibility("select" + n + "normal","block");
 		};
 	};
 	
-	checkValue = thisCheck.checked;
+	console.log("...");
+	
+	//instead of checking the arrays etc it's probably quicker to just check if anything relevant is visible right now
+	if (checkExpert) {
+		console.log("1");
+		if (checkList) {
+			if (document.getElementById("blurbDisplayFullNormal").style.display != "none") {
+				setVisibility("blurbDisplayFullNormal","none");
+				setVisibility("blurbDisplayFullExpert","list-item");
+			};
+		} else {
+			if (document.getElementById("blurbDisplaySingleNormal").style.display != "none") {
+				setVisibility("blurbDisplaySingleNormal","none");
+				setVisibility("blurbDisplaySingleExpert","list-item");
+			};
+		};
+	} else {
+		if (checkList) {
+			if (document.getElementById("blurbDisplayFullNormal").style.display != "none") {
+				setVisibility("blurbDisplayFullNormal","none");
+				setVisibility("blurbDisplayFullExpert","list-item");
+			};
+		} else {
+			if (document.getElementById("blurbDisplaySingleExpert").style.display != "none") {
+				setVisibility("blurbDisplaySingleNormal","list-item");
+				setVisibility("blurbDisplaySingleExpert","none");
+			};
+		};
+		
+		
+		
+	};
+	
+};
+
+
+function changeBlurb() {
+	var checkList = document.getElementById("checkList");
+	
+	var n = 0
+	var thisSelect = document.getElementById("select" + n + "normal");
+	
+	var blurbDisplaySingleNormal = document.getElementById("blurbDisplaySingleNormal");
+	var blurbDisplayFullNormal = document.getElementById("blurbDisplayFullNormal");
+	
+	var lastSelect = document.getElementById("select" + currentDepth + "normal");
+	
+	if (checkList.checked) {
+		setVisibility("blurbDisplaySingleNormal", "none");
+		setVisibility("blurbDisplaySingleExpert", "none");
+		
+		//going down the list of dropdowns to find the first selected SequentialBranch
+		while (thisSelect != null) {
+			if (thisSelect.style.display != 'none') {
+				if (thisSelect.value.search("SequentialBranch") != -1) {
+					//hiding the remaining dropdowns once that SequentialBranch-valued dropdown has been found
+					n = n + 1
+					var hideSelect = document.getElementById("select" + n + "normal")
+					while (document.getElementById("select" + n + "normal") != null) {
+						if (hideSelect.style.display != 'none') {
+							fullDisplayed = n;
+							hideSelect.style.display = 'none';
+						} else {
+							break
+						};
+						
+						n = n + 1;
+						hideSelect = document.getElementById("select" + n + "normal");
+					};
+					
+					blurbDisplayFullNormal.style.display = 'list-item';
+			
+					break
+				};
+			};
+			n = n + 1
+			thisSelect = document.getElementById("select" + n + "normal");
+		};
+		
+	} else {
+		while (n < fullDisplayed) {
+			n = n + 1
+			thisSelect = document.getElementById("select" + n + "normal");
+			thisSelect.style.display = 'block';
+			
+			blurbDisplayFullExpert.style.display = 'none';
+			blurbDisplayFullNormal.style.display = 'none';
+			blurbDisplaySingleExpert.style.display = 'none';
+			blurbDisplaySingleNormal.style.display = 'none';
+			
+			if (lastSelect.value.search("Blurb") != -1) {
+				if (blurbDisplaySingleNormal != null) {
+					if (document.getElementById("checkExpert").checked) {
+						blurbDisplaySingleExpert.style.display = 'list-item';
+					} else {
+						blurbDisplaySingleNormal.style.display = 'list-item';
+					};
+				};
+			};
+		};
+		
+	};		
+	
+};
+
+var fullDisplayed = 0;
+
+
+//wip: use this more
+function applyBlurbs(htmlIn, mode) {
+	var arrRelevant = new Array();
+	
+	switch (mode) {
+		case "all":
+			arrRelevant.push(getOrBuildThing("blurbDisplaySingleNormal", "ul", true));
+			arrRelevant.push(getOrBuildThing("blurbDisplaySingleExpert", "ul", true));
+			arrRelevant.push(getOrBuildThing("blurbDisplayFullNormal", "ol", true));
+			arrRelevant.push(getOrBuildThing("blurbDisplayFullExpert", "ol", true));
+			break;
+			
+		case "full":
+			arrRelevant.push(getOrBuildThing("blurbDisplayFullNormal", "ol", true));
+			arrRelevant.push(getOrBuildThing("blurbDisplayFullExpert", "ol", true));
+			break;
+			
+		case "single":
+			arrRelevant.push(getOrBuildThing("blurbDisplaySingleNormal", "ul", true));
+			arrRelevant.push(getOrBuildThing("blurbDisplaySingleExpert", "ul", true));
+			break;
+			
+		case "normal":
+			arrRelevant.push(getOrBuildThing("blurbDisplaySingleNormal", "ul", true));
+			arrRelevant.push(getOrBuildThing("blurbDisplayFullNormal", "ol", true));
+			break;
+			
+		case "expert":
+			arrRelevant.push(getOrBuildThing("blurbDisplaySingleExpert", "ul", true));
+			arrRelevant.push(getOrBuildThing("blurbDisplayFullExpert", "ol", true));
+			break;
+			
+		case "singlenormal":
+			arrRelevant.push(getOrBuildThing("blurbDisplaySingleNormal", "ul", true));
+			break;
+			
+		case "singleexpert":
+			arrRelevant.push(getOrBuildThing("blurbDisplaySingleExpert", "ul", true));
+			break;
+			
+		case "fullnormal":
+			arrRelevant.push(getOrBuildThing("blurbDisplayFullNormal", "ol", true));
+			break;
+			
+		case "fullexpert":
+			arrRelevant.push(getOrBuildThing("blurbDisplayFullExpert", "ol", true));
+			break;
+			
+		case "all-contd":
+			arrRelevant.push(getOrBuildThing("blurbDisplaySingleNormal", "ul", true));
+			arrRelevant.push(getOrBuildThing("blurbDisplaySingleExpert", "ul", true));
+			arrRelevant.push(getOrBuildThing("blurbDisplayFullNormal", "ol", true));
+			arrRelevant.push(getOrBuildThing("blurbDisplayFullExpert", "ol", true));
+			break;
+	};
+	
+	for (var n = 0; n < arrRelevant.length; n++) {
+		arrRelevant[n].innerHTML = htmlIn
+	};
 };
 
 function buildCheckBoxExpert() {
@@ -111,7 +308,7 @@ function buildCheckBoxExpert() {
 	checkExpert.id = 'checkExpert';
 	checkExpert.type = 'checkbox';
 	checkExpert.addEventListener("change", function() { 
-		changeHandlerChk("expert") 
+		changeExpert() 
 		});
 	
 	var lblExpert = document.createElement("label");
@@ -121,53 +318,179 @@ function buildCheckBoxExpert() {
 };
 
 function buildCheckBoxBlurb() {
-	var checkBlurb = document.createElement("input");
-	checkBlurb.id = 'checkBlurb';
-	checkBlurb.type = 'checkbox';
-	checkBlurb.addEventListener("change", function() { 
-		changeHandlerChk("blurb") 
+	var checkList = document.createElement("input");
+	checkList.id = 'checkList';
+	checkList.type = 'checkbox';
+	checkList.addEventListener("change", function() { 
+		changeBlurb() 
 		});
 	
 	var lblBlurbDisplay = document.createElement("label");
-	lblBlurbDisplay.appendChild(checkBlurb);
-	lblBlurbDisplay.appendChild(document.createTextNode("BlurbDisplay"));
+	lblBlurbDisplay.appendChild(checkList);
+	lblBlurbDisplay.appendChild(document.createTextNode("Display lines as list instead of as single lines"));
 	document.body.appendChild(lblBlurbDisplay);
 };
 
-function buildBlurbDisplay(rowN, data, hashData , empty) {
+function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
+	console.log("buildBlurbDisplay running....");
 	// making sure there aren't any more dropdowns below the blurblist
 	clearFurtherDropdowns(rowN);
 	
-	// getting or building the blurblist element
-	if (document.getElementById("blurbDisplay") != null) {
-		var blurbDisplay = document.getElementById("blurbDisplay");
-	} else {
-		var blurbDisplay = document.createElement("ul");
-		blurbDisplay.id = "blurbDisplay";
-		document.body.appendChild(blurbDisplay);
-	};
+	// getting or building the blurblist elements
+	var blurbDisplaySingleNormal = getOrBuildThing("blurbDisplaySingleNormal", "ul", true);
+	var blurbDisplaySingleExpert = getOrBuildThing("blurbDisplaySingleExpert", "ul", true);
+	var blurbDisplayFullNormal = getOrBuildThing("blurbDisplayFullNormal", "ol", true);
+	var blurbDisplayFullExpert = getOrBuildThing("blurbDisplayFullExpert", "ol");
 	
-	var blurbDisplay = document.getElementById("blurbDisplay")
-	
+	//wip: branch
 	if (empty == true) {
-		blurbDisplay.innerHTML = "[Branch terminates here]";
+		applyBlurbs("[Branch terminates here]" , "all-contd");
 	} else {
-	
-		//getting the blurb text
+		
 		var thisSelect = document.getElementById("select" + (rowN - 1) + "expert");
-		var thisBlurb = findInData(data.dialogItems,thisSelect.value)
-		var thisBlurbText = thisBlurb.branchPaths[0].branchPathValue
+		console.log("thisSelect.value: ");
+		console.log(thisSelect.value);
 		
-		// adding the blurb text to the blurblist
-		//blurbDisplay.innerHTML = "<li>" + thisBlurbText; // bullet point version
-		blurbDisplay.innerHTML = "\"" + thisBlurbText + "\"";
+		//getting the blurb text
+		var thisBlurb = findInData(data.dialogItems,thisSelect.value);
+		if (thisSelect.value.search("Branch") == -1) {
+			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "single");
+		} else {
+			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "branch");
+		};
 		
-		// getting the hashName
-		blurbDisplay.innerHTML += "<br>" + findInHashData(hashData.hashItems, thisBlurb.itemName).hashName
+		var newTextNorm = ""
+		var newTextExp = ""
+		
+		blurbDisplayFullNormal.innerHTML = "";
+		for (var n = 0; n < thisBlurbText.length; n++) {
+			// adding the blurb text to the blurblist
+			if (thisBlurbText.length == 1) {
+				newTextNorm = "\"" + thisBlurbText[n] + "\"";
+				newTextExp = "\"" + thisBlurbText[n] + "\"";
+				newTextExp += "<br>" + thisBlurbHash[n];
+			} else {
+				
+				if (thisBlurbHash[n] != "") {
+					newTextNorm += "<li>" +"\"" + thisBlurbText[n] + "\"";
+					newTextExp += "<li>" +"\"" + thisBlurbText[n] + "\"";
+					newTextExp += "\n" + thisBlurbHash[n] + "</li>";
+					
+				} else {
+					newTextNorm += "</ul>";
+					newTextNorm += "<h2>" + "Switching to additional branch" + "</h2>";
+					newTextNorm += "<ol>";
+					
+					newTextExp += "</ul>";
+					newTextExp += "<h2>" +"\"" + thisBlurbText[n] + "\"</h2>";
+					newTextExp += "<ol>";
+				};
+			};
+			
+		};
+		
+		if (thisSelect.value.search("Branch") != -1) {
+			applyBlurbs(newTextNorm, "fullnormal");
+			applyBlurbs(newTextExp, "fullexpert");
+		} else {
+			applyBlurbs(newTextNorm, "singlenormal");
+			applyBlurbs(newTextExp, "singleexpert");
+		};
+		
 	};
 	
-	blurbDisplay.style.display = 'block';
+	if (document.getElementById("checkList").checked) {
+		console.log("checkList is checked");
+		setVisibility("blurbDisplayFullNormal", "list-item");
+		setVisibility("blurbDisplaySingleNormal", "none");
+		
+	} else {
+		if (originator != "branch") {
+			if (document.getElementById("checkExpert").checked) {
+				setVisibility("blurbDisplaySingleExpert", "block");
+			} else {
+				setVisibility("blurbDisplaySingleNormal", "block");
+			};
+		} else {
+			setVisibility("blurbDisplaySingleNormal", "none");
+			setVisibility("blurbDisplaySingleExpert", "none");
+		};
+		setVisibility("blurbDisplayFullNormal", "none");
+	};
 };
+
+function numToText(intIn) {
+	switch (intIn) {
+		case 1:
+			outTxt = "1st";
+			break
+			
+		case 2:
+			outTxt = "2nd";
+			break
+			
+		case 3:
+			outTxt = "3rd";
+			break
+			
+		default:
+			outTxt = intIn + "th";
+	};
+	outTxt = outTxt + " time";
+	
+	return(outTxt);
+};
+
+function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
+	var thisBPaths = thisBlurb.branchPaths
+	
+	var arrTexts = new Array();
+	var arrHashes = new Array();
+	
+	for (var n = 0; n < thisBPaths.length; n++) {
+		var thisText = thisBPaths[n].branchPathValue;
+		var thisHash = findInHashData(hashData.hashItems, thisBlurb.itemName);
+		
+		if (mode != "single") {
+			var thisName = thisBPaths[n].branchPathValue;
+			var thisItem = findInData(data.dialogItems, thisName);
+			
+			thisText = thisItem.branchPaths[0].branchPathValue;
+			thisHash = findInHashData(hashData.hashItems, thisName);
+			
+			//wip: further Branch
+			if (thisName.search("Branch") == -1) {
+				thisHash = thisHash.hashName;
+				
+				arrTexts.push(thisText);
+				arrHashes.push(thisHash);
+			} else {
+					var additionalBranch = findInData(data.dialogItems, thisName);
+					var [additionalTexts , additionalHashes] = getBlurbTextAndHash(additionalBranch , hashData , data , "branch");
+					arrTexts.push(thisName);
+					arrHashes.push("");
+					
+					for (var i = 0; i < additionalTexts.length; i++) {
+						arrTexts.push(additionalTexts[i]);
+						arrHashes.push(additionalHashes[i]);
+					};
+				
+			};
+			
+		};
+		
+		if (mode == "single") {
+			thisHash = thisHash.hashName;
+			
+			arrTexts.push(thisText);
+			arrHashes.push(thisHash);
+		};
+		
+	};
+	
+	return([arrTexts, arrHashes])
+};
+
 
 
 // clearing all further dropdowns as well as removing the blurblist from view when an earlier dropdown is changed
@@ -196,10 +519,10 @@ function clearFurtherDropdowns(rowN) {
 		n = n + 1
 	};
 	
-	if (document.getElementById("blurbDisplay") != null) {
-		var blurbDisplay = document.getElementById("blurbDisplay");
-		blurbDisplay.style.display = 'none';
-	};
+	setVisibility("blurbDisplaySingleNormal", "none");
+	setVisibility("blurbDisplaySingleExpert", "none");
+	setVisibility("blurbDisplayFullNormal", "none");
+	setVisibility("blurbDisplayFullExpert", "none");
 };
 
 //finding an item by its itemName in the data
@@ -220,6 +543,8 @@ function findInHashData(arrSearch,strSearch) {
 			break
 		};
 	};
+	
+	return(null);
 };
 
 //extracting number from between two square brackets
@@ -259,23 +584,7 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 				outputName = "";
 			} else {
 				outputName = (numberFromBrackets(inputName) + 1);
-				switch (outputName) {
-					case 1:
-						outputName = "1st";
-						break
-						
-					case 2:
-						outputName = "2nd";
-						break
-						
-					case 3:
-						outputName = "3rd";
-						break
-						
-					default:
-						outputName = outputName + "th";
-				};
-				outputName = outputName + " time";
+				outputName = numToText(outputName);
 			};
 			break;
 			
@@ -483,8 +792,8 @@ function buildThisDropdown(type, rowN , data , hashData) {
 		thisSelect.id = thisDropdownID;
 		
 		//making sure the blurblist stays at the bottom of all the dropdown menus
-		if (document.getElementById("blurbDisplay") != null) {
-			document.body.insertBefore(thisSelect,document.getElementById("blurbDisplay"));
+		if (document.getElementById("blurbDisplaySingleNormal") != null) {
+			document.body.insertBefore(thisSelect,document.getElementById("blurbDisplaySingleNormal"));
 		} else {
 			document.body.appendChild(thisSelect);
 		};
@@ -542,7 +851,7 @@ function buildDropdown(rowN , data , hashData) {
 	};
 	
 	if (prevSelectVal == "[Null]") {
-		buildBlurbDisplay(rowN + 1 , data , hashData, true);
+		buildBlurbDisplay(rowN + 1 , data , hashData, true , "blurb");
 	} else {
 	
 		// actually creating the dropdown options
@@ -617,15 +926,13 @@ function buildDropdown(rowN , data , hashData) {
 		};
 	};
 	
-	if (prevSelectVal == "[Null]") {
-		thisSelectExpert.style.display = 'none';
-		thisSelectNormal.style.display = 'none';
-	} else {
+	thisSelectExpert.style.display = 'none';
+	thisSelectNormal.style.display = 'none';
+			
+	if (prevSelectVal != "[Null]") {
 		if (document.getElementById("checkExpert").checked) {
 			thisSelectExpert.style.display = 'block';
-			thisSelectNormal.style.display = 'none';
 		} else {
-			thisSelectExpert.style.display = 'none';
 			thisSelectNormal.style.display = 'block';
 		};
 	};
@@ -643,7 +950,7 @@ function buildCollapsible(collName) {
 	var collContent = ""
 	
 	switch (collName) {
-	  case "Start":
+		case "Start":
 			collContent = "The starting point of all Heart lines is the DisDialogTree type object Dlg_HeartGadget.Dlg_HeartGadget in Startup.upk"
 			collContent += "\nDisDialogTree Dlg_HeartGadget.Dlg_HeartGadget has three conversation hooks which watch for inputs in order to fire dialogue."
 			collContent += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_DialogHook fires if this was a non-targeted, i.e. ambient, whisper."
@@ -684,6 +991,7 @@ buildCollapsible("Technical");
 buildCollapsible("Other");
 
 
+var lastUpdated = 0;
 
 var arrDisplayed = new Array();
 var currentDepth = 0;
