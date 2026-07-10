@@ -39,8 +39,8 @@ async function loadHashData() {
 function changeHandler(type, rowN , data , hashData) {
 	console.log("changeHandler for rowN " + rowN);
 	var thisSelect = document.getElementById("select" + rowN + type);
-	currentDepth = rowN;
-	fullDisplayed = rowN;
+	currentState.currentDepth = rowN;
+	currentState.fullDisplayed = rowN;
 	
 	// making sure the other, hidden dropdown updates too
 	if (type == "normal") {
@@ -58,10 +58,7 @@ function changeHandler(type, rowN , data , hashData) {
 	};
 	
 	// hiding the blurb display
-	setVisibility("blurbDisplaySingleNormal", "none");
-	setVisibility("blurbDisplayFullNormal", "none");
-	setVisibility("blurbDisplaySingleExpert", "none");
-	setVisibility("blurbDisplayFullExpert", "none");
+	setVisibilityAllBlurbs("none");
 	
 	if (thisSelect.value != "") {
 		
@@ -70,13 +67,13 @@ function changeHandler(type, rowN , data , hashData) {
 				buildBlurbDisplay(rowN + 1 , data , hashData, false, "blurb");
 			} else {
 				buildBlurbDisplay(rowN + 1 , data , hashData, false, "branch");
-				updateArrDisplayed(rowN);
+				updateArrDisplayedd(rowN);
 				buildDropdown(rowN + 1 , data , hashData);
 				changeExpert();
 				changeBlurb();
 			};
 		} else {
-			updateArrDisplayed(rowN);
+			updateArrDisplayedd(rowN);
 			buildDropdown(rowN + 1 , data , hashData);
 		};
 	};
@@ -154,7 +151,7 @@ function changeBlurb() {
 	var blurbDisplaySingleNormal = document.getElementById("blurbDisplaySingleNormal");
 	var blurbDisplayFullNormal = document.getElementById("blurbDisplayFullNormal");
 	
-	var lastSelect = document.getElementById("select" + currentDepth + "normal");
+	var lastSelect = document.getElementById("select" + currentState.currentDepth + "normal");
 	
 	if (checkList.checked) {
 		setVisibility("blurbDisplaySingleNormal", "none");
@@ -169,7 +166,7 @@ function changeBlurb() {
 					var hideSelect = document.getElementById("select" + n + "normal")
 					while (document.getElementById("select" + n + "normal") != null) {
 						if (hideSelect.style.display != 'none') {
-							fullDisplayed = n;
+							currentState.fullDisplayed = n;
 							hideSelect.style.display = 'none';
 						} else {
 							break
@@ -189,15 +186,11 @@ function changeBlurb() {
 		};
 		
 	} else {
-		while (n < fullDisplayed) {
+		while (n < currentState.fullDisplayed) {
 			n = n + 1
 			thisSelect = document.getElementById("select" + n + "normal");
 			thisSelect.style.display = 'block';
 			
-			blurbDisplayFullExpert.style.display = 'none';
-			blurbDisplayFullNormal.style.display = 'none';
-			blurbDisplaySingleExpert.style.display = 'none';
-			blurbDisplaySingleNormal.style.display = 'none';
 			
 			if (lastSelect.value.includes("Blurb")) {
 				if (blurbDisplaySingleNormal != null) {
@@ -214,6 +207,11 @@ function changeBlurb() {
 	
 };
 
+// setting visibility of all blurb displays to something
+// find it easier to read when this is just its own function even though it doesn't need to be
+function setVisibilityAllBlurbs(blurbVisibility) {
+	blurbDisplays.forEach((element) => setVisibility(element, blurbVisibility));
+};
 
 // set the visibility of a thing to something (ie "none", "block", "list-item" etc.) if that thing exists. If blnCreateNew is true, then create the thing first if it doesn't exist.
 //wip: use this more
@@ -245,14 +243,14 @@ function getOrBuildThing(thingName, thingType, blnCreateNew) {
 	
 };
 
-function updateArrDisplayed(rowN) {
-	var currentLength = arrDisplayed.length
+function updateArrDisplayedd(rowN) {
+	var currentLength = currentState.arrDisplayed.length
 	for (var i = rowN; i <= currentLength; i++) {
-		arrDisplayed.pop();
+		currentState.arrDisplayed.pop();
 	};
 	
 	thisSelectNormal = document.getElementById("select" + rowN + "normal");
-	arrDisplayed.push(thisSelectNormal.children[thisSelectNormal.selectedIndex].label);
+	currentState.arrDisplayed.push(thisSelectNormal.children[thisSelectNormal.selectedIndex].label);
 };
 
 
@@ -388,10 +386,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	};
 	
 	// blurb visibility: hiding everything by default
-	setVisibility("blurbDisplaySingleNormal", "none");
-	setVisibility("blurbDisplaySingleExpert", "none");
-	setVisibility("blurbDisplayFullNormal", "none");
-	setVisibility("blurbDisplayFullExpert", "none");
+	setVisibilityAllBlurbs("none");
 	
 	if (document.getElementById("checkList").checked) {
 		console.log("checkList is checked");
@@ -491,10 +486,8 @@ function clearFurtherDropdowns(rowN) {
 		n = n + 1
 	};
 	
-	setVisibility("blurbDisplaySingleNormal", "none");
-	setVisibility("blurbDisplaySingleExpert", "none");
-	setVisibility("blurbDisplayFullNormal", "none");
-	setVisibility("blurbDisplayFullExpert", "none");
+	//hiding the blurb display
+	setVisibilityAllBlurbs("none");
 };
 
 //finding an item by its itemName in the data
@@ -614,8 +607,8 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 			
 		//StoryFlag state 1 / StoryFlag state 2
 		case "StoryFlag ":
-			//wip: arrDisplayed for Boyle branches doesn't work correctly leading to error
-			var prevVal = arrDisplayed[(arrDisplayed.length - 1)];
+			//wip: currentState.arrDisplayed for Boyle branches doesn't work correctly leading to error
+			var prevVal = currentState.arrDisplayed[(currentState.arrDisplayed.length - 1)];
 			
 			//"Check: Is the player in the Golden Cat?" -> "Is the player in the Golden Cat"
 			outputName = prevVal.slice(prevVal.search("Check: ")+7)
@@ -1007,20 +1000,32 @@ function buildCollapsible(collName) {
 		});
 };
 
+
+// utility array of id strings for the four blurb displays
+const blurbDisplays = [
+	"blurbDisplaySingleNormal",
+	"blurbDisplayFullNormal",
+	"blurbDisplaySingleExpert",
+	"blurbDisplayFullExpert",
+];
+
+// utility container of current page state
+const currentState = {
+	fullDisplayed: 0,
+	arrDisplayed: new Array(),
+	currentDepth: 0,
+};
+
+//running everything
+//building the basic page
 buildCollapsible("Start");
 buildCollapsible("Classes");
 buildCollapsible("Technical");
 buildCollapsible("Other");
-
-
-
-var fullDisplayed = 0;
-
-var arrDisplayed = new Array();
-var currentDepth = 0;
-//running everything
 buildCheckBoxExpert();
 buildCheckBoxBlurb();
+
+//getting the JSON data and then building the first dropdown
 //getting main JSON data
 loadData().then(data => { 
 	console.log(data);
