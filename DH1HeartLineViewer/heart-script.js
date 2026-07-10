@@ -927,9 +927,9 @@ function buildDropdown(rowN , data , hashData) {
 			
 	if (prevSelectVal != "[Null]") {
 		if (document.getElementById("checkExpert").checked) {
-			thisSelectExpert.style.display = styles.select;
+			setVisibility("select" + rowN + "Expert");
 		} else {
-			thisSelectNormal.style.display = styles.select;
+			setVisibility("select" + rowN + "Normal");
 		};
 	};
 };
