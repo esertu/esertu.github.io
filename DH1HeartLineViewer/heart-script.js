@@ -43,7 +43,7 @@ function changeHandler(type, rowN , data , hashData) {
 	currentState.fullDisplayed = rowN;
 	
 	// making sure the other, hidden dropdown updates too
-	document.getElementById("select" + rowN + expertTypesMap[type]).value = thisSelect.value;
+	document.getElementById("select" + rowN + expertTypeOpposite[type]).value = thisSelect.value;
 	
 	// hiding any dropdowns past this one
 	var n = rowN + 1
@@ -75,6 +75,20 @@ function changeHandler(type, rowN , data , hashData) {
 	
 };
 
+function showOnlyThis(strIDStart, strIDType) {
+	if (strIDStart.includes("select")) {
+		thisStyle = styles.select;
+	} else {
+		if (strIDStart.includes("Single")) {
+			thisStyle = styles.blurbSingle;
+		} else {
+			thisStyle = styles.blurbFull;
+		};
+	};
+	
+	setVisibility(strIDStart + strIDType , thisStyle);
+	setVisibility(strIDStart + expertTypeOpposite[strIDType] , "none");
+};
 
 function changeExpert() {
 	console.log("changeExpert");
@@ -83,22 +97,20 @@ function changeExpert() {
 	var checkList = document.getElementById("checkList");
 	checkList = checkList.checked;
 	
-	var n = 0
+	var rowN = 0
 	if (checkExpert) {
-		while (document.getElementById("select" + n + "Normal") != null) {
-			if (document.getElementById("select" + n + "Normal").style.display != "none") {
-				setVisibility("select" + n + "Expert","block");
-				setVisibility("select" + n + "Normal","none");
+		while (document.getElementById("select" + rowN + "Normal") != null) {
+			if (document.getElementById("select" + rowN + "Normal").style.display != "none") {
+				showOnlyThis("select" + rowN, "Expert");
 			};
-			n = n + 1
+			rowN = rowN + 1
 		};
 	} else {
-		while (document.getElementById("select" + n + "Normal") != null) {
-			if (document.getElementById("select" + n + "Expert").style.display != "none") {
-				setVisibility("select" + n + "Expert","none");
-				setVisibility("select" + n + "Normal","block");
+		while (document.getElementById("select" + rowN + "Normal") != null) {
+			if (document.getElementById("select" + rowN + "Expert").style.display != "none") {
+				showOnlyThis("select" + rowN, "Normal");
 			};
-			n = n + 1
+			rowN = rowN + 1
 		};
 	};
 	
@@ -108,26 +120,22 @@ function changeExpert() {
 		if (checkExpert) {
 			if (checkList) {
 				if (document.getElementById("blurbDisplayFullNormal").style.display != "none") {
-					setVisibility("blurbDisplayFullNormal","none");
-					setVisibility("blurbDisplayFullExpert","list-item");
+					showOnlyThis("blurbDisplayFull", "Expert");
 				};
 			} else {
 				if (document.getElementById("blurbDisplaySingleNormal").style.display != "none") {
-					setVisibility("blurbDisplaySingleNormal","none");
-					setVisibility("blurbDisplaySingleExpert","list-item");
+					showOnlyThis("blurbDisplaySingle", "Expert");
 				};
 			};
 			
 		} else {
 			if (checkList) {
 				if (document.getElementById("blurbDisplayFullExpert").style.display != "none") {
-					setVisibility("blurbDisplayFullExpert","none");
-					setVisibility("blurbDisplayFullNormal","list-item");
+					showOnlyThis("blurbDisplayFull", "Normal");
 				};
 			} else {
 				if (document.getElementById("blurbDisplaySingleExpert").style.display != "none") {
-					setVisibility("blurbDisplaySingleNormal","list-item");
-					setVisibility("blurbDisplaySingleExpert","none");
+					showOnlyThis("blurbDisplaySingle", "Normal");
 				};
 			};
 		};
@@ -171,7 +179,7 @@ function changeBlurb() {
 						hideSelect = document.getElementById("select" + n + "Normal");
 					};
 					
-					blurbDisplayFullNormal.style.display = 'list-item';
+					blurbDisplayFullNormal.style.display = styles.blurbFull;
 			
 					break
 				};
@@ -184,15 +192,15 @@ function changeBlurb() {
 		while (n < currentState.fullDisplayed) {
 			n = n + 1
 			thisSelect = document.getElementById("select" + n + "Normal");
-			thisSelect.style.display = 'block';
+			thisSelect.style.display = styles.select;
 			
 			
 			if (lastSelect.value.includes("Blurb")) {
 				if (blurbDisplaySingleNormal != null) {
 					if (document.getElementById("checkExpert").checked) {
-						blurbDisplaySingleExpert.style.display = 'list-item';
+						blurbDisplaySingleExpert.style.display = styles.blurbSingle;
 					} else {
-						blurbDisplaySingleNormal.style.display = 'list-item';
+						blurbDisplaySingleNormal.style.display = styles.blurbSingle;
 					};
 				};
 			};
@@ -256,6 +264,7 @@ function updateArrDisplayedd(rowN) {
 
 
 //wip: use this more
+//wip: clean this up
 function applyBlurbs(htmlIn, mode) {
 	var arrRelevant = new Array();
 	
@@ -392,17 +401,17 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	if (document.getElementById("checkList").checked) {
 		console.log("checkList is checked");
 		if (document.getElementById("checkExpert").checked) {
-			setVisibility("blurbDisplayFullNormal", "list-item");
+			setVisibility("blurbDisplayFullNormal", styles.blurbFull);
 		} else {
-			setVisibility("blurbDisplayFullExpert", "list-item");
+			setVisibility("blurbDisplayFullExpert", styles.blurbFull);
 		};
 		
 	} else {
 		if (originator != "branch") {
 			if (document.getElementById("checkExpert").checked) {
-				setVisibility("blurbDisplaySingleExpert", "block");
+				setVisibility("blurbDisplaySingleExpert", styles.blurbSingle);
 			} else {
-				setVisibility("blurbDisplaySingleNormal", "block");
+				setVisibility("blurbDisplaySingleNormal", styles.blurbSingle);
 			};
 		};
 	};
@@ -770,7 +779,7 @@ function buildThisDropdown(type, rowN , data , hashData) {
 	if (document.getElementById(thisDropdownID) != null) {
 		var thisSelect = document.getElementById(thisDropdownID);
 		clearFurtherDropdowns(rowN);
-		thisSelect.style.display = 'block'; //wip: other styles?
+		thisSelect.style.display = styles.select; //wip: other styles?
 	} else {
 		var thisSelect = document.createElement("select");
 		thisSelect.id = thisDropdownID;
@@ -781,7 +790,6 @@ function buildThisDropdown(type, rowN , data , hashData) {
 		} else {
 			document.body.appendChild(thisSelect);
 		};
-		thisSelect.style.display = 'block';
 		
 		// adding the event listener to run things when the value fo this dropdown changes
 		thisSelect.addEventListener("change", function() { 
@@ -897,15 +905,23 @@ function buildDropdown(rowN , data , hashData) {
 				};
 			};
 			
-			var optionExpert = document.createElement("option");
-			optionExpert.text = expertText;
-			optionExpert.value = thisBranchPathValue;
-			thisSelectExpert.appendChild(optionExpert);
+			// adding the resulting text as a new option to both ddropdown types
+			expertTypes.forEach((element) => {
+				if (element == "Normal") {
+					var thisText = normalText;
+					var thisSelect = thisSelectNormal;
+				} else {
+					var thisText = expertText;
+					var thisSelect = thisSelectExpert;
+				};
+				
+				var option = document.createElement("option");
+				option.text = thisText;
+				option.value = thisBranchPathValue;
+				thisSelect.appendChild(option);
+				}
+			);
 			
-			var optionNormal = document.createElement("option");
-			optionNormal.text = normalText;
-			optionNormal.value = thisBranchPathValue;
-			thisSelectNormal.appendChild(optionNormal);
 		};
 	};
 	
@@ -913,42 +929,44 @@ function buildDropdown(rowN , data , hashData) {
 			
 	if (prevSelectVal != "[Null]") {
 		if (document.getElementById("checkExpert").checked) {
-			thisSelectExpert.style.display = 'block';
+			thisSelectExpert.style.display = styles.select;
 		} else {
-			thisSelectNormal.style.display = 'block';
+			thisSelectNormal.style.display = styles.select;
 		};
 	};
 };
 
 
 
+const arrCheckboxes = [
+	"Expert",
+	"List"
+];
+function buildCheckBoxes() {
 
-function buildCheckBoxExpert() {
-	var checkExpert = document.createElement("input");
-	checkExpert.id = 'checkExpert';
-	checkExpert.type = 'checkbox';
-	checkExpert.addEventListener("change", function() { 
-		changeExpert() 
-		});
-	
-	var lblExpert = document.createElement("label");
-	lblExpert.appendChild(checkExpert);
-	lblExpert.appendChild(document.createTextNode("Expert"));
-	document.body.appendChild(lblExpert);
-};
-
-function buildCheckBoxBlurb() {
-	var checkList = document.createElement("input");
-	checkList.id = 'checkList';
-	checkList.type = 'checkbox';
-	checkList.addEventListener("change", function() { 
-		changeBlurb() 
-		});
-	
-	var lblBlurbDisplay = document.createElement("label");
-	lblBlurbDisplay.appendChild(checkList);
-	lblBlurbDisplay.appendChild(document.createTextNode("Display lines as list instead of as single lines"));
-	document.body.appendChild(lblBlurbDisplay);
+	arrCheckboxes.forEach((element) => {
+		var check = document.createElement("input");
+		check.id = 'check' + element;
+		check.type = 'checkbox';
+		
+		if (element == "Expert") {
+			check.addEventListener("change", function() { 
+				changeExpert() 
+				});
+		} else {
+			check.addEventListener("change", function() { 
+				changeBlurb() 
+				});
+		};
+		
+		var label = document.createElement("label");
+		label.appendChild(check);
+		label.appendChild(document.createTextNode(element));
+		document.body.appendChild(label);
+		
+	}
+	);
+			
 };
 
 function changeHandlerColl(collName){
@@ -1010,9 +1028,16 @@ const expertTypes = [
 	"Expert",
 ];
 // utility map of id string endings for the two dropdown types where one maps to the other ie for when only one should be shown and therefore the other hidden
-const expertTypesMap = {
+const expertTypeOpposite = {
 	"Normal": "Expert",
 	"Expert": "Normal",
+};
+
+// utility map of style.display types that a type of item should be displayed as
+const styles = {
+	"select": "block",
+	"blurbSingle": "list-item",
+	"blurbFull": "block",
 };
 
 // utility container of current page state
@@ -1028,8 +1053,7 @@ buildCollapsible("Start");
 buildCollapsible("Classes");
 buildCollapsible("Technical");
 buildCollapsible("Other");
-buildCheckBoxExpert();
-buildCheckBoxBlurb();
+buildCheckBoxes();
 
 //getting the JSON data and then building the first dropdown
 //getting main JSON data
