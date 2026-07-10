@@ -42,12 +42,6 @@ function changeHandler(type, rowN , data , hashData) {
 	currentDepth = rowN;
 	fullDisplayed = rowN;
 	
-	// hiding the blurb display
-	setVisibility("blurbDisplaySingleNormal", "none");
-	setVisibility("blurbDisplayFullNormal", "none");
-	setVisibility("blurbDisplaySingleExpert", "none");
-	setVisibility("blurbDisplayFullExpert", "none");
-	
 	// making sure the other, hidden dropdown updates too
 	if (type == "normal") {
 		document.getElementById("select" + rowN + "expert").value = thisSelect.value;
@@ -55,6 +49,7 @@ function changeHandler(type, rowN , data , hashData) {
 		document.getElementById("select" + rowN + "normal").value = thisSelect.value;
 	};
 	
+	// hiding any dropdowns past this one
 	var n = rowN + 1
 	while (document.getElementById("select" + n + "normal") != null) {
 		setVisibility("select" + n + "normal","none")
@@ -62,15 +57,20 @@ function changeHandler(type, rowN , data , hashData) {
 		n = n + 1
 	};
 	
+	// hiding the blurb display
+	setVisibility("blurbDisplaySingleNormal", "none");
+	setVisibility("blurbDisplayFullNormal", "none");
+	setVisibility("blurbDisplaySingleExpert", "none");
+	setVisibility("blurbDisplayFullExpert", "none");
+	
 	if (thisSelect.value != "") {
 		
-		if (thisSelect.value.search("DisConv_Blurb") != -1 || thisSelect.value.search("SequentialBranch") != -1) {
-			if (thisSelect.value.search("DisConv_Blurb") != -1) {
+		if (thisSelect.value.includes("DisConv_Blurb") || thisSelect.value.includes("SequentialBranch")) {
+			if (thisSelect.value.includes("DisConv_Blurb")) {
 				buildBlurbDisplay(rowN + 1 , data , hashData, false, "blurb");
 			} else {
 				buildBlurbDisplay(rowN + 1 , data , hashData, false, "branch");
 				updateArrDisplayed(rowN);
-				//wip: move the build out of the if and instead add a function that hides/unhides elements
 				buildDropdown(rowN + 1 , data , hashData);
 				changeExpert();
 				changeBlurb();
@@ -163,7 +163,7 @@ function changeBlurb() {
 		//going down the list of dropdowns to find the first selected SequentialBranch
 		while (thisSelect != null) {
 			if (thisSelect.style.display != 'none') {
-				if (thisSelect.value.search("SequentialBranch") != -1) {
+				if (thisSelect.value.includes("SequentialBranch")) {
 					//hiding the remaining dropdowns once that SequentialBranch-valued dropdown has been found
 					n = n + 1
 					var hideSelect = document.getElementById("select" + n + "normal")
@@ -199,7 +199,7 @@ function changeBlurb() {
 			blurbDisplaySingleExpert.style.display = 'none';
 			blurbDisplaySingleNormal.style.display = 'none';
 			
-			if (lastSelect.value.search("Blurb") != -1) {
+			if (lastSelect.value.includes("Blurb")) {
 				if (blurbDisplaySingleNormal != null) {
 					if (document.getElementById("checkExpert").checked) {
 						blurbDisplaySingleExpert.style.display = 'list-item';
@@ -341,7 +341,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 		
 		//getting the blurb text
 		var thisBlurb = findInData(data.dialogItems,thisSelect.value);
-		if (thisSelect.value.search("SequentialBranch") == -1) {
+		if (thisSelect.value.includes("SequentialBranch") == false) {
 			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "single");
 		} else {
 			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "branch");
@@ -377,7 +377,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 			
 		};
 		
-		if (thisSelect.value.search("SequentialBranch") != -1) {
+		if (thisSelect.value.includes("SequentialBranch")) {
 			applyBlurbs(newTextNorm, "fullnormal");
 			applyBlurbs(newTextExp, "fullexpert");
 		} else {
@@ -431,7 +431,7 @@ function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
 			thisHash = findInHashData(hashData.hashItems, thisName);
 			
 			//wip: further Branch
-			if (thisName.search("SequentialBranch") == -1) {
+			if (thisName.includes("SequentialBranch") == false) {
 				thisHash = thisHash.hashName;
 				
 				arrTexts.push(thisText);
@@ -550,11 +550,11 @@ function numberFromBrackets(inputName) {
 
 //extracting number from between an underscore and a period, ie DisConv_Blurb_14.1398 -> 14
 function numberFromItem(inputName) {
-	if (inputName.search("_") == -1) {
+	if (inputName.includes("_") == false) {
 		inputName = 0;
 	} else {
 		inputName = inputName.slice(inputName.search("_")+1)
-		if (inputName.search("_") == -1) {
+		if (inputName.includes("_") == false) {
 			inputName = 0;
 		} else {
 			inputName = inputName.slice(inputName.search("_")+1)
@@ -622,7 +622,7 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 			outputName = outputName.replace("?","")
 			
 			// "Does the player know Lydia's identity?" -> "Player knows Lydia's identity"
-			if (prevVal.search("know") != -1) {
+			if (prevVal.includes("know")) {
 				// "Does the player know Lydia's identity" -> "Player know Lydia's identity"
 				outputName = outputName.replace("Does the p", "P") 
 				
@@ -1013,8 +1013,8 @@ buildCollapsible("Technical");
 buildCollapsible("Other");
 
 
+
 var fullDisplayed = 0;
-var lastUpdated = 0;
 
 var arrDisplayed = new Array();
 var currentDepth = 0;
