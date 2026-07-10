@@ -43,17 +43,12 @@ function changeHandler(type, rowN , data , hashData) {
 	currentState.fullDisplayed = rowN;
 	
 	// making sure the other, hidden dropdown updates too
-	if (type == "normal") {
-		document.getElementById("select" + rowN + "expert").value = thisSelect.value;
-	} else {
-		document.getElementById("select" + rowN + "normal").value = thisSelect.value;
-	};
+	document.getElementById("select" + rowN + expertTypesMap[type]).value = thisSelect.value;
 	
 	// hiding any dropdowns past this one
 	var n = rowN + 1
-	while (document.getElementById("select" + n + "normal") != null) {
-		setVisibility("select" + n + "normal","none")
-		setVisibility("select" + n + "expert","none")
+	while (document.getElementById("select" + n + "Normal") != null) {
+		setVisibilityBothDropdownsInRow(n, "none");
 		n = n + 1
 	};
 	
@@ -90,18 +85,18 @@ function changeExpert() {
 	
 	var n = 0
 	if (checkExpert) {
-		while (document.getElementById("select" + n + "normal") != null) {
-			if (document.getElementById("select" + n + "normal").style.display != "none") {
-				setVisibility("select" + n + "expert","block");
-				setVisibility("select" + n + "normal","none");
+		while (document.getElementById("select" + n + "Normal") != null) {
+			if (document.getElementById("select" + n + "Normal").style.display != "none") {
+				setVisibility("select" + n + "Expert","block");
+				setVisibility("select" + n + "Normal","none");
 			};
 			n = n + 1
 		};
 	} else {
-		while (document.getElementById("select" + n + "normal") != null) {
-			if (document.getElementById("select" + n + "expert").style.display != "none") {
-				setVisibility("select" + n + "expert","none");
-				setVisibility("select" + n + "normal","block");
+		while (document.getElementById("select" + n + "Normal") != null) {
+			if (document.getElementById("select" + n + "Expert").style.display != "none") {
+				setVisibility("select" + n + "Expert","none");
+				setVisibility("select" + n + "Normal","block");
 			};
 			n = n + 1
 		};
@@ -146,12 +141,12 @@ function changeBlurb() {
 	var checkList = document.getElementById("checkList");
 	
 	var n = 0
-	var thisSelect = document.getElementById("select" + n + "normal");
+	var thisSelect = document.getElementById("select" + n + "Normal");
 	
 	var blurbDisplaySingleNormal = document.getElementById("blurbDisplaySingleNormal");
 	var blurbDisplayFullNormal = document.getElementById("blurbDisplayFullNormal");
 	
-	var lastSelect = document.getElementById("select" + currentState.currentDepth + "normal");
+	var lastSelect = document.getElementById("select" + currentState.currentDepth + "Normal");
 	
 	if (checkList.checked) {
 		setVisibility("blurbDisplaySingleNormal", "none");
@@ -163,8 +158,8 @@ function changeBlurb() {
 				if (thisSelect.value.includes("SequentialBranch")) {
 					//hiding the remaining dropdowns once that SequentialBranch-valued dropdown has been found
 					n = n + 1
-					var hideSelect = document.getElementById("select" + n + "normal")
-					while (document.getElementById("select" + n + "normal") != null) {
+					var hideSelect = document.getElementById("select" + n + "Normal")
+					while (document.getElementById("select" + n + "Normal") != null) {
 						if (hideSelect.style.display != 'none') {
 							currentState.fullDisplayed = n;
 							hideSelect.style.display = 'none';
@@ -173,7 +168,7 @@ function changeBlurb() {
 						};
 						
 						n = n + 1;
-						hideSelect = document.getElementById("select" + n + "normal");
+						hideSelect = document.getElementById("select" + n + "Normal");
 					};
 					
 					blurbDisplayFullNormal.style.display = 'list-item';
@@ -182,13 +177,13 @@ function changeBlurb() {
 				};
 			};
 			n = n + 1
-			thisSelect = document.getElementById("select" + n + "normal");
+			thisSelect = document.getElementById("select" + n + "Normal");
 		};
 		
 	} else {
 		while (n < currentState.fullDisplayed) {
 			n = n + 1
-			thisSelect = document.getElementById("select" + n + "normal");
+			thisSelect = document.getElementById("select" + n + "Normal");
 			thisSelect.style.display = 'block';
 			
 			
@@ -209,8 +204,14 @@ function changeBlurb() {
 
 // setting visibility of all blurb displays to something
 // find it easier to read when this is just its own function even though it doesn't need to be
-function setVisibilityAllBlurbs(blurbVisibility) {
-	blurbDisplays.forEach((element) => setVisibility(element, blurbVisibility));
+function setVisibilityAllBlurbs(thisVisibility) {
+	blurbDisplays.forEach((element) => setVisibility(element, thisVisibility));
+};
+
+// setting visibility of all lines of a certain row to something
+// find it easier to read when this is just its own function even though it doesn't need to be
+function setVisibilityBothDropdownsInRow(rowN, thisVisibility) {
+	expertTypes.forEach((element) => setVisibility("select" + rowN + element, thisVisibility));
 };
 
 // set the visibility of a thing to something (ie "none", "block", "list-item" etc.) if that thing exists. If blnCreateNew is true, then create the thing first if it doesn't exist.
@@ -249,7 +250,7 @@ function updateArrDisplayedd(rowN) {
 		currentState.arrDisplayed.pop();
 	};
 	
-	thisSelectNormal = document.getElementById("select" + rowN + "normal");
+	thisSelectNormal = document.getElementById("select" + rowN + "Normal");
 	currentState.arrDisplayed.push(thisSelectNormal.children[thisSelectNormal.selectedIndex].label);
 };
 
@@ -333,7 +334,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 		applyBlurbs("[Branch terminates here]" , "all-contd");
 	} else {
 		
-		var thisSelect = document.getElementById("select" + (rowN - 1) + "expert");
+		var thisSelect = document.getElementById("select" + (rowN - 1) + "Expert");
 		console.log("thisSelect.value: ");
 		console.log(thisSelect.value);
 		
@@ -463,14 +464,10 @@ function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
 // clearing all further dropdowns as well as removing the blurblist from view when an earlier dropdown is changed
 function clearFurtherDropdowns(rowN) {
 	var n = 0
-	while (document.getElementById("select" + (rowN + n) + "expert") != null) {
+	while (document.getElementById("select" + (rowN + n) + "Expert") != null) {
 		for (var i = 0; i <= 1; i++) {
 			// clearing dropdown of its children
-			if (i == 0) {
-				var type = "expert";
-			} else {
-				var type = "normal";
-			};
+			var type = expertTypes[i];
 			
 			var thisSelect = document.getElementById("select" + (rowN + n) + type);
 			if (thisSelect != null) {
@@ -799,8 +796,8 @@ function buildThisDropdown(type, rowN , data , hashData) {
 //wip: fix [Null] branches
 function buildDropdown(rowN , data , hashData) {
 	// getting or building this drop-down menu
-	var thisSelectNormal = buildThisDropdown("normal", rowN , data , hashData)
-	var thisSelectExpert = buildThisDropdown("expert", rowN , data , hashData)
+	var thisSelectNormal = buildThisDropdown("Normal", rowN , data , hashData)
+	var thisSelectExpert = buildThisDropdown("Expert", rowN , data , hashData)
 	
 	// adding the default starting "option", which is blank and can't be selected again later
 	var option = document.createElement("option");
@@ -831,7 +828,7 @@ function buildDropdown(rowN , data , hashData) {
 		var thisItem = data.dialogItems[0]
 		prevSelectVal = null
 	} else {
-		var prevSelect = document.getElementById("select" + (rowN - 1) + "expert");
+		var prevSelect = document.getElementById("select" + (rowN - 1) + "Expert");
 		prevSelectVal = prevSelect.value
 		// looking for the previous dropdown's value in the data array
 		var thisItem = findInData(data.dialogItems, prevSelectVal);
@@ -900,7 +897,6 @@ function buildDropdown(rowN , data , hashData) {
 				};
 			};
 			
-			
 			var optionExpert = document.createElement("option");
 			optionExpert.text = expertText;
 			optionExpert.value = thisBranchPathValue;
@@ -913,8 +909,7 @@ function buildDropdown(rowN , data , hashData) {
 		};
 	};
 	
-	thisSelectExpert.style.display = 'none';
-	thisSelectNormal.style.display = 'none';
+	setVisibilityBothDropdownsInRow(rowN, "none");
 			
 	if (prevSelectVal != "[Null]") {
 		if (document.getElementById("checkExpert").checked) {
@@ -1008,6 +1003,17 @@ const blurbDisplays = [
 	"blurbDisplaySingleExpert",
 	"blurbDisplayFullExpert",
 ];
+
+// utility array of id string endings for the two dropdown types
+const expertTypes = [
+	"Normal",
+	"Expert",
+];
+// utility map of id string endings for the two dropdown types where one maps to the other ie for when only one should be shown and therefore the other hidden
+const expertTypesMap = {
+	"Normal": "Expert",
+	"Expert": "Normal",
+};
 
 // utility container of current page state
 const currentState = {
