@@ -854,7 +854,7 @@ function buildDropdown(rowN , data , hashData) {
 			};
 
 			// special: checkstoryflags
-			if (thisBranchPathValue.lastIndexOf("DisConv_Check",0) != 0) {
+			if (thisBranchPathValue.includes("DisConv_Check") == false) {
 				// don't need destination description in row 0 as it's already described by the origin
 				if (rowN > 0) {
 					if (thisBranch.branchPathCondition == null) {
@@ -882,7 +882,7 @@ function buildDropdown(rowN , data , hashData) {
 			// special: conditions
 			if (thisBranch.branchPathCondition != null) {
 				var conditionVal = thisBranch.branchPathCondition;
-				if (thisItem.itemName.lastIndexOf("DisConv_Random",0) === 0) {
+				if (thisItem.itemName.includes("DisConv_Random")) {
 					expertText = expertText + " (" + conditionVal + "% chance)";
 					normalText = conditionVal + "% chance → " + normalText;
 				} else {
