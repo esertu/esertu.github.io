@@ -76,17 +76,7 @@ function changeHandler(type, rowN , data , hashData) {
 };
 
 function showOnlyThis(strIDStart, strIDType) {
-	if (strIDStart.includes("select")) {
-		thisStyle = styles.select;
-	} else {
-		if (strIDStart.includes("Single")) {
-			thisStyle = styles.blurbSingle;
-		} else {
-			thisStyle = styles.blurbFull;
-		};
-	};
-	
-	setVisibility(strIDStart + strIDType , thisStyle);
+	setVisibility(strIDStart + strIDType);
 	setVisibility(strIDStart + expertTypeOpposite[strIDType] , "none");
 };
 
@@ -152,7 +142,6 @@ function changeBlurb() {
 	var thisSelect = document.getElementById("select" + n + "Normal");
 	
 	var blurbDisplaySingleNormal = document.getElementById("blurbDisplaySingleNormal");
-	var blurbDisplayFullNormal = document.getElementById("blurbDisplayFullNormal");
 	
 	var lastSelect = document.getElementById("select" + currentState.currentDepth + "Normal");
 	
@@ -170,7 +159,7 @@ function changeBlurb() {
 					while (document.getElementById("select" + n + "Normal") != null) {
 						if (hideSelect.style.display != 'none') {
 							currentState.fullDisplayed = n;
-							hideSelect.style.display = 'none';
+							setVisibility(hideSelect,"none");
 						} else {
 							break
 						};
@@ -179,7 +168,7 @@ function changeBlurb() {
 						hideSelect = document.getElementById("select" + n + "Normal");
 					};
 					
-					blurbDisplayFullNormal.style.display = styles.blurbFull;
+					setVisibility("blurbDisplayFullNormal");
 			
 					break
 				};
@@ -191,16 +180,14 @@ function changeBlurb() {
 	} else {
 		while (n < currentState.fullDisplayed) {
 			n = n + 1
-			thisSelect = document.getElementById("select" + n + "Normal");
-			thisSelect.style.display = styles.select;
-			
+			setVisibility("select" + n + "Normal");
 			
 			if (lastSelect.value.includes("Blurb")) {
 				if (blurbDisplaySingleNormal != null) {
 					if (document.getElementById("checkExpert").checked) {
-						blurbDisplaySingleExpert.style.display = styles.blurbSingle;
+						setVisibility("blurbDisplaySingleExpert");
 					} else {
-						blurbDisplaySingleNormal.style.display = styles.blurbSingle;
+						setVisibility("blurbDisplaySingleNormal");
 					};
 				};
 			};
@@ -222,13 +209,29 @@ function setVisibilityBothDropdownsInRow(rowN, thisVisibility) {
 	expertTypes.forEach((element) => setVisibility("select" + rowN + element, thisVisibility));
 };
 
-// set the visibility of a thing to something (ie "none", "block", "list-item" etc.) if that thing exists. If blnCreateNew is true, then create the thing first if it doesn't exist.
+// set the visibility of a thing to something (ie "none", "block", "list-item" etc.) if that thing exists. If blnCreateNew is true, then create the thing first if it doesn't exist
 //wip: use this more
 function setVisibility(thingName, thingVisibility, blnCreateNew) {
 	thisThing = getOrBuildThing(thingName, "", blnCreateNew);
 	
 	if (thisThing != null) {
-		thisThing.style.display = thingVisibility;
+		// if thingVisibility has been given, just apply it
+		if (thingVisibility) {
+			thisThing.style.display = thingVisibility;
+			
+		// otherwise, get the value from the styles Map
+		} else {
+			if (thingName.includes("blurb")) {
+				if (thingName.includes("Full")) {
+					thingVisibility = styles.blurbFull;
+				} else {
+					thingVisibility = styles.blurbSingle;
+				};
+			} else {
+				thingVisibility = styles.select;
+			};
+			thisThing.style.display = thingVisibility;
+		};
 	};
 };
 
@@ -401,17 +404,17 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	if (document.getElementById("checkList").checked) {
 		console.log("checkList is checked");
 		if (document.getElementById("checkExpert").checked) {
-			setVisibility("blurbDisplayFullNormal", styles.blurbFull);
+			setVisibility("blurbDisplayFullNormal");
 		} else {
-			setVisibility("blurbDisplayFullExpert", styles.blurbFull);
+			setVisibility("blurbDisplayFullExpert");
 		};
 		
 	} else {
 		if (originator != "branch") {
 			if (document.getElementById("checkExpert").checked) {
-				setVisibility("blurbDisplaySingleExpert", styles.blurbSingle);
+				setVisibility("blurbDisplaySingleExpert");
 			} else {
-				setVisibility("blurbDisplaySingleNormal", styles.blurbSingle);
+				setVisibility("blurbDisplaySingleNormal");
 			};
 		};
 	};
@@ -484,7 +487,7 @@ function clearFurtherDropdowns(rowN) {
 					thisSelect.firstChild.remove()
 				};
 				
-				thisSelect.style.display = 'none';
+				setVisibility("select" + (rowN + n) + type,"none");
 			};
 			
 		};
@@ -779,7 +782,7 @@ function buildThisDropdown(type, rowN , data , hashData) {
 	if (document.getElementById(thisDropdownID) != null) {
 		var thisSelect = document.getElementById(thisDropdownID);
 		clearFurtherDropdowns(rowN);
-		thisSelect.style.display = styles.select; //wip: other styles?
+		setVisibility(thisDropdownID);
 	} else {
 		var thisSelect = document.createElement("select");
 		thisSelect.id = thisDropdownID;
