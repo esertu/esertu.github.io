@@ -808,27 +808,23 @@ function buildDropdown(rowN , data , hashData) {
 	var thisSelectExpert = buildThisDropdown("Expert", rowN , data , hashData)
 	
 	// adding the default starting "option", which is blank and can't be selected again later
-	var option = document.createElement("option");
-	option.disabled = true;
-	option.selected = true;
-	if (rowN == 0) {
-		option.text = "Dlg_HeartGadget";
-	} else {
-		option.text = "";
-	};
-	option.value = -1;
-	thisSelectExpert.appendChild(option);
-	
-	var option = document.createElement("option");
-	option.disabled = true;
-	option.selected = true;
-	if (rowN == 0) {
-		option.text = "Dlg_HeartGadget";
-	} else {
-		option.text = "";
-	};
-	option.value = -1;
-	thisSelectNormal.appendChild(option);
+	expertTypes.forEach((element) => {
+		var option = document.createElement("option");
+		option.disabled = true;
+		option.selected = true;
+		if (rowN == 0) {
+			option.text = "Dlg_HeartGadget";
+		} else {
+			option.text = "";
+		};
+		option.value = -1;
+		
+		if (element == "Normal") {
+			thisSelectNormal.appendChild(option);
+		} else {
+			thisSelectExpert.appendChild(option);
+		};
+	});
 		
 	// creating all dropdown options, which is the branchPathName and branchPathValue items of the item's branchPaths item
 	// first row is different because it's actually still the starting item
@@ -919,8 +915,7 @@ function buildDropdown(rowN , data , hashData) {
 				option.text = thisText;
 				option.value = thisBranchPathValue;
 				thisSelect.appendChild(option);
-				}
-			);
+			});
 			
 		};
 	};
