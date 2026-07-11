@@ -40,11 +40,10 @@ function changeHandler(type, rowN , data , hashData) {
 	console.log("");
 	console.log("changeHandler for rowN " + rowN);
 	const thisSelect = document.getElementById("select" + rowN + type);
-	currentState.currentDepth = rowN;
-	currentState.fullDisplayed = rowN;
+	const thisValue = thisSelect.value;
 	
 	// making sure the other, hidden dropdown updates too
-	document.getElementById("select" + rowN + expertTypeOpposite[type]).value = thisSelect.value;
+	document.getElementById("select" + rowN + expertTypeOpposite[type]).value = thisValue;
 	
 	// hiding any dropdowns past this one
 	var n = rowN + 1
@@ -56,21 +55,50 @@ function changeHandler(type, rowN , data , hashData) {
 	// hiding the blurb display
 	setVisibilityAllBlurbs("none");
 	
-	if (thisSelect.value != "") {
-		
-		if (thisSelect.value.includes("DisConv_Blurb") || thisSelect.value.includes("SequentialBranch")) {
-			if (thisSelect.value.includes("DisConv_Blurb")) {
-				buildBlurbDisplay(rowN + 1 , data , hashData, false, "blurb");
-			} else {
-				buildBlurbDisplay(rowN + 1 , data , hashData, false, "branch");
-				updateArrDisplayedd(rowN);
-				buildDropdown(rowN + 1 , data , hashData);
-				applyChkExpert();
-				applyChkBlurb();
-			};
+	if (thisValue.includes("DisConv_Blurb") || thisValue.includes("SequentialBranch")) {
+		if (thisValue.includes("DisConv_Blurb")) {
+			currentState.depthState["Single"] = rowN;
+			currentState.depthState.freezeFull = true;
+			
+			buildBlurbDisplay(rowN + 1 , data , hashData, false, "blurb");
+			
 		} else {
+			currentState.depthState["Full"] = rowN;
+			currentState.depthState["Single"] = rowN + 1;
+			
+			currentState.depthState.freezeSingle = true;
+			
+			buildBlurbDisplay(rowN + 1 , data , hashData, false, "branch");
 			updateArrDisplayedd(rowN);
 			buildDropdown(rowN + 1 , data , hashData);
+			applyChkExpert();
+			applyChkBlurb();
+		};
+	} else {
+		if (thisValue != "") {
+			updateArrDisplayedd(rowN);
+			buildDropdown(rowN + 1 , data , hashData);
+			
+			if (rowN < currentState.depthState["Single"] || rowN < currentState.depthState["Full"]) {
+				if (rowN < currentState.depthState["Single"]) {
+					currentState.depthState["Single"] = rowN;
+					currentState.depthState.freezeSingle = false;
+				};
+				
+				if (rowN < currentState.depthState["Full"]) {
+					currentState.depthState["Full"] = rowN;
+					currentState.depthState.freezeFull = false;
+				};
+			} else {
+			  if (currentState.depthState.freezeFull == false) {
+					currentState.depthState["Full"] = rowN;
+				};
+			  if (currentState.depthState.freezeSingle == false) {
+					currentState.depthState["Single"] = rowN;
+				};
+			};
+			
+			
 		};
 	};
 	
@@ -111,8 +139,7 @@ function applyChkExpert() {
 	console.log(">> applyChkExpert is now attempting to show: " + "select" + rowN + currentExpert);
 	
 	// showing the relevant dropdowns and hiding the currently active ones
-	// showing the relevant dropdowns and hiding the currently active ones
-	while (document.getElementById("select" + rowN + currentExpert) != null) {
+	while (document.getElementById("select" + rowN + currentExpert) != null && rowN <= currentState.depthState[currentBlurb]) {
 		if (document.getElementById("select" + rowN + currentExpert).style.display == "none") {
 			showOnlyThis("select" + rowN, currentExpert);
 		} else {
@@ -142,11 +169,9 @@ function changeChkExpert() {
 };
 
 function applyChkBlurb() {
-	console.log("applyChkBlurb");
-	var n = 0
-	var thisSelect = document.getElementById("select" + n + "Normal");
-	
-	var lastSelect = document.getElementById("select" + currentState.currentDepth + "Normal");
+	console.log("applyChkBlurb for blurbState " + currentState.blurbState);
+	var rowN = 0
+	var thisSelect = document.getElementById("select" + rowN + currentState.expertState);
 	
 	setVisibilityAllBlurbs("none");
 	
@@ -156,40 +181,54 @@ function applyChkBlurb() {
 			if (thisSelect.style.display != 'none') {
 				if (thisSelect.value.includes("SequentialBranch")) {
 					//hiding the remaining dropdowns once that SequentialBranch-valued dropdown has been found
-					n = n + 1
-					var hideSelect = document.getElementById("select" + n + "Normal")
-					while (document.getElementById("select" + n + "Normal") != null) {
+					rowN = rowN + 1
+					var hideSelect = document.getElementById("select" + rowN + currentState.expertState)
+					while (document.getElementById("select" + rowN + currentState.expertState) != null) {
+						console.log("found hideSelect: ");
+						console.log(hideSelect);
 						if (hideSelect.style.display != 'none') {
-							currentState.fullDisplayed = n;
-							setVisibility("select" + n + "Normal","none");
+							setVisibility("select" + rowN + currentState.expertState,"none");
 						} else {
 							break
 						};
 						
-						n = n + 1;
-						hideSelect = document.getElementById("select" + n + "Normal");
+						rowN = rowN + 1;
+						hideSelect = document.getElementById("select" + rowN + currentState.expertState);
 					};
 					
-					setVisibility("blurbDisplayFullNormal");
+					setVisibility("blurbDisplayFull" + currentState.expertState);
 			
 					break
 				};
 			};
-			n = n + 1
-			thisSelect = document.getElementById("select" + n + "Normal");
+			rowN = rowN + 1
+			thisSelect = document.getElementById("select" + rowN + currentState.expertState);
 		};
 		
 	} else {
-		while (n < currentState.fullDisplayed) {
-			n = n + 1
-			setVisibility("select" + n + "Normal");
-			
-			if (lastSelect.value.includes("Blurb")) {
-				setVisibility("blurbDisplaySingle" + currentState.expertState);
+		while (document.getElementById("select" + rowN + currentState.expertState) != null) {
+			console.log("1");
+			console.log("Full: " + currentState.depthState["Full"]);
+			console.log("Single: " + currentState.depthState["Single"]);
+			console.log(currentState.blurbState);
+			console.log("current: " + currentState.depthState[currentState.blurbState]);
+			if (rowN <= currentState.depthState[currentState.blurbState]) {
+				showOnlyThis("select" + rowN, currentState.expertState);
+				console.log(".. unhiding select " + "select" + rowN + currentState.expertState);
+				
+				if (rowN == currentState.depthState[currentState.blurbState] && document.getElementById("select" + rowN + currentState.expertState).value.includes("Blurb")) {
+					console.log("2");
+					setVisibility("blurbDisplaySingle" + currentState.expertState);
+				};
 			};
+			
+			rowN = rowN + 1
+			
+			
 		};
 		
 	};
+	console.log("applyChkBlurb end");
 };
 
 function changeChkBlurb() {
@@ -283,6 +322,7 @@ function applyBlurbToDisplay(targetName, htmlIn) {
 };
 
 //wip: boyles dont function correctly right now
+//wip: implement better "how many levels deep are we" bookkeeping
 
 function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	console.log("buildBlurbDisplay running for rowN " + rowN + " " + originator);
@@ -998,11 +1038,16 @@ const styles = {
 
 // utility container of current page state
 const currentState = {
-	fullDisplayed: 0,
 	arrDisplayed: new Array(),
-	currentDepth: 0,
 	expertState: expertTypes[0],
 	blurbState: blurbTypes[0],
+	
+	depthState: {
+		"Single": 0,
+		"Full": 0,
+		freezeSingle: false,
+		freezeFull: false
+	},
 };
 
 //running everything
