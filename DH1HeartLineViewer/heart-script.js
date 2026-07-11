@@ -271,65 +271,15 @@ function updateArrDisplayedd(rowN) {
 
 
 //wip: use this more
-//wip: clean this up
-function applyBlurbs(htmlIn, mode) {
-	var arrRelevant = new Array();
+function applyBlurbToDisplay(targetName, htmlIn) {
 	
-	switch (mode) {
-		case "all":
-			arrRelevant.push(getOrBuildThing("blurbDisplaySingleNormal", "ul", true));
-			arrRelevant.push(getOrBuildThing("blurbDisplaySingleExpert", "ul", true));
-			arrRelevant.push(getOrBuildThing("blurbDisplayFullNormal", "ol", true));
-			arrRelevant.push(getOrBuildThing("blurbDisplayFullExpert", "ol", true));
-			break;
-			
-		case "full":
-			arrRelevant.push(getOrBuildThing("blurbDisplayFullNormal", "ol", true));
-			arrRelevant.push(getOrBuildThing("blurbDisplayFullExpert", "ol", true));
-			break;
-			
-		case "single":
-			arrRelevant.push(getOrBuildThing("blurbDisplaySingleNormal", "ul", true));
-			arrRelevant.push(getOrBuildThing("blurbDisplaySingleExpert", "ul", true));
-			break;
-			
-		case "normal":
-			arrRelevant.push(getOrBuildThing("blurbDisplaySingleNormal", "ul", true));
-			arrRelevant.push(getOrBuildThing("blurbDisplayFullNormal", "ol", true));
-			break;
-			
-		case "expert":
-			arrRelevant.push(getOrBuildThing("blurbDisplaySingleExpert", "ul", true));
-			arrRelevant.push(getOrBuildThing("blurbDisplayFullExpert", "ol", true));
-			break;
-			
-		case "singlenormal":
-			arrRelevant.push(getOrBuildThing("blurbDisplaySingleNormal", "ul", true));
-			break;
-			
-		case "singleexpert":
-			arrRelevant.push(getOrBuildThing("blurbDisplaySingleExpert", "ul", true));
-			break;
-			
-		case "fullnormal":
-			arrRelevant.push(getOrBuildThing("blurbDisplayFullNormal", "ol", true));
-			break;
-			
-		case "fullexpert":
-			arrRelevant.push(getOrBuildThing("blurbDisplayFullExpert", "ol", true));
-			break;
-			
-		case "all-contd":
-			arrRelevant.push(getOrBuildThing("blurbDisplaySingleNormal", "ul", true));
-			arrRelevant.push(getOrBuildThing("blurbDisplaySingleExpert", "ul", true));
-			arrRelevant.push(getOrBuildThing("blurbDisplayFullNormal", "ol", true));
-			arrRelevant.push(getOrBuildThing("blurbDisplayFullExpert", "ol", true));
-			break;
+	if (targetName.includes("Full")) {
+		var thisThing = getOrBuildThing(targetName, "ol", true);
+	} else {
+		var thisThing = getOrBuildThing(targetName, "ul", true);
 	};
 	
-	for (var n = 0; n < arrRelevant.length; n++) {
-		arrRelevant[n].innerHTML = htmlIn
-	};
+	thisThing.innerHTML = htmlIn;
 };
 
 //wip: boyles dont function correctly right now
@@ -347,7 +297,12 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	
 	//wip: branch
 	if (empty == true) {
-		applyBlurbs("[Branch terminates here]" , "all-contd");
+		blurbTypes.forEach((blurbType) => {
+			expertTypes.forEach((expertType) => {
+				applyBlurbToDisplay("blurbDisplay" + blurbType + expertType, "[Branch terminates here]");
+			});
+		});
+		
 	} else {
 		
 		const thisSelect = document.getElementById("select" + (rowN - 1) + "Expert");
@@ -365,7 +320,6 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 		var newTextNorm = ""
 		var newTextExp = ""
 		
-		blurbDisplayFullNormal.innerHTML = "";
 		for (var n = 0; n < thisBlurbText.length; n++) {
 			// adding the blurb text to the blurblist
 			if (thisBlurbText.length == 1) {
@@ -392,13 +346,22 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 			
 		};
 		
-		if (thisSelect.value.includes("SequentialBranch")) {
-			applyBlurbs(newTextNorm, "fullnormal");
-			applyBlurbs(newTextExp, "fullexpert");
-		} else {
-			applyBlurbs(newTextNorm, "singlenormal");
-			applyBlurbs(newTextExp, "singleexpert");
+		var arrNewText = {
+			"Normal": newTextNorm,
+			"Expert": newTextExp
 		};
+		
+		if (thisSelect.value.includes("SequentialBranch")) {
+			var applyTo = "Full"
+		} else {
+			var applyTo = "Single"
+		};
+		
+		console.log("/// building display for blurbDisplay" + applyTo);
+		
+		expertTypes.forEach((expertType) => {
+			applyBlurbToDisplay("blurbDisplay" + applyTo + expertType, arrNewText[expertType]);
+		});
 		
 	};
 	
