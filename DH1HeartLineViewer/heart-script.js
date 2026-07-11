@@ -46,8 +46,10 @@ function changeHandler(type, rowN , data , hashData) {
 	document.getElementById("select" + rowN + expertTypeOpposite[type]).value = thisValue;
 	
 	// hiding any dropdowns past this one
-	var n = rowN + 1
-	while (document.getElementById("select" + n + "Normal") != null) {
+	var n = rowN + 1;
+	const currentMaxDepth = currentState.depthState["Maximum"];
+	while (n <= currentMaxDepth) {
+		console.log("-------------- " + n);
 		setVisibilityBothDropdownsInRow(n, "none");
 		n = n + 1
 	};
@@ -128,7 +130,6 @@ function showOnlyThis(strIDStart, strIDType) {
 
 // runs to apply the expertState setting, ie which dropdowns and blurb display variants should be showing
 function applyChkExpert() {
-	console.log("applyChkExpert");
 	const currentExpert = currentState.expertState;
 	const otherExpert = expertTypeOpposite[currentExpert];
 	const currentBlurb = currentState.blurbState;
@@ -138,8 +139,11 @@ function applyChkExpert() {
 	
 	console.log(">> applyChkExpert is now attempting to show: " + "select" + rowN + currentExpert);
 	
+	const currentMaxDepth = currentState.depthState["Maximum"];
+	const currentDisplayDepth = currentState.depthState[currentBlurb];
+	
 	// showing the relevant dropdowns and hiding the currently active ones
-	while (document.getElementById("select" + rowN + currentExpert) != null && rowN <= currentState.depthState[currentBlurb]) {
+	while (rowN <= currentMaxDepth && rowN <= currentDisplayDepth) {
 		if (document.getElementById("select" + rowN + currentExpert).style.display == "none") {
 			showOnlyThis("select" + rowN, currentExpert);
 		} else {
@@ -172,19 +176,19 @@ function applyChkBlurb() {
 	var rowN = 0
 	var thisSelect = document.getElementById("select" + rowN + currentState.expertState);
 	
+	const currentMaxDepth = currentState.depthState["Maximum"];
+	
 	setVisibilityAllBlurbs("none");
 	
 	if (currentState.blurbState == "Full") {
 		//going down the list of dropdowns to find the first selected SequentialBranch
-		while (thisSelect != null) {
+		while (rowN <= currentMaxDepth) {
 			if (thisSelect.style.display != 'none') {
 				if (thisSelect.value.includes("SequentialBranch")) {
 					//hiding the remaining dropdowns once that SequentialBranch-valued dropdown has been found
 					rowN = rowN + 1
 					var hideSelect = document.getElementById("select" + rowN + currentState.expertState)
 					while (document.getElementById("select" + rowN + currentState.expertState) != null) {
-						console.log("found hideSelect: ");
-						console.log(hideSelect);
 						if (hideSelect.style.display != 'none') {
 							setVisibility("select" + rowN + currentState.expertState,"none");
 						} else {
@@ -209,24 +213,16 @@ function applyChkBlurb() {
 		};
 		
 	} else {
-		while (document.getElementById("select" + rowN + currentState.expertState) != null) {
-			console.log("1");
-			console.log("Full: " + currentState.depthState["Full"]);
-			console.log("Single: " + currentState.depthState["Single"]);
-			console.log(currentState.blurbState);
-			console.log("current: " + currentState.depthState[currentState.blurbState]);
+		while (rowN <= currentMaxDepth) {
 			if (rowN <= currentState.depthState[currentState.blurbState]) {
 				showOnlyThis("select" + rowN, currentState.expertState);
-				console.log(".. unhiding select " + "select" + rowN + currentState.expertState);
 				
 				if (rowN == currentState.depthState[currentState.blurbState] && (document.getElementById("select" + rowN + currentState.expertState).value.includes("Blurb") || document.getElementById("select" + rowN + currentState.expertState).value.includes("[Null]"))) {
-					console.log("2");
 					setVisibility("blurbDisplaySingle" + currentState.expertState);
 				};
 			};
 			
 			rowN = rowN + 1
-			
 			
 		};
 		
@@ -245,7 +241,9 @@ function changeChkBlurb() {
 // setting visibility of all blurb displays to something
 // find it easier to read when this is just its own function even though it doesn't need to be
 function setVisibilityAllBlurbs(thisVisibility) {
-	blurbDisplays.forEach((element) => setVisibility(element, thisVisibility));
+	if (document.getElementById("blurbDisplayFullNormal") != null) {
+		blurbDisplays.forEach((element) => setVisibility(element, thisVisibility));
+	};
 };
 
 // setting visibility of all lines of a certain row to something
@@ -340,7 +338,6 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	
 	setVisibilityAllBlurbs("none");
 	
-	//wip: branch
 	if (empty == true) {
 		blurbTypes.forEach((blurbType) => {
 			expertTypes.forEach((expertType) => {
@@ -361,6 +358,11 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 		} else {
 			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "branch");
 		};
+		
+		console.log("thisBlurbText:");
+		console.log(thisBlurbText);
+		console.log("thisSelect.value:");
+		console.log(thisSelect.value);
 		
 		var newTextNorm = ""
 		var newTextExp = ""
@@ -470,21 +472,19 @@ function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
 // clearing all further dropdowns as well as removing the blurblist from view when an earlier dropdown is changed
 function clearFurtherDropdowns(rowN) {
 	var n = 0
-	while (document.getElementById("select" + (rowN + n) + "Expert") != null) {
-		for (var i = 0; i <= 1; i++) {
+	const currentMaxDepth = currentState.depthState["Maximum"];
+	
+	while ((rowN + n) <= currentMaxDepth) {
+		expertTypes.forEach((type) => {
 			// clearing dropdown of its children
-			var type = expertTypes[i];
-			
 			var thisSelect = document.getElementById("select" + (rowN + n) + type);
-			if (thisSelect != null) {
-				while (thisSelect.firstChild) {
-					thisSelect.firstChild.remove()
-				};
-				
-				setVisibility("select" + (rowN + n) + type,"none");
+			while (thisSelect.firstChild) {
+				thisSelect.firstChild.remove()
 			};
+				
+			setVisibility("select" + (rowN + n) + type,"none");
 			
-		};
+		});
 		
 		n = n + 1
 	};
@@ -653,7 +653,7 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 			
 		default:
 			outputName = inputName;
-			console.log("createFriendlyName:");
+			console.log("missing createFriendlyName:");
 			console.log(inputName);
 	};
 	
@@ -774,9 +774,13 @@ function buildThisDropdown(type, rowN , data , hashData) {
 	console.log("buildThisDropdown for row " + rowN);
 	const thisDropdownID = "select" + rowN + type;
 	
+	const currentMaxDepth = currentState.depthState["Maximum"];
+	
 	if (document.getElementById(thisDropdownID) != null) {
 		var thisSelect = document.getElementById(thisDropdownID);
-		clearFurtherDropdowns(rowN);
+		if (rowN > 0) {
+			clearFurtherDropdowns(rowN);
+		};
 		setVisibility(thisDropdownID);
 	} else {
 		var thisSelect = document.createElement("select");
@@ -794,6 +798,9 @@ function buildThisDropdown(type, rowN , data , hashData) {
 			changeHandler(type, rowN , data , hashData) ;
 			});
 	
+		if (rowN > currentState.depthState["Maximum"]) {
+			currentState.depthState["Maximum"] = rowN;
+		};
 	};
 	
 	return(thisSelect)
@@ -1051,7 +1058,8 @@ const currentState = {
 		"Single": 0,
 		"Full": 0,
 		freezeSingle: false,
-		freezeFull: false
+		freezeFull: false,
+		"Maximum": 0
 	},
 };
 
