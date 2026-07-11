@@ -42,14 +42,13 @@ function changeHandler(type, rowN , data , hashData) {
 	const thisSelect = elms.get("select" + rowN + type);
 	const thisValue = thisSelect.value;
 	
-	// making sure the other, hidden dropdown updates too
+	// updating the other, hidden dropdown too
 	elms.get("select" + rowN + expertTypeOpposite[type]).value = thisValue;
 	
 	// hiding any dropdowns past this one
 	var n = rowN + 1;
 	const currentMaxDepth = currentState.depthState["Maximum"];
 	while (n <= currentMaxDepth) {
-		console.log("-------------- " + n);
 		setVisibilityBothDropdownsInRow(n, "none");
 		n = n + 1;
 	};
@@ -80,6 +79,7 @@ function changeHandler(type, rowN , data , hashData) {
 		if (thisValue != "") {
 			updateArrDisplayedd(rowN);
 			buildDropdown(rowN + 1 , data , hashData);
+			applyChkExpert();
 			
 			if (rowN < currentState.depthState["Single"] || rowN < currentState.depthState["Full"]) {
 				if (rowN < currentState.depthState["Single"]) {
@@ -171,61 +171,71 @@ function changeChkExpert() {
 	applyChkExpert();
 };
 
+function applyBlurbListView(rowN) {
+	var thisSelect = elms.get("select" + rowN + currentState.expertState);
+	const currentMaxDepth = currentState.depthState["Maximum"];
+	
+	//going down the list of dropdowns to find the first selected SequentialBranch
+	while (rowN <= currentMaxDepth) {
+		if (thisSelect.style.display != 'none') {
+			if (thisSelect.value.includes("SequentialBranch")) {
+				//hiding the remaining dropdowns once that SequentialBranch-valued dropdown has been found
+				rowN = rowN + 1;
+				var hideSelect = elms.get("select" + rowN + currentState.expertState)
+				while (elms.get("select" + rowN + currentState.expertState) != null) {
+					if (hideSelect.style.display != 'none') {
+						setVisibility("select" + rowN + currentState.expertState,"none");
+					} else {
+						break
+					};
+					
+					rowN = rowN + 1;
+					hideSelect = elms.get("select" + rowN + currentState.expertState);
+				};
+				
+				setVisibility("blurbDisplayFull" + currentState.expertState);
+		
+				break
+			} else {
+				if (elms.get("select" + currentState.depthState["Single"] + "Expert").value.includes("[Null]")) {
+					setVisibility("blurbDisplaySingle" + currentState.expertState);
+				};
+		}
+		};
+		rowN = rowN + 1;
+		thisSelect = elms.get("select" + rowN + currentState.expertState);
+	};
+};
+
+function applySingleBlurbView(rowN) {
+	const currentMaxDepth = currentState.depthState["Maximum"];
+	
+	while (rowN <= currentMaxDepth) {
+		if (rowN <= currentState.depthState[currentState.blurbState]) {
+			showOnlyThis("select" + rowN, currentState.expertState);
+			
+			if (rowN == currentState.depthState[currentState.blurbState] && (elms.get("select" + rowN + currentState.expertState).value.includes("Blurb") || elms.get("select" + rowN + currentState.expertState).value.includes("[Null]"))) {
+				setVisibility("blurbDisplaySingle" + currentState.expertState);
+			};
+		};
+		
+		rowN = rowN + 1;
+		
+	};
+};
+
 function applyChkBlurb() {
 	console.log("applyChkBlurb for blurbState " + currentState.blurbState);
 	var rowN = 0;
 	var thisSelect = elms.get("select" + rowN + currentState.expertState);
 	
-	const currentMaxDepth = currentState.depthState["Maximum"];
 	
 	setVisibilityAllBlurbs("none");
 	
 	if (currentState.blurbState == "Full") {
-		//going down the list of dropdowns to find the first selected SequentialBranch
-		while (rowN <= currentMaxDepth) {
-			if (thisSelect.style.display != 'none') {
-				if (thisSelect.value.includes("SequentialBranch")) {
-					//hiding the remaining dropdowns once that SequentialBranch-valued dropdown has been found
-					rowN = rowN + 1;
-					var hideSelect = elms.get("select" + rowN + currentState.expertState)
-					while (elms.get("select" + rowN + currentState.expertState) != null) {
-						if (hideSelect.style.display != 'none') {
-							setVisibility("select" + rowN + currentState.expertState,"none");
-						} else {
-							break
-						};
-						
-						rowN = rowN + 1;
-						hideSelect = elms.get("select" + rowN + currentState.expertState);
-					};
-					
-					setVisibility("blurbDisplayFull" + currentState.expertState);
-			
-					break
-				} else {
-					if (elms.get("select" + currentState.depthState["Single"] + "Expert").value.includes("[Null]")) {
-						setVisibility("blurbDisplaySingle" + currentState.expertState);
-					};
-			}
-			};
-			rowN = rowN + 1;
-			thisSelect = elms.get("select" + rowN + currentState.expertState);
-		};
-		
+		applyBlurbListView(rowN);
 	} else {
-		while (rowN <= currentMaxDepth) {
-			if (rowN <= currentState.depthState[currentState.blurbState]) {
-				showOnlyThis("select" + rowN, currentState.expertState);
-				
-				if (rowN == currentState.depthState[currentState.blurbState] && (elms.get("select" + rowN + currentState.expertState).value.includes("Blurb") || elms.get("select" + rowN + currentState.expertState).value.includes("[Null]"))) {
-					setVisibility("blurbDisplaySingle" + currentState.expertState);
-				};
-			};
-			
-			rowN = rowN + 1;
-			
-		};
-		
+		applySingleBlurbView(rowN);
 	};
 	console.log("applyChkBlurb end");
 };
@@ -315,7 +325,6 @@ function updateArrDisplayedd(rowN) {
 };
 
 
-//wip: use this more
 function applyBlurbToDisplay(targetName, htmlIn) {
 	
 	if (targetName.includes("Full")) {
@@ -327,81 +336,75 @@ function applyBlurbToDisplay(targetName, htmlIn) {
 	thisThing.innerHTML = htmlIn;
 };
 
-//wip: boyles dont function correctly right now
-//wip: implement better "how many levels deep are we" bookkeeping
+// building the blurblist elements
+function ensureBlurbDisplaysExist() {
+	getOrBuildThing("blurbDisplaySingleNormal", "ul", true);
+	getOrBuildThing("blurbDisplaySingleExpert", "ul", true);
+	getOrBuildThing("blurbDisplayFullNormal", "ol", true);
+	getOrBuildThing("blurbDisplayFullExpert", "ol", true);
+};
 
-function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
-	console.log("buildBlurbDisplay running for rowN " + rowN + " " + originator);
-	// making sure there aren't any more dropdowns below the blurblist
-	clearFurtherDropdowns(rowN);
-	
-	// getting or building the blurblist elements
-	const blurbDisplaySingleNormal = getOrBuildThing("blurbDisplaySingleNormal", "ul", true);
-	const blurbDisplaySingleExpert = getOrBuildThing("blurbDisplaySingleExpert", "ul", true);
-	const blurbDisplayFullNormal = getOrBuildThing("blurbDisplayFullNormal", "ol", true);
-	const blurbDisplayFullExpert = getOrBuildThing("blurbDisplayFullExpert", "ol", true);
-	
-	setVisibilityAllBlurbs("none");
-	
-	if (empty == true) {
-		blurbTypes.forEach((blurbType) => {
-			expertTypes.forEach((expertType) => {
-				applyBlurbToDisplay("blurbDisplay" + blurbType + expertType, "[Branch terminates here]");
-			});
+// filling the "[Null]" branch ending blurb displays for all four blurb display types
+function fillTerminatingBlurbDisplay() {
+	blurbTypes.forEach((blurbType) => {
+		expertTypes.forEach((expertType) => {
+			applyBlurbToDisplay("blurbDisplay" + blurbType + expertType, "[Branch terminates here]");
 		});
-		
+	});
+};
+
+function getEntireBlurbTextAndHash(thisSelect , hashData , data) {
+	//getting the blurb text
+	const thisBlurb = findInData(data.dialogItems,thisSelect.value);
+	
+	if (thisSelect.value.includes("SequentialBranch") == false) {
+		var [thisBlurbText , thisBlurbHash] = getThisBlurbTextAndHash(thisBlurb , hashData , data , "single");
 	} else {
-		
-		const thisSelect = elms.get("select" + (rowN - 1) + "Expert");
-		console.log("thisSelect.value: ");
-		console.log(thisSelect.value);
-		
-		//getting the blurb text
-		const thisBlurb = findInData(data.dialogItems,thisSelect.value);
-		if (thisSelect.value.includes("SequentialBranch") == false) {
-			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "single");
+		var [thisBlurbText , thisBlurbHash] = getThisBlurbTextAndHash(thisBlurb , hashData , data , "branch");
+	};
+	
+	return([thisBlurbText , thisBlurbHash]);
+};
+	
+function buildBlurbHTML(thisSelect , thisBlurbText , thisBlurbHash) {
+	var newTextNorm = "";
+	var newTextExp = "";
+	
+	for (var n = 0; n < thisBlurbText.length; n++) {
+		// adding the blurb text to the blurblist
+		if (thisBlurbText.length == 1) {
+			newTextNorm = "\"" + thisBlurbText[n] + "\"";
+			newTextExp = "\"" + thisBlurbText[n] + "\"";
+			newTextExp += "<br>" + thisBlurbHash[n];
 		} else {
-			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "branch");
-		};
-		
-		console.log("thisBlurbText:");
-		console.log(thisBlurbText);
-		console.log("thisSelect.value:");
-		console.log(thisSelect.value);
-		
-		var newTextNorm = "";
-		var newTextExp = "";
-		
-		for (var n = 0; n < thisBlurbText.length; n++) {
-			// adding the blurb text to the blurblist
-			if (thisBlurbText.length == 1) {
-				newTextNorm = "\"" + thisBlurbText[n] + "\"";
-				newTextExp = "\"" + thisBlurbText[n] + "\"";
-				newTextExp += "<br>" + thisBlurbHash[n];
-			} else {
-				
-				if (thisBlurbHash[n] != "") {
-					newTextNorm += "<li>" +"\"" + thisBlurbText[n] + "\"";
-					newTextExp += "<li>" +"\"" + thisBlurbText[n] + "\"";
-					newTextExp += "\n" + thisBlurbHash[n] + "</li>";
-					
-				} else {
-					newTextNorm += "</ul>";
-					newTextNorm += "<h2>" + "Switching to additional branch" + "</h2>";
-					newTextNorm += "<ol>";
-					
-					newTextExp += "</ul>";
-					newTextExp += "<h2>" +"\"" + thisBlurbText[n] + "\"</h2>";
-					newTextExp += "<ol>";
-				};
-			};
 			
+			if (thisBlurbHash[n] != "") {
+				newTextNorm += "<li>" +"\"" + thisBlurbText[n] + "\"";
+				newTextExp += "<li>" +"\"" + thisBlurbText[n] + "\"";
+				newTextExp += "\n" + thisBlurbHash[n] + "</li>";
+				
+			} else {
+				newTextNorm += "</ul>";
+				newTextNorm += "<h2>" + "Switching to additional branch" + "</h2>";
+				newTextNorm += "<ol>";
+				
+				newTextExp += "</ul>";
+				newTextExp += "<h2>" +"\"" + thisBlurbText[n] + "\"</h2>";
+				newTextExp += "<ol>";
+			};
 		};
 		
-		var arrNewText = {
-			"Normal": newTextNorm,
-			"Expert": newTextExp
-		};
+	};
+		
+	var arrNewText = {
+		"Normal": newTextNorm,
+		"Expert": newTextExp
+	};
+	
+	return(arrNewText)
+};
+
+function applyBlurbHTML(thisSelect, arrNewText) {
 		
 		if (thisSelect.value.includes("SequentialBranch")) {
 			var applyTo = "Full"
@@ -414,15 +417,40 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 		expertTypes.forEach((expertType) => {
 			applyBlurbToDisplay("blurbDisplay" + applyTo + expertType, arrNewText[expertType]);
 		});
-		
-	};
+};
+
+function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
+	console.log("buildBlurbDisplay running for rowN " + rowN + " " + originator);
+	// making sure there aren't any more dropdowns below the blurblist
+	clearFurtherDropdowns(rowN);
 	
-	// blurb visibility: hiding everything by default
-	showOnlyThis("blurbDisplay" + currentState.blurbState, currentState.expertState);
+	// building the blurblist elements if they don't already exist
+	ensureBlurbDisplaysExist();
+	
+	// if this runs with the empty tag, this is a "[Null]" terminating branch and we need to fill the blurb display accordingly
+	if (empty) {
+		fillTerminatingBlurbDisplay();
+	} else {
+		
+		const thisSelect = elms.get("select" + (rowN - 1) + "Expert");
+		
+		[thisBlurbText , thisBlurbHash] = getEntireBlurbTextAndHash(thisSelect , hashData , data);
+		
+		arrNewText = buildBlurbHTML(thisSelect, thisBlurbText , thisBlurbHash);
+		
+		applyBlurbHTML(thisSelect, arrNewText);
+	
+		// showing the relevant blurb display
+		if (thisSelect.value != "[Null]") {
+			showOnlyThis("blurbDisplay" + currentState.blurbState, currentState.expertState);
+		} else {
+			setVisibilityBothDropdownsInRow(rowN, "none")
+		};
+	};
 };
 
 
-function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
+function getThisBlurbTextAndHash(thisBlurb , hashData , data , mode) {
 	const thisBPaths = thisBlurb.branchPaths;
 	
 	var arrTexts = new Array();
@@ -447,7 +475,7 @@ function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
 				arrHashes.push(thisHash);
 			} else {
 					var additionalBranch = findInData(data.dialogItems, thisName);
-					var [additionalTexts , additionalHashes] = getBlurbTextAndHash(additionalBranch , hashData , data , "branch");
+					var [additionalTexts , additionalHashes] = getThisBlurbTextAndHash(additionalBranch , hashData , data , "branch");
 					arrTexts.push(thisName);
 					arrHashes.push("");
 					
@@ -471,7 +499,6 @@ function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
 	
 	return([arrTexts, arrHashes])
 };
-
 
 
 // clearing all further dropdowns as well as removing the blurblist from view when an earlier dropdown is changed
@@ -567,6 +594,127 @@ function numberFromItem(inputName) {
 	return(inputName);
 };
 
+function createFriendlyTerm_DisSpeaker(inputName, rowN) {
+	// "DisSpeakerStoryGroup = Twk_ID_Calista"
+	if (inputName.slice(0,30) == "DisSpeakerStoryGroup = Twk_ID_") {
+		if (rowN != 3) {
+			outputName = "Targeted NPC is " + inputName.slice(30);
+			outputName = outputName.replace("Lord","Lord ");
+			outputName = outputName.replace("Boyle"," Boyle");
+			outputName = outputName.replace("SlackJaw","Slackjaw");
+			outputName = outputName.replace("Granny","Granny ");
+			outputName = outputName.replace("Madam","Madame Prudence");
+			
+		} else {
+			outputName = "Targeted NPC is a";
+			
+			//"a Overseer" -> "an Overseer"
+			if (inputName.slice(30,31) == "A") {
+				// female Aristocrats (AristoFemale) don't need the n because they're "a[!] female Aristocrat" in display
+				if (inputName.slice(30,32) != "Ar") {
+					outputName = outputName + "n"
+				};
+			} else {
+				if (inputName.slice(30,31) == "O") {
+					outputName = outputName + "n"
+				} else {
+					if (inputName.slice(30,31) == "E") {
+						outputName = outputName + "n"
+					};
+				};
+			};
+			
+			outputName = outputName + " ";
+			
+			// adding the determined name to the base phrase
+			// "DisSpeakerStoryGroup = Twk_ID_AristoFemale" -> "AristoFemale"
+			outputName = outputName + inputName.slice(30);
+			
+			// "CityGuard" -> "City Guard"
+			outputName = outputName.replace("Guard","	Guard");
+			
+			// handling "Male" and "Female" by moving it from the end of the string to the start, ie ("Twk_ID_AristoFemale" ->) "AristoFemale" -> "female Aristo"
+			if (inputName.slice(-3) == "ale") {
+				var NPCType = inputName.slice(30,36); //ie Aristo
+				
+				//writing out full names from shortened ones
+				switch (NPCType) {
+					case "Aristo":
+						NPCType = "Aristocrat";
+						break
+					case "Middle":
+						NPCType = "Middle class citizen";
+						break
+				};
+				
+				var NPCGender = inputName.slice(36); //ie Female
+				NPCGender = NPCGender.replace("F","f").replace("M","m") //ie Female -> female
+				
+				outputName = outputName = outputName.slice(0,18) + NPCGender + " " + NPCType; //ie "female Aristocrat"
+			};
+			
+			// removing "s" from group names (ie "Overseers" -> "Overseer"
+			if (outputName.slice(-1) == "s") {
+				outputName = outputName.slice(0,-1);
+			};
+			
+			// adding clarifier about the two groups for Overseers
+			if (outputName.slice(-4) == "seer") {
+				outputName = outputName + " (1st group)"
+			};
+		};
+		
+	} else {
+		
+		if (inputName == "DisSpeakerStoryGroup = SG_Ovrsr_Overseers_Twk") {
+			// adding clarifier about the two groups for Overseers
+			outputName = "Targeted NPC is an Overseer (2nd group)";
+		} else {
+			outputName = "Targeted NPC is none of the above";
+		};
+	};
+	
+	return(outputName);
+};
+
+//wip: Null branches are broken again
+
+function createFriendlyTerm_StoryFlag(inputName) {
+	var prevVal = currentState.arrDisplayed[(currentState.arrDisplayed.length - 1)];
+	
+	//"Check: Is the player in the Golden Cat?" -> "Is the player in the Golden Cat"
+	outputName = prevVal.slice(prevVal.search("Check: ")+7)
+	outputName = outputName.replace("?","")
+	
+	// "Does the player know Lydia's identity?" -> "Player knows Lydia's identity"
+	if (prevVal.includes("know")) {
+		// "Does the player know Lydia's identity" -> "Player know Lydia's identity"
+		outputName = outputName.replace("Does the p", "P");
+		
+		// "Player know Lydia's identity" -> "Player knows Lydia's identity" / "Player doesn't know Lydia's identity"
+		if (inputName.slice(-1) == "1") {
+			outputName = outputName.replace("know","doesn\'t know");
+		} else {
+			outputName = outputName.replace("know","knows");
+		};
+		
+	// "Is the player in the High Overseer's Office" -> "Player is not in the High Overseer's Office"
+	} else {
+		// "Is the player in the High Overseer's Office" -> "Player in the High Overseer's Office"
+		outputName = outputName.replace("Is the p", "P");
+		
+		// "Player in the High Overseer's Office" -> "Player is in the High Overseer's Office" / "Player is not in the High Overseer's Office"
+		if (inputName.slice(-1) == "1") {
+			outputName = outputName.replace(" in "," is not in ");
+			outputName = outputName.replace(" on "," is not on ");
+		} else {
+			outputName = outputName.replace(" in "," is in ");
+			outputName = outputName.replace(" on "," is on ");
+		};
+	};
+	return(outputName);
+};
+
 //wip: implement all classes 
 // creating a less filename-y more readable name for a class
 function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
@@ -616,40 +764,7 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 			
 		//StoryFlag state 1 / StoryFlag state 2
 		case "StoryFlag ":
-			//wip: currentState.arrDisplayed for Boyle branches doesn't work correctly leading to error
-			var prevVal = currentState.arrDisplayed[(currentState.arrDisplayed.length - 1)];
-			
-			//"Check: Is the player in the Golden Cat?" -> "Is the player in the Golden Cat"
-			outputName = prevVal.slice(prevVal.search("Check: ")+7)
-			outputName = outputName.replace("?","")
-			
-			// "Does the player know Lydia's identity?" -> "Player knows Lydia's identity"
-			if (prevVal.includes("know")) {
-				// "Does the player know Lydia's identity" -> "Player know Lydia's identity"
-				outputName = outputName.replace("Does the p", "P");
-				
-				// "Player know Lydia's identity" -> "Player knows Lydia's identity" / "Player doesn't know Lydia's identity"
-				if (inputName.slice(-1) == "1") {
-					outputName = outputName.replace("know","doesn\'t know");
-				} else {
-					outputName = outputName.replace("know","knows");
-				};
-				
-			// "Is the player in the High Overseer's Office" -> "Player is not in the High Overseer's Office"
-			} else {
-				// "Is the player in the High Overseer's Office" -> "Player in the High Overseer's Office"
-				outputName = outputName.replace("Is the p", "P");
-				
-				// "Player in the High Overseer's Office" -> "Player is in the High Overseer's Office" / "Player is not in the High Overseer's Office"
-				if (inputName.slice(-1) == "1") {
-					outputName = outputName.replace(" in "," is not in ");
-					outputName = outputName.replace(" on "," is not on ");
-				} else {
-					outputName = outputName.replace(" in "," is in ");
-					outputName = outputName.replace(" on "," is on ");
-				};
-			};
-			
+			outputName = createFriendlyTerm_StoryFlag(inputName);
 			break;
 			
 		//terminated branch
@@ -687,84 +802,7 @@ function createFriendlyConditionName(inputName, rowN) {
 			
 		//DisSpeakerStoryGroup //wip
 		case "DisSpeaker":
-			// "DisSpeakerStoryGroup = Twk_ID_Calista"
-			if (inputName.slice(0,30) == "DisSpeakerStoryGroup = Twk_ID_") {
-				if (rowN != 3) {
-					outputName = "Targeted NPC is " + inputName.slice(30);
-					outputName = outputName.replace("Lord","Lord ");
-					outputName = outputName.replace("Boyle"," Boyle");
-					outputName = outputName.replace("SlackJaw","Slackjaw");
-					outputName = outputName.replace("Granny","Granny ");
-					outputName = outputName.replace("Madam","Madame Prudence");
-					
-				} else {
-					outputName = "Targeted NPC is a";
-					
-					//"a Overseer" -> "an Overseer"
-					if (inputName.slice(30,31) == "A") {
-						// female Aristocrats (AristoFemale) don't need the n because they're "a[!] female Aristocrat" in display
-						if (inputName.slice(30,32) != "Ar") {
-							outputName = outputName + "n"
-						};
-					} else {
-						if (inputName.slice(30,31) == "O") {
-							outputName = outputName + "n"
-						} else {
-							if (inputName.slice(30,31) == "E") {
-								outputName = outputName + "n"
-							};
-						};
-					};
-					
-					outputName = outputName + " ";
-					
-					// adding the determined name to the base phrase
-					// "DisSpeakerStoryGroup = Twk_ID_AristoFemale" -> "AristoFemale"
-					outputName = outputName + inputName.slice(30);
-					
-					// "CityGuard" -> "City Guard"
-					outputName = outputName.replace("Guard","	Guard");
-					
-					// handling "Male" and "Female" by moving it from the end of the string to the start, ie ("Twk_ID_AristoFemale" ->) "AristoFemale" -> "female Aristo"
-					if (inputName.slice(-3) == "ale") {
-						const NPCType = inputName.slice(30,36); //ie Aristo
-						
-						//writing out full names from shortened ones
-						switch (NPCType) {
-							case "Aristo":
-								NPCType = "Aristocrat";
-								break
-							case "Middle":
-								NPCType = "Middle class citizen";
-								break
-						};
-						
-						const NPCGender = inputName.slice(36); //ie Female
-						NPCGender = NPCGender.replace("F","f").replace("M","m") //ie Female -> female
-						
-						outputName = outputName = outputName.slice(0,18) + NPCGender + " " + NPCType; //ie "female Aristocrat"
-					};
-					
-					// removing "s" from group names (ie "Overseers" -> "Overseer"
-					if (outputName.slice(-1) == "s") {
-						outputName = outputName.slice(0,-1);
-					};
-					
-					// adding clarifier about the two groups for Overseers
-					if (outputName.slice(-4) == "seer") {
-						outputName = outputName + " (1st group)"
-					};
-				};
-				
-			} else {
-				
-				if (inputName == "DisSpeakerStoryGroup = SG_Ovrsr_Overseers_Twk") {
-					// adding clarifier about the two groups for Overseers
-					outputName = "Targeted NPC is an Overseer (2nd group)";
-				} else {
-					outputName = "Targeted NPC is none of the above";
-				};
-			};
+			outputName = createFriendlyTerm_DisSpeaker(inputName, rowN);
 			break;
 			
 		default:
@@ -814,12 +852,7 @@ function buildThisDropdown(type, rowN , data , hashData) {
 	return(thisSelect)
 };
 
-//wip: fix [Null] branches
-function buildDropdown(rowN , data , hashData) {
-	// getting or building this drop-down menu
-	var thisSelectNormal = buildThisDropdown("Normal", rowN , data , hashData)
-	var thisSelectExpert = buildThisDropdown("Expert", rowN , data , hashData)
-	
+function buildDefaultOptions(rowN, thisSelectNormal , thisSelectExpert) {
 	// adding the default starting "option", which is blank and can't be selected again later
 	expertTypes.forEach((element) => {
 		var option = document.createElement("option");
@@ -838,83 +871,122 @@ function buildDropdown(rowN , data , hashData) {
 			thisSelectExpert.appendChild(option);
 		};
 	});
-		
-	// creating all dropdown options, which is the branchPathName and branchPathValue items of the item's branchPaths item
+};
+
+// splitting this up into two functions for readability even though it's slower since we do the if rowN == 0 check each time
+function getPrevValue(rowN) {
 	// first row is different because it's actually still the starting item
 	if (rowN == 0) {
-		var thisItem = data.dialogItems[0];
 		prevSelectVal = null;
 	} else {
 		var prevSelect = elms.get("select" + (rowN - 1) + "Expert");
 		prevSelectVal = prevSelect.value;
-		// looking for the previous dropdown's value in the data array
+	};
+	
+	return(prevSelectVal);
+};
+
+// splitting this up into two functions for readability even though it's slower since we do the if rowN == 0 check each time
+function getThisItem(prevSelectVal , data) {
+	// first row is different because it's actually still the starting item
+	if (prevSelectVal == null) {
+		var thisItem = data.dialogItems[0];
+	} else {
 		var thisItem = findInData(data.dialogItems, prevSelectVal);
 	};
 	
+	return(thisItem);
+};
+
+//wip: make data global
+
+function createThisOptionText(thisItem , n, rowN , data) {
+	var thisBranch = thisItem.branchPaths[n];
+	var thisBranchPathName = thisBranch.branchPathName;
+	var thisBranchPathValue = thisBranch.branchPathValue;
+	var expertText = thisBranchPathName + " → " + thisBranch.branchPathValue;
+	
+	// normal text gets rather complicated behind the scenes to display something that's both short and hopefully understandable to the average layperson
+	var normalText = ""
+	if (thisBranch.friendlyName != null) {
+		normalText = thisBranch.friendlyName;
+	} else {
+		normalText = createFriendlyName(thisBranchPathName, rowN , data , thisBranchPathValue);
+	};
+
+	// special: checkstoryflags
+	if (thisBranchPathValue.includes("DisConv_Check") == false) {
+		// don't need destination description in row 0 as it's already described by the origin
+		if (rowN > 0) {
+			if (thisBranch.branchPathCondition == null) {
+				normalText = normalText + " → ";
+				normalText = normalText + createFriendlyName(thisBranchPathValue, rowN , data);
+			} else {
+				normalText = createFriendlyName(thisBranchPathValue, rowN , data , thisBranchPathValue);
+			};
+		};
+	} else {
+		
+		var thisStoryFlag = thisBranch.checkedStoryFlag;
+		expertText = expertText + " (checked StoryFlag: " + thisStoryFlag + ")";
+		
+		var thisStoryFlag = thisBranch.checkedStoryFlagFriendly;
+		if (rowN == 1) {
+			normalText = "Check: " + thisStoryFlag;
+		} else {
+			normalText = normalText + " → ";
+			normalText = normalText + "Check: " + thisStoryFlag;
+		};
+		
+	};
+
+	// special: conditions
+	if (thisBranch.branchPathCondition != null) {
+		var conditionVal = thisBranch.branchPathCondition;
+		if (thisItem.itemName.includes("DisConv_Random")) {
+			expertText = expertText + " (" + conditionVal + "% chance)";
+			normalText = conditionVal + "% chance → " + normalText;
+		} else {
+			//wip
+			expertText = expertText + " (if " + conditionVal + ")";
+			
+			if (normalText.slice(0,3) == " → ") {
+				normalText = createFriendlyConditionName(conditionVal, rowN) + normalText;
+			} else {
+				normalText = createFriendlyConditionName(conditionVal, rowN) + " → " + normalText;
+			};
+		};
+	};
+	
+	return([normalText, expertText , thisBranchPathValue]);
+};
+
+function buildDropdown(rowN , data , hashData) {
+	// getting or building this drop-down menu
+	var thisSelectNormal = buildThisDropdown("Normal", rowN , data , hashData)
+	var thisSelectExpert = buildThisDropdown("Expert", rowN , data , hashData)
+	
+	// adding the default starting "option", which is blank and can't be selected again later
+	buildDefaultOptions(rowN , thisSelectNormal , thisSelectExpert);
+		
+	// creating all dropdown options, which is the branchPathName and branchPathValue items of the item's branchPaths item
+	
+	// fetching the previous dropdown's value and the current item (which is the previous dropdown's value looked up in the data map)
+	var prevSelectVal = getPrevValue(rowN);
+	var thisItem = getThisItem(prevSelectVal , data);
+	
 	if (prevSelectVal == "[Null]") {
 		buildBlurbDisplay(rowN + 1 , data , hashData, true , "blurb");
+		showOnlyThis("select" + rowN, currentState.expertState);
 	} else {
+		// looking for the previous dropdown's value in the data array
 	
 		// actually creating the dropdown options
 		for (var n = 0; n < thisItem.branchPaths.length; n++) {
-			var thisBranch = thisItem.branchPaths[n];
-			var thisBranchPathName = thisBranch.branchPathName;
-			var thisBranchPathValue = thisBranch.branchPathValue;
-			var expertText = thisBranchPathName + " → " + thisBranch.branchPathValue;
-			
-			// normal text gets rather complicated behind the scenes to display something that's both short and hopefully understandable to the average layperson
-			var normalText = ""
-			if (thisBranch.friendlyName != null) {
-				normalText = thisBranch.friendlyName;
-			} else {
-				normalText = createFriendlyName(thisBranchPathName, rowN , data , thisBranchPathValue);
-			};
-
-			// special: checkstoryflags
-			if (thisBranchPathValue.includes("DisConv_Check") == false) {
-				// don't need destination description in row 0 as it's already described by the origin
-				if (rowN > 0) {
-					if (thisBranch.branchPathCondition == null) {
-						normalText = normalText + " → ";
-						normalText = normalText + createFriendlyName(thisBranchPathValue, rowN , data);
-					} else {
-						normalText = createFriendlyName(thisBranchPathValue, rowN , data , thisBranchPathValue);
-					};
-				};
-			} else {
-				
-				var thisStoryFlag = thisBranch.checkedStoryFlag;
-				expertText = expertText + " (checked StoryFlag: " + thisStoryFlag + ")";
-				
-				var thisStoryFlag = thisBranch.checkedStoryFlagFriendly;
-				if (rowN == 1) {
-					normalText = "Check: " + thisStoryFlag;
-				} else {
-					normalText = normalText + " → ";
-					normalText = normalText + "Check: " + thisStoryFlag;
-				};
-				
-			};
-
-			// special: conditions
-			if (thisBranch.branchPathCondition != null) {
-				var conditionVal = thisBranch.branchPathCondition;
-				if (thisItem.itemName.includes("DisConv_Random")) {
-					expertText = expertText + " (" + conditionVal + "% chance)";
-					normalText = conditionVal + "% chance → " + normalText;
-				} else {
-					//wip
-					expertText = expertText + " (if " + conditionVal + ")";
-					
-					if (normalText.slice(0,3) == " → ") {
-						normalText = createFriendlyConditionName(conditionVal, rowN) + normalText;
-					} else {
-						normalText = createFriendlyConditionName(conditionVal, rowN) + " → " + normalText;
-					};
-				};
-			};
+			[normalText, expertText , thisBranchPathValue] = createThisOptionText(thisItem , n, rowN , data);
 			
 			// adding the resulting text as a new option to both ddropdown types
+			//wip: replace this with buildDefaultOptions reworked to work for this too
 			expertTypes.forEach((element) => {
 				if (element == "Normal") {
 					var thisText = normalText;
@@ -931,13 +1003,8 @@ function buildDropdown(rowN , data , hashData) {
 			});
 			
 		};
-	};
-	
 			
-	if (prevSelectVal != "[Null]") {
 		showOnlyThis("select" + rowN, currentState.expertState);
-	} else {
-		setVisibilityBothDropdownsInRow(rowN, "none");
 	};
 };
 
@@ -1070,7 +1137,7 @@ const currentState = {
 	},
 };
 
-// utility container of elements
+// utility container of page elements
 const elms = new Map();
 
 //running everything
