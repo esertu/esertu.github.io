@@ -51,7 +51,7 @@ function changeHandler(type, rowN , data , hashData) {
 	while (n <= currentMaxDepth) {
 		console.log("-------------- " + n);
 		setVisibilityBothDropdownsInRow(n, "none");
-		n = n + 1
+		n = n + 1;
 	};
 	
 	// hiding the blurb display
@@ -135,7 +135,7 @@ function applyChkExpert() {
 	const currentBlurb = currentState.blurbState;
 	const otherBlurb = blurbTypeOpposites[currentBlurb];
 	
-	var rowN = 0
+	var rowN = 0;
 	
 	console.log(">> applyChkExpert is now attempting to show: " + "select" + rowN + currentExpert);
 	
@@ -149,7 +149,7 @@ function applyChkExpert() {
 		} else {
 			break;
 		};
-		rowN = rowN + 1
+		rowN = rowN + 1;
 	};
 	
 	console.log(">> applyChkExpert is now attempting to show: " + "blurbDisplay" + currentBlurb + currentExpert);
@@ -173,7 +173,7 @@ function changeChkExpert() {
 
 function applyChkBlurb() {
 	console.log("applyChkBlurb for blurbState " + currentState.blurbState);
-	var rowN = 0
+	var rowN = 0;
 	var thisSelect = elms.get("select" + rowN + currentState.expertState);
 	
 	const currentMaxDepth = currentState.depthState["Maximum"];
@@ -186,7 +186,7 @@ function applyChkBlurb() {
 			if (thisSelect.style.display != 'none') {
 				if (thisSelect.value.includes("SequentialBranch")) {
 					//hiding the remaining dropdowns once that SequentialBranch-valued dropdown has been found
-					rowN = rowN + 1
+					rowN = rowN + 1;
 					var hideSelect = elms.get("select" + rowN + currentState.expertState)
 					while (elms.get("select" + rowN + currentState.expertState) != null) {
 						if (hideSelect.style.display != 'none') {
@@ -208,7 +208,7 @@ function applyChkBlurb() {
 					};
 			}
 			};
-			rowN = rowN + 1
+			rowN = rowN + 1;
 			thisSelect = elms.get("select" + rowN + currentState.expertState);
 		};
 		
@@ -222,7 +222,7 @@ function applyChkBlurb() {
 				};
 			};
 			
-			rowN = rowN + 1
+			rowN = rowN + 1;
 			
 		};
 		
@@ -304,7 +304,8 @@ function getOrBuildThing(thingName, thingType, blnCreateNew) {
 };
 
 function updateArrDisplayedd(rowN) {
-	const currentLength = currentState.arrDisplayed.length
+	const currentLength = currentState.arrDisplayed.length;
+	
 	for (var i = rowN; i <= currentLength; i++) {
 		currentState.arrDisplayed.pop();
 	};
@@ -368,8 +369,8 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 		console.log("thisSelect.value:");
 		console.log(thisSelect.value);
 		
-		var newTextNorm = ""
-		var newTextExp = ""
+		var newTextNorm = "";
+		var newTextExp = "";
 		
 		for (var n = 0; n < thisBlurbText.length; n++) {
 			// adding the blurb text to the blurblist
@@ -422,7 +423,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 
 
 function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
-	const thisBPaths = thisBlurb.branchPaths
+	const thisBPaths = thisBlurb.branchPaths;
 	
 	var arrTexts = new Array();
 	var arrHashes = new Array();
@@ -475,7 +476,7 @@ function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
 
 // clearing all further dropdowns as well as removing the blurblist from view when an earlier dropdown is changed
 function clearFurtherDropdowns(rowN) {
-	var n = 0
+	var n = 0;
 	const currentMaxDepth = currentState.depthState["Maximum"];
 	
 	while ((rowN + n) <= currentMaxDepth) {
@@ -491,7 +492,7 @@ function clearFurtherDropdowns(rowN) {
 			
 		});
 		
-		n = n + 1
+		n = n + 1;
 	};
 	
 	//hiding the blurb display
@@ -625,27 +626,27 @@ function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
 			// "Does the player know Lydia's identity?" -> "Player knows Lydia's identity"
 			if (prevVal.includes("know")) {
 				// "Does the player know Lydia's identity" -> "Player know Lydia's identity"
-				outputName = outputName.replace("Does the p", "P") 
+				outputName = outputName.replace("Does the p", "P");
 				
 				// "Player know Lydia's identity" -> "Player knows Lydia's identity" / "Player doesn't know Lydia's identity"
 				if (inputName.slice(-1) == "1") {
-					outputName = outputName.replace("know","doesn\'t know")
+					outputName = outputName.replace("know","doesn\'t know");
 				} else {
-					outputName = outputName.replace("know","knows")
+					outputName = outputName.replace("know","knows");
 				};
 				
 			// "Is the player in the High Overseer's Office" -> "Player is not in the High Overseer's Office"
 			} else {
 				// "Is the player in the High Overseer's Office" -> "Player in the High Overseer's Office"
-				outputName = outputName.replace("Is the p", "P") 
+				outputName = outputName.replace("Is the p", "P");
 				
 				// "Player in the High Overseer's Office" -> "Player is in the High Overseer's Office" / "Player is not in the High Overseer's Office"
 				if (inputName.slice(-1) == "1") {
-					outputName = outputName.replace(" in "," is not in ")
-					outputName = outputName.replace(" on "," is not on ")
+					outputName = outputName.replace(" in "," is not in ");
+					outputName = outputName.replace(" on "," is not on ");
 				} else {
-					outputName = outputName.replace(" in "," is in ")
-					outputName = outputName.replace(" on "," is on ")
+					outputName = outputName.replace(" in "," is in ");
+					outputName = outputName.replace(" on "," is on ");
 				};
 			};
 			
@@ -801,7 +802,7 @@ function buildThisDropdown(type, rowN , data , hashData) {
 		};
 		
 		// adding the event listener to run things when the value fo this dropdown changes
-		thisSelect.addEventListener("change", function() { 
+		thisSelect.addEventListener("change", function() {
 			changeHandler(type, rowN , data , hashData) ;
 			});
 	
@@ -841,11 +842,11 @@ function buildDropdown(rowN , data , hashData) {
 	// creating all dropdown options, which is the branchPathName and branchPathValue items of the item's branchPaths item
 	// first row is different because it's actually still the starting item
 	if (rowN == 0) {
-		var thisItem = data.dialogItems[0]
-		prevSelectVal = null
+		var thisItem = data.dialogItems[0];
+		prevSelectVal = null;
 	} else {
 		var prevSelect = elms.get("select" + (rowN - 1) + "Expert");
-		prevSelectVal = prevSelect.value
+		prevSelectVal = prevSelect.value;
 		// looking for the previous dropdown's value in the data array
 		var thisItem = findInData(data.dialogItems, prevSelectVal);
 	};
@@ -856,9 +857,9 @@ function buildDropdown(rowN , data , hashData) {
 	
 		// actually creating the dropdown options
 		for (var n = 0; n < thisItem.branchPaths.length; n++) {
-			var thisBranch = thisItem.branchPaths[n]
-			var thisBranchPathName = thisBranch.branchPathName
-			var thisBranchPathValue = thisBranch.branchPathValue
+			var thisBranch = thisItem.branchPaths[n];
+			var thisBranchPathName = thisBranch.branchPathName;
+			var thisBranchPathValue = thisBranch.branchPathValue;
 			var expertText = thisBranchPathName + " → " + thisBranch.branchPathValue;
 			
 			// normal text gets rather complicated behind the scenes to display something that's both short and hopefully understandable to the average layperson
@@ -889,7 +890,7 @@ function buildDropdown(rowN , data , hashData) {
 				if (rowN == 1) {
 					normalText = "Check: " + thisStoryFlag;
 				} else {
-					normalText = normalText + " → "
+					normalText = normalText + " → ";
 					normalText = normalText + "Check: " + thisStoryFlag;
 				};
 				
@@ -962,8 +963,7 @@ function buildCheckBoxes() {
 		label.appendChild(document.createTextNode(element));
 		document.body.appendChild(label);
 		
-	}
-	);
+	});
 			
 };
 
@@ -973,7 +973,7 @@ function changeHandlerColl(collName){
 
 // inspired by https://stackoverflow.com/a/27698406 and https://medium.com/@jordanfinners/creating-a-collapsible-section-with-nothing-but-html-199f04f13377
 function buildCollapsible(collName) {
-	var collContent = ""
+	var collContent = "";
 	
 	switch (collName) {
 		case "Start":
