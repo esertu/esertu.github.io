@@ -39,11 +39,11 @@ async function loadHashData() {
 function changeHandler(type, rowN , data , hashData) {
 	console.log("");
 	console.log("changeHandler for rowN " + rowN);
-	const thisSelect = document.getElementById("select" + rowN + type);
+	const thisSelect = elms.get("select" + rowN + type);
 	const thisValue = thisSelect.value;
 	
 	// making sure the other, hidden dropdown updates too
-	document.getElementById("select" + rowN + expertTypeOpposite[type]).value = thisValue;
+	elms.get("select" + rowN + expertTypeOpposite[type]).value = thisValue;
 	
 	// hiding any dropdowns past this one
 	var n = rowN + 1;
@@ -144,7 +144,7 @@ function applyChkExpert() {
 	
 	// showing the relevant dropdowns and hiding the currently active ones
 	while (rowN <= currentMaxDepth && rowN <= currentDisplayDepth) {
-		if (document.getElementById("select" + rowN + currentExpert).style.display == "none") {
+		if (elms.get("select" + rowN + currentExpert).style.display == "none") {
 			showOnlyThis("select" + rowN, currentExpert);
 		} else {
 			break;
@@ -155,8 +155,8 @@ function applyChkExpert() {
 	console.log(">> applyChkExpert is now attempting to show: " + "blurbDisplay" + currentBlurb + currentExpert);
 	
 	// showing the other relevant blurb display and hiding the currently active one
-	if (document.getElementById("blurbDisplaySingleNormal") != null) {
-		if (document.getElementById("blurbDisplay" + currentBlurb + otherExpert).style.display != "none") {
+	if (elms.get("blurbDisplaySingleNormal") != null) {
+		if (elms.get("blurbDisplay" + currentBlurb + otherExpert).style.display != "none") {
 			showOnlyThis("blurbDisplay" + currentBlurb, currentExpert);
 		};
 	};
@@ -174,7 +174,7 @@ function changeChkExpert() {
 function applyChkBlurb() {
 	console.log("applyChkBlurb for blurbState " + currentState.blurbState);
 	var rowN = 0
-	var thisSelect = document.getElementById("select" + rowN + currentState.expertState);
+	var thisSelect = elms.get("select" + rowN + currentState.expertState);
 	
 	const currentMaxDepth = currentState.depthState["Maximum"];
 	
@@ -187,8 +187,8 @@ function applyChkBlurb() {
 				if (thisSelect.value.includes("SequentialBranch")) {
 					//hiding the remaining dropdowns once that SequentialBranch-valued dropdown has been found
 					rowN = rowN + 1
-					var hideSelect = document.getElementById("select" + rowN + currentState.expertState)
-					while (document.getElementById("select" + rowN + currentState.expertState) != null) {
+					var hideSelect = elms.get("select" + rowN + currentState.expertState)
+					while (elms.get("select" + rowN + currentState.expertState) != null) {
 						if (hideSelect.style.display != 'none') {
 							setVisibility("select" + rowN + currentState.expertState,"none");
 						} else {
@@ -196,20 +196,20 @@ function applyChkBlurb() {
 						};
 						
 						rowN = rowN + 1;
-						hideSelect = document.getElementById("select" + rowN + currentState.expertState);
+						hideSelect = elms.get("select" + rowN + currentState.expertState);
 					};
 					
 					setVisibility("blurbDisplayFull" + currentState.expertState);
 			
 					break
 				} else {
-					if (document.getElementById("select" + currentState.depthState["Single"] + "Expert").value.includes("[Null]")) {
+					if (elms.get("select" + currentState.depthState["Single"] + "Expert").value.includes("[Null]")) {
 						setVisibility("blurbDisplaySingle" + currentState.expertState);
 					};
 			}
 			};
 			rowN = rowN + 1
-			thisSelect = document.getElementById("select" + rowN + currentState.expertState);
+			thisSelect = elms.get("select" + rowN + currentState.expertState);
 		};
 		
 	} else {
@@ -217,7 +217,7 @@ function applyChkBlurb() {
 			if (rowN <= currentState.depthState[currentState.blurbState]) {
 				showOnlyThis("select" + rowN, currentState.expertState);
 				
-				if (rowN == currentState.depthState[currentState.blurbState] && (document.getElementById("select" + rowN + currentState.expertState).value.includes("Blurb") || document.getElementById("select" + rowN + currentState.expertState).value.includes("[Null]"))) {
+				if (rowN == currentState.depthState[currentState.blurbState] && (elms.get("select" + rowN + currentState.expertState).value.includes("Blurb") || elms.get("select" + rowN + currentState.expertState).value.includes("[Null]"))) {
 					setVisibility("blurbDisplaySingle" + currentState.expertState);
 				};
 			};
@@ -241,7 +241,7 @@ function changeChkBlurb() {
 // setting visibility of all blurb displays to something
 // find it easier to read when this is just its own function even though it doesn't need to be
 function setVisibilityAllBlurbs(thisVisibility) {
-	if (document.getElementById("blurbDisplayFullNormal") != null) {
+	if (elms.get("blurbDisplayFullNormal") != null) {
 		blurbDisplays.forEach((element) => setVisibility(element, thisVisibility));
 	};
 };
@@ -291,7 +291,11 @@ function getOrBuildThing(thingName, thingType, blnCreateNew) {
 			const newThing = document.createElement(thingType);
 			newThing.id = thingName;
 			document.body.appendChild(newThing);
+			
+			elms.set(thingName, newThing);
+			
 			return(newThing)
+			
 		} else {
 			return(null);
 		};
@@ -305,7 +309,7 @@ function updateArrDisplayedd(rowN) {
 		currentState.arrDisplayed.pop();
 	};
 	
-	thisSelectNormal = document.getElementById("select" + rowN + "Normal");
+	thisSelectNormal = elms.get("select" + rowN + "Normal");
 	currentState.arrDisplayed.push(thisSelectNormal.children[thisSelectNormal.selectedIndex].label);
 };
 
@@ -347,7 +351,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 		
 	} else {
 		
-		const thisSelect = document.getElementById("select" + (rowN - 1) + "Expert");
+		const thisSelect = elms.get("select" + (rowN - 1) + "Expert");
 		console.log("thisSelect.value: ");
 		console.log(thisSelect.value);
 		
@@ -476,8 +480,9 @@ function clearFurtherDropdowns(rowN) {
 	
 	while ((rowN + n) <= currentMaxDepth) {
 		expertTypes.forEach((type) => {
+			
 			// clearing dropdown of its children
-			var thisSelect = document.getElementById("select" + (rowN + n) + type);
+			var thisSelect = elms.get("select" + (rowN + n) + type);
 			while (thisSelect.firstChild) {
 				thisSelect.firstChild.remove()
 			};
@@ -776,8 +781,8 @@ function buildThisDropdown(type, rowN , data , hashData) {
 	
 	const currentMaxDepth = currentState.depthState["Maximum"];
 	
-	if (document.getElementById(thisDropdownID) != null) {
-		var thisSelect = document.getElementById(thisDropdownID);
+	if (elms.get(thisDropdownID) != null) {
+		var thisSelect = elms.get(thisDropdownID);
 		if (rowN > 0) {
 			clearFurtherDropdowns(rowN);
 		};
@@ -786,9 +791,11 @@ function buildThisDropdown(type, rowN , data , hashData) {
 		var thisSelect = document.createElement("select");
 		thisSelect.id = thisDropdownID;
 		
+		elms.set(thisDropdownID, thisSelect)
+		
 		//making sure the blurblist stays at the bottom of all the dropdown menus
-		if (document.getElementById("blurbDisplaySingleNormal") != null) {
-			document.body.insertBefore(thisSelect,document.getElementById("blurbDisplaySingleNormal"));
+		if (elms.get("blurbDisplaySingleNormal") != null) {
+			document.body.insertBefore(thisSelect , elms.get("blurbDisplaySingleNormal"));
 		} else {
 			document.body.appendChild(thisSelect);
 		};
@@ -837,7 +844,7 @@ function buildDropdown(rowN , data , hashData) {
 		var thisItem = data.dialogItems[0]
 		prevSelectVal = null
 	} else {
-		var prevSelect = document.getElementById("select" + (rowN - 1) + "Expert");
+		var prevSelect = elms.get("select" + (rowN - 1) + "Expert");
 		prevSelectVal = prevSelect.value
 		// looking for the previous dropdown's value in the data array
 		var thisItem = findInData(data.dialogItems, prevSelectVal);
@@ -1055,13 +1062,16 @@ const currentState = {
 	blurbState: blurbTypes[0],
 	
 	depthState: {
-		"Single": 0,
-		"Full": 0,
+		"Single": 0, // current depth of displayed dropdowns when single line blurb display is checked
+		"Full": 0, // current depth of displayed dropdowns when multi line blurb display is checked
 		freezeSingle: false,
 		freezeFull: false,
 		"Maximum": 0
 	},
 };
+
+// utility container of elements
+const elms = new Map();
 
 //running everything
 //building the basic page
