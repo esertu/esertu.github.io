@@ -77,8 +77,25 @@ function changeHandler(type, rowN , data , hashData) {
 };
 
 function showOnlyThis(strIDStart, strIDType) {
+	var strIDStart = strIDStart;
+	// setting this thing to visible
 	setVisibility(strIDStart + strIDType);
-	setVisibility(strIDStart + expertTypeOpposite[strIDType] , "none");
+	
+	
+	// setting all other relevant things to invisible
+	// dropdowns: set other dropdown invsibile
+	if (strIDStart.includes("select")) {
+		setVisibility(strIDStart + expertTypeOpposite[strIDType] , "none");
+		
+	// blurbs: set all other blurbs to invisible
+	} else {
+		setVisibility(strIDStart + expertTypeOpposite[strIDType] , "none");
+		if (strIDStart.includes("Full")) {
+			setVisibility(strIDStart.replace("Full","Single") + strIDType , "none");
+			setVisibility(strIDStart.replace("Full","Single") + expertTypeOpposite[strIDType] , "none");
+		} else {
+		};
+	};
 };
 
 // runs to apply the expertState setting, ie which dropdowns and blurb display variants should be showing
@@ -168,9 +185,7 @@ function applyChkBlurb() {
 			setVisibility("select" + n + "Normal");
 			
 			if (lastSelect.value.includes("Blurb")) {
-				if (document.getElementById("blurbDisplaySingleNormal") != null) {
-					setVisibility("blurbDisplaySingle" + currentState.expertState);
-				};
+				setVisibility("blurbDisplaySingle" + currentState.expertState);
 			};
 		};
 		
@@ -388,9 +403,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	};
 	
 	// blurb visibility: hiding everything by default
-	setVisibilityAllBlurbs("none");
-	
-	setVisibility("blurbDisplay" + currentState.blurbState + currentState.expertState);
+	showOnlyThis("blurbDisplay" + currentState.blurbState, currentState.expertState);
 };
 
 
@@ -897,10 +910,11 @@ function buildDropdown(rowN , data , hashData) {
 		};
 	};
 	
-	setVisibilityBothDropdownsInRow(rowN, "none");
 			
 	if (prevSelectVal != "[Null]") {
-		setVisibility("select" + rowN + currentState.expertState);
+		showOnlyThis("select" + rowN, currentState.expertState);
+	} else {
+		setVisibilityBothDropdownsInRow(rowN, "none");
 	};
 };
 
