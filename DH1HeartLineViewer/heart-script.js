@@ -39,7 +39,7 @@ async function loadHashData() {
 function changeHandler(type, rowN , data , hashData) {
 	console.log("");
 	console.log("changeHandler for rowN " + rowN);
-	var thisSelect = document.getElementById("select" + rowN + type);
+	const thisSelect = document.getElementById("select" + rowN + type);
 	currentState.currentDepth = rowN;
 	currentState.fullDisplayed = rowN;
 	
@@ -129,8 +129,6 @@ function applyChkBlurb() {
 	var n = 0
 	var thisSelect = document.getElementById("select" + n + "Normal");
 	
-	var blurbDisplaySingleNormal = document.getElementById("blurbDisplaySingleNormal");
-	
 	var lastSelect = document.getElementById("select" + currentState.currentDepth + "Normal");
 	
 	setVisibilityAllBlurbs("none");
@@ -170,7 +168,7 @@ function applyChkBlurb() {
 			setVisibility("select" + n + "Normal");
 			
 			if (lastSelect.value.includes("Blurb")) {
-				if (blurbDisplaySingleNormal != null) {
+				if (document.getElementById("blurbDisplaySingleNormal") != null) {
 					setVisibility("blurbDisplaySingle" + currentState.expertState);
 				};
 			};
@@ -235,7 +233,7 @@ function getOrBuildThing(thingName, thingType, blnCreateNew) {
 		
 	} else {
 		if (blnCreateNew) {
-			var newThing = document.createElement(thingType);
+			const newThing = document.createElement(thingType);
 			newThing.id = thingName;
 			document.body.appendChild(newThing);
 			return(newThing)
@@ -247,7 +245,7 @@ function getOrBuildThing(thingName, thingType, blnCreateNew) {
 };
 
 function updateArrDisplayedd(rowN) {
-	var currentLength = currentState.arrDisplayed.length
+	const currentLength = currentState.arrDisplayed.length
 	for (var i = rowN; i <= currentLength; i++) {
 		currentState.arrDisplayed.pop();
 	};
@@ -327,22 +325,22 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	clearFurtherDropdowns(rowN);
 	
 	// getting or building the blurblist elements
-	var blurbDisplaySingleNormal = getOrBuildThing("blurbDisplaySingleNormal", "ul", true);
-	var blurbDisplaySingleExpert = getOrBuildThing("blurbDisplaySingleExpert", "ul", true);
-	var blurbDisplayFullNormal = getOrBuildThing("blurbDisplayFullNormal", "ol", true);
-	var blurbDisplayFullExpert = getOrBuildThing("blurbDisplayFullExpert", "ol", true);
+	const blurbDisplaySingleNormal = getOrBuildThing("blurbDisplaySingleNormal", "ul", true);
+	const blurbDisplaySingleExpert = getOrBuildThing("blurbDisplaySingleExpert", "ul", true);
+	const blurbDisplayFullNormal = getOrBuildThing("blurbDisplayFullNormal", "ol", true);
+	const blurbDisplayFullExpert = getOrBuildThing("blurbDisplayFullExpert", "ol", true);
 	
 	//wip: branch
 	if (empty == true) {
 		applyBlurbs("[Branch terminates here]" , "all-contd");
 	} else {
 		
-		var thisSelect = document.getElementById("select" + (rowN - 1) + "Expert");
+		const thisSelect = document.getElementById("select" + (rowN - 1) + "Expert");
 		console.log("thisSelect.value: ");
 		console.log(thisSelect.value);
 		
 		//getting the blurb text
-		var thisBlurb = findInData(data.dialogItems,thisSelect.value);
+		const thisBlurb = findInData(data.dialogItems,thisSelect.value);
 		if (thisSelect.value.includes("SequentialBranch") == false) {
 			var [thisBlurbText , thisBlurbHash] = getBlurbTextAndHash(thisBlurb , hashData , data , "single");
 		} else {
@@ -397,7 +395,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 
 
 function getBlurbTextAndHash(thisBlurb , hashData , data , mode) {
-	var thisBPaths = thisBlurb.branchPaths
+	const thisBPaths = thisBlurb.branchPaths
 	
 	var arrTexts = new Array();
 	var arrHashes = new Array();
@@ -702,7 +700,7 @@ function createFriendlyConditionName(inputName, rowN) {
 					
 					// handling "Male" and "Female" by moving it from the end of the string to the start, ie ("Twk_ID_AristoFemale" ->) "AristoFemale" -> "female Aristo"
 					if (inputName.slice(-3) == "ale") {
-						var NPCType = inputName.slice(30,36); //ie Aristo
+						const NPCType = inputName.slice(30,36); //ie Aristo
 						
 						//writing out full names from shortened ones
 						switch (NPCType) {
@@ -714,7 +712,7 @@ function createFriendlyConditionName(inputName, rowN) {
 								break
 						};
 						
-						var NPCGender = inputName.slice(36); //ie Female
+						const NPCGender = inputName.slice(36); //ie Female
 						NPCGender = NPCGender.replace("F","f").replace("M","m") //ie Female -> female
 						
 						outputName = outputName = outputName.slice(0,18) + NPCGender + " " + NPCType; //ie "female Aristocrat"
@@ -753,7 +751,7 @@ function createFriendlyConditionName(inputName, rowN) {
 function buildThisDropdown(type, rowN , data , hashData) {
 	// getting or building this drop-down menu
 	console.log("buildThisDropdown for row " + rowN);
-	var thisDropdownID = "select" + rowN + type
+	const thisDropdownID = "select" + rowN + type;
 	
 	if (document.getElementById(thisDropdownID) != null) {
 		var thisSelect = document.getElementById(thisDropdownID);
