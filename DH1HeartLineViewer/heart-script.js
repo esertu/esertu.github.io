@@ -37,6 +37,7 @@ async function loadHashData() {
 
 // runs when change in drop-down menu occurs
 function changeHandler(type, rowN , data , hashData) {
+	console.log("");
 	console.log("changeHandler for rowN " + rowN);
 	var thisSelect = document.getElementById("select" + rowN + type);
 	currentState.currentDepth = rowN;
@@ -64,8 +65,8 @@ function changeHandler(type, rowN , data , hashData) {
 				buildBlurbDisplay(rowN + 1 , data , hashData, false, "branch");
 				updateArrDisplayedd(rowN);
 				buildDropdown(rowN + 1 , data , hashData);
-				changeExpert();
-				changeBlurb();
+				applyChkExpert();
+				applyChkBlurb();
 			};
 		} else {
 			updateArrDisplayedd(rowN);
@@ -80,64 +81,51 @@ function showOnlyThis(strIDStart, strIDType) {
 	setVisibility(strIDStart + expertTypeOpposite[strIDType] , "none");
 };
 
-function changeExpert() {
-	console.log("changeExpert");
-	var checkExpert = document.getElementById("checkExpert");
-	checkExpert = checkExpert.checked;
-	var checkList = document.getElementById("checkList");
-	checkList = checkList.checked;
+// runs to apply the expertState setting, ie which dropdowns and blurb display variants should be showing
+function applyChkExpert() {
+	console.log("applyChkExpert");
+	const currentExpert = currentState.expertState;
+	const otherExpert = expertTypeOpposite[currentExpert];
+	const currentBlurb = currentState.blurbState;
+	const otherBlurb = blurbTypeOpposites[currentBlurb];
 	
 	var rowN = 0
-	if (checkExpert) {
-		while (document.getElementById("select" + rowN + "Normal") != null) {
-			if (document.getElementById("select" + rowN + "Normal").style.display != "none") {
-				showOnlyThis("select" + rowN, "Expert");
-			};
-			rowN = rowN + 1
-		};
-	} else {
-		while (document.getElementById("select" + rowN + "Normal") != null) {
-			if (document.getElementById("select" + rowN + "Expert").style.display != "none") {
-				showOnlyThis("select" + rowN, "Normal");
-			};
-			rowN = rowN + 1
-		};
-	};
 	
+	console.log(">> applyChkExpert is now attempting to show: " + "select" + rowN + currentExpert);
 	
-	//instead of checking the arrays etc it's probably quicker to just check if anything relevant is visible right now
-	if (document.getElementById("blurbDisplaySingleNormal") != null) {
-		if (checkExpert) {
-			if (checkList) {
-				if (document.getElementById("blurbDisplayFullNormal").style.display != "none") {
-					showOnlyThis("blurbDisplayFull", "Expert");
-				};
-			} else {
-				if (document.getElementById("blurbDisplaySingleNormal").style.display != "none") {
-					showOnlyThis("blurbDisplaySingle", "Expert");
-				};
-			};
-			
+	// showing the relevant dropdowns and hiding the currently active ones
+	// showing the relevant dropdowns and hiding the currently active ones
+	while (document.getElementById("select" + rowN + currentExpert) != null) {
+		if (document.getElementById("select" + rowN + currentExpert).style.display == "none") {
+			showOnlyThis("select" + rowN, currentExpert);
 		} else {
-			if (checkList) {
-				if (document.getElementById("blurbDisplayFullExpert").style.display != "none") {
-					showOnlyThis("blurbDisplayFull", "Normal");
-				};
-			} else {
-				if (document.getElementById("blurbDisplaySingleExpert").style.display != "none") {
-					showOnlyThis("blurbDisplaySingle", "Normal");
-				};
-			};
+			break;
 		};
+		rowN = rowN + 1
 	};
 	
+	console.log(">> applyChkExpert is now attempting to show: " + "blurbDisplay" + currentBlurb + currentExpert);
+	
+	// showing the other relevant blurb display and hiding the currently active one
+	if (document.getElementById("blurbDisplaySingleNormal") != null) {
+		if (document.getElementById("blurbDisplay" + currentBlurb + currentExpert).style.display == "none") {
+			showOnlyThis("blurbDisplay" + currentBlurb, currentExpert);
+		};
+	};
+	console.log("");
 };
 
-
-function changeBlurb() {
-	console.log("changeBlurb");
-	var checkList = document.getElementById("checkList");
+// runs when the expert checkbox is checked or unchecked
+function changeChkExpert() {
+	// flipping the convenience value to Normal or Expert
+	currentState.expertState = expertTypeOpposite[currentState.expertState];
 	
+	// applying the effects of the new value to the page by showing/hiding the right dropdowns and blurb list
+	applyChkExpert();
+};
+
+function applyChkBlurb() {
+	console.log("applyChkBlurb");
 	var n = 0
 	var thisSelect = document.getElementById("select" + n + "Normal");
 	
@@ -145,10 +133,9 @@ function changeBlurb() {
 	
 	var lastSelect = document.getElementById("select" + currentState.currentDepth + "Normal");
 	
-	if (checkList.checked) {
-		setVisibility("blurbDisplaySingleNormal", "none");
-		setVisibility("blurbDisplaySingleExpert", "none");
-		
+	setVisibilityAllBlurbs("none");
+	
+	if (currentState.blurbState == "Full") {
 		//going down the list of dropdowns to find the first selected SequentialBranch
 		while (thisSelect != null) {
 			if (thisSelect.style.display != 'none') {
@@ -159,7 +146,7 @@ function changeBlurb() {
 					while (document.getElementById("select" + n + "Normal") != null) {
 						if (hideSelect.style.display != 'none') {
 							currentState.fullDisplayed = n;
-							setVisibility(hideSelect,"none");
+							setVisibility("select" + n + "Normal","none");
 						} else {
 							break
 						};
@@ -184,17 +171,20 @@ function changeBlurb() {
 			
 			if (lastSelect.value.includes("Blurb")) {
 				if (blurbDisplaySingleNormal != null) {
-					if (document.getElementById("checkExpert").checked) {
-						setVisibility("blurbDisplaySingleExpert");
-					} else {
-						setVisibility("blurbDisplaySingleNormal");
-					};
+					setVisibility("blurbDisplaySingle" + currentState.expertState);
 				};
 			};
 		};
 		
-	};		
+	};
+};
+
+function changeChkBlurb() {
+	// flipping the convenience value to Single or Full
+	currentState.blurbState = blurbTypeOpposites[currentState.blurbState];
 	
+	// applying the effects of the new value to the page by showing/hiding the right blurb list
+	applyChkBlurb();
 };
 
 // setting visibility of all blurb displays to something
@@ -212,6 +202,7 @@ function setVisibilityBothDropdownsInRow(rowN, thisVisibility) {
 // set the visibility of a thing to something (ie "none", "block", "list-item" etc.) if that thing exists. If blnCreateNew is true, then create the thing first if it doesn't exist
 //wip: use this more
 function setVisibility(thingName, thingVisibility, blnCreateNew) {
+	console.log("setting visibility for " + thingName + " to " + thingVisibility);
 	thisThing = getOrBuildThing(thingName, "", blnCreateNew);
 	
 	if (thisThing != null) {
@@ -401,23 +392,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	// blurb visibility: hiding everything by default
 	setVisibilityAllBlurbs("none");
 	
-	if (document.getElementById("checkList").checked) {
-		console.log("checkList is checked");
-		if (document.getElementById("checkExpert").checked) {
-			setVisibility("blurbDisplayFullNormal");
-		} else {
-			setVisibility("blurbDisplayFullExpert");
-		};
-		
-	} else {
-		if (originator != "branch") {
-			if (document.getElementById("checkExpert").checked) {
-				setVisibility("blurbDisplaySingleExpert");
-			} else {
-				setVisibility("blurbDisplaySingleNormal");
-			};
-		};
-	};
+	setVisibility("blurbDisplay" + currentState.blurbState + currentState.expertState);
 };
 
 
@@ -777,6 +752,7 @@ function createFriendlyConditionName(inputName, rowN) {
 
 function buildThisDropdown(type, rowN , data , hashData) {
 	// getting or building this drop-down menu
+	console.log("buildThisDropdown for row " + rowN);
 	var thisDropdownID = "select" + rowN + type
 	
 	if (document.getElementById(thisDropdownID) != null) {
@@ -926,20 +902,10 @@ function buildDropdown(rowN , data , hashData) {
 	setVisibilityBothDropdownsInRow(rowN, "none");
 			
 	if (prevSelectVal != "[Null]") {
-		if (document.getElementById("checkExpert").checked) {
-			setVisibility("select" + rowN + "Expert");
-		} else {
-			setVisibility("select" + rowN + "Normal");
-		};
+		setVisibility("select" + rowN + currentState.expertState);
 	};
 };
 
-
-
-const arrCheckboxes = [
-	"Expert",
-	"List"
-];
 function buildCheckBoxes() {
 
 	arrCheckboxes.forEach((element) => {
@@ -949,11 +915,11 @@ function buildCheckBoxes() {
 		
 		if (element == "Expert") {
 			check.addEventListener("change", function() { 
-				changeExpert() 
+				changeChkExpert() 
 				});
 		} else {
 			check.addEventListener("change", function() { 
-				changeBlurb() 
+				changeChkBlurb() 
 				});
 		};
 		
@@ -1012,6 +978,12 @@ function buildCollapsible(collName) {
 };
 
 
+// utility array of id strings for the two checkboxes, which will be called "check(string)"
+const arrCheckboxes = [
+	"Expert",
+	"List"
+];
+
 // utility array of id strings for the four blurb displays
 const blurbDisplays = [
 	"blurbDisplaySingleNormal",
@@ -1031,6 +1003,17 @@ const expertTypeOpposite = {
 	"Expert": "Normal",
 };
 
+// utility array of id string names for the two blurb displays types
+const blurbTypes = [
+	"Single",
+	"Full",
+];
+// utility map of id string names for the two blurb types where one maps to the other ie for when only one should be shown and therefore the other hidden
+const blurbTypeOpposites = {
+	"Single": "Full",
+	"Full": "Single",
+};
+
 // utility map of style.display types that a type of item should be displayed as
 const styles = {
 	"select": "block",
@@ -1043,6 +1026,8 @@ const currentState = {
 	fullDisplayed: 0,
 	arrDisplayed: new Array(),
 	currentDepth: 0,
+	expertState: expertTypes[0],
+	blurbState: blurbTypes[0],
 };
 
 //running everything
