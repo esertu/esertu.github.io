@@ -199,7 +199,11 @@ function applyChkBlurb() {
 					setVisibility("blurbDisplayFull" + currentState.expertState);
 			
 					break
-				};
+				} else {
+					if (document.getElementById("select" + currentState.depthState["Single"] + "Expert").value.includes("[Null]")) {
+						setVisibility("blurbDisplaySingle" + currentState.expertState);
+					};
+			}
 			};
 			rowN = rowN + 1
 			thisSelect = document.getElementById("select" + rowN + currentState.expertState);
@@ -216,7 +220,7 @@ function applyChkBlurb() {
 				showOnlyThis("select" + rowN, currentState.expertState);
 				console.log(".. unhiding select " + "select" + rowN + currentState.expertState);
 				
-				if (rowN == currentState.depthState[currentState.blurbState] && document.getElementById("select" + rowN + currentState.expertState).value.includes("Blurb")) {
+				if (rowN == currentState.depthState[currentState.blurbState] && (document.getElementById("select" + rowN + currentState.expertState).value.includes("Blurb") || document.getElementById("select" + rowN + currentState.expertState).value.includes("[Null]"))) {
 					console.log("2");
 					setVisibility("blurbDisplaySingle" + currentState.expertState);
 				};
@@ -334,6 +338,8 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 	const blurbDisplaySingleExpert = getOrBuildThing("blurbDisplaySingleExpert", "ul", true);
 	const blurbDisplayFullNormal = getOrBuildThing("blurbDisplayFullNormal", "ol", true);
 	const blurbDisplayFullExpert = getOrBuildThing("blurbDisplayFullExpert", "ol", true);
+	
+	setVisibilityAllBlurbs("none");
 	
 	//wip: branch
 	if (empty == true) {
