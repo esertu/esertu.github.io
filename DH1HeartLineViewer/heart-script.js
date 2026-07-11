@@ -152,11 +152,10 @@ function applyChkExpert() {
 	
 	// showing the other relevant blurb display and hiding the currently active one
 	if (document.getElementById("blurbDisplaySingleNormal") != null) {
-		if (document.getElementById("blurbDisplay" + currentBlurb + currentExpert).style.display == "none") {
+		if (document.getElementById("blurbDisplay" + currentBlurb + otherExpert).style.display != "none") {
 			showOnlyThis("blurbDisplay" + currentBlurb, currentExpert);
 		};
 	};
-	console.log("");
 };
 
 // runs when the expert checkbox is checked or unchecked
