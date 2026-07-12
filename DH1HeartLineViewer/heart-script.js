@@ -387,7 +387,7 @@ function buildBlurbHTML(thisSelect , thisBlurbText , thisBlurbHash) {
 			if (thisBlurbHash[n] != "") {
 				newTextNorm += "<li>" +"\"" + thisBlurbText[n] + "\"";
 				newTextExp += "<li>" +"\"" + thisBlurbText[n] + "\"";
-				newTextExp += "\n" + thisBlurbHash[n] + "</li>";
+				newTextExp += "<br>" + thisBlurbHash[n] + "</li>";
 				
 			} else {
 				newTextNorm += "</ul>";
