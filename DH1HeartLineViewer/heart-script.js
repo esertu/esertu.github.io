@@ -1034,7 +1034,7 @@ function buildCheckBoxes() {
 		} else {
 			var descriptiveText = "Display all voicelines at the end of a branch at once instead of blurb by blurb"
 			label.title = descriptiveText;
-			label.appendChild(document.createTextNode("List mode"));
+			label.appendChild(document.createTextNode("List view mode"));
 			
 			check.addEventListener("change", function() { 
 				changeChkBlurb() 
