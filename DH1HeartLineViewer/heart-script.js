@@ -1,3 +1,5 @@
+version = "1.0";
+
 // note to self - open up a local server to make fetch work locally, eg cmd -> python -m http.server 8000
 // and then access it at http://localhost:8000/
 
@@ -682,8 +684,6 @@ function createFriendlyTerm_DisSpeaker(inputName, rowN) {
 	return(outputName);
 };
 
-//wip: Null branches are broken again
-
 function createFriendlyTerm_StoryFlag(inputName) {
 	var prevVal = currentState.arrDisplayed[(currentState.arrDisplayed.length - 1)];
 	
@@ -854,25 +854,25 @@ function buildThisDropdown(type, rowN) {
 	return(thisSelect)
 };
 
-function buildDefaultOptions(rowN, thisSelectNormal , thisSelectExpert) {
+function buildOptions(rowN, expertType, mode, optionText , optionValue, thisSelects) {
 	// adding the default starting "option", which is blank and can't be selected again later
-	expertTypes.forEach((element) => {
-		var option = document.createElement("option");
+	
+	var option = document.createElement("option");
+	option.text = optionText;
+	option.value = optionValue;
+	
+	if (mode == "default") {
 		option.disabled = true;
 		option.selected = true;
-		if (rowN == 0) {
-			option.text = "Dlg_HeartGadget";
-		} else {
-			option.text = "";
-		};
-		option.value = -1;
-		
-		if (element == "Normal") {
-			thisSelectNormal.appendChild(option);
-		} else {
-			thisSelectExpert.appendChild(option);
-		};
-	});
+	};
+	
+	if (thisSelects.length == 1) {
+		thisSelects[0].appendChild(option);
+	} else {
+		console.log("appending to: ");
+		console.log(thisSelects[ expertTypes.indexOf(expertType) ]);
+		thisSelects[ expertTypes.indexOf(expertType) ].appendChild(option);
+	};
 };
 
 // splitting this up into two functions for readability even though it's slower since we do the if rowN == 0 check each time
@@ -899,8 +899,6 @@ function getThisItem(prevSelectVal) {
 	
 	return(thisItem);
 };
-
-//wip: make data global
 
 function createThisOptionText(thisItem , n, rowN) {
 	var thisBranch = thisItem.branchPaths[n];
@@ -949,7 +947,6 @@ function createThisOptionText(thisItem , n, rowN) {
 			expertText = expertText + " (" + conditionVal + "% chance)";
 			normalText = conditionVal + "% chance → " + normalText;
 		} else {
-			//wip
 			expertText = expertText + " (if " + conditionVal + ")";
 			
 			if (normalText.slice(0,3) == " → ") {
@@ -969,7 +966,15 @@ function buildDropdown(rowN) {
 	var thisSelectExpert = buildThisDropdown("Expert", rowN)
 	
 	// adding the default starting "option", which is blank and can't be selected again later
-	buildDefaultOptions(rowN , thisSelectNormal , thisSelectExpert);
+	if (rowN == 0) {
+		var thisText = "Dlg_HeartGadget";
+	} else {
+		var thisText = "";
+	};
+	
+	expertTypes.forEach((element) => {
+		buildOptions(rowN , element , "default", thisText, -1, [thisSelectNormal , thisSelectExpert]);
+	});
 		
 	// creating all dropdown options, which is the branchPathName and branchPathValue items of the item's branchPaths item
 	
@@ -989,7 +994,6 @@ function buildDropdown(rowN) {
 			[normalText, expertText , thisBranchPathValue] = createThisOptionText(thisItem , n, rowN);
 			
 			// adding the resulting text as a new option to both ddropdown types
-			//wip: replace this with buildDefaultOptions reworked to work for this too
 			expertTypes.forEach((element) => {
 				if (element == "Normal") {
 					var thisText = normalText;
@@ -999,10 +1003,7 @@ function buildDropdown(rowN) {
 					var thisSelect = thisSelectExpert;
 				};
 				
-				var option = document.createElement("option");
-				option.text = thisText;
-				option.value = thisBranchPathValue;
-				thisSelect.appendChild(option);
+				buildOptions(rowN, element, "", thisText , thisBranchPathValue, [thisSelect]);
 			});
 			
 		};
@@ -1090,6 +1091,7 @@ function buildCollapsible(collName) {
 		case "Other":
 			collContentArr.push("One voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five.")
 			collContentArr.push("Overseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions. Since I couldn't determine the actual function of the two groups in the release version of the game I simply named them \"1st\" (Twk_ID) and \"2nd\" (SG_Ovrsr) group after the order they appear in the SpeakerInStoryGroup check.")
+			collContentArr.push("Longer text inside drop-downs might be cut off when the drop-down is open on certain browsers. Selecting an option should still display the entire text, as will going through the dropdown's options with the arrow keys.")
 			break;
 	};
 	
@@ -1115,6 +1117,19 @@ function buildCollapsible(collName) {
 		});
 };
 
+
+function buildFooter() {
+	var footer = document.createElement("div");
+	
+	footer.innerHTML += "v." + version;
+	
+	footer.style.position = "absolute";
+	footer.style.bottom = 0;
+	footer.style.right = 0;
+	footer.style.margin = "10px";
+	footer.style.color = "grey";
+	document.body.appendChild(footer);
+};
 
 // utility array of id strings for the two checkboxes, which will be called "check(string)"
 const arrCheckboxes = [
@@ -1191,6 +1206,7 @@ buildCollapsible("Technical");
 buildCollapsible("Other");
 buildHeadline("Heart dialogue tree viewer",1,true);
 buildCheckBoxes();
+buildFooter();
 
 //getting the JSON data and then building the first dropdown
 //getting main JSON data
