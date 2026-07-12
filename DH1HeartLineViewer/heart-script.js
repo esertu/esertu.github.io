@@ -64,12 +64,18 @@ function changeHandler(type, rowN) {
 			buildBlurbDisplay(rowN + 1 , false, "blurb");
 			
 		} else {
-			currentState.depthState["Full"] = rowN;
+			// don't update blurb display etc. if this is a SequentialBranch after a SequentialBranch so the original SequentialBranch continues to be the one that gets displayed when list view is activated
+			if (rowN <= currentState.depthState["Full"] || elms.get("blurbDisplaySingleNormal") == null || currentState.depthState.freezeFull == false) {
+				currentState.depthState["Full"] = rowN;
+				currentState.depthState["Full"] = rowN;
+				
+				buildBlurbDisplay(rowN + 1 , false, "branch");
+			};
+			
 			currentState.depthState["Single"] = rowN + 1;
 			
 			currentState.depthState.freezeSingle = true;
 			
-			buildBlurbDisplay(rowN + 1 , false, "branch");
 			updateArrDisplayedd(rowN);
 			buildDropdown(rowN + 1);
 			applyChkExpert();
@@ -81,13 +87,13 @@ function changeHandler(type, rowN) {
 			buildDropdown(rowN + 1);
 			applyChkExpert();
 			
-			if (rowN < currentState.depthState["Single"] || rowN < currentState.depthState["Full"]) {
-				if (rowN < currentState.depthState["Single"]) {
+			if (rowN <= currentState.depthState["Single"] || rowN <= currentState.depthState["Full"]) {
+				if (rowN <= currentState.depthState["Single"]) {
 					currentState.depthState["Single"] = rowN;
 					currentState.depthState.freezeSingle = false;
 				};
 				
-				if (rowN < currentState.depthState["Full"]) {
+				if (rowN <= currentState.depthState["Full"]) {
 					currentState.depthState["Full"] = rowN;
 					currentState.depthState.freezeFull = false;
 				};
