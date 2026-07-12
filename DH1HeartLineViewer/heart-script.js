@@ -1,3 +1,5 @@
+version = "1.0";
+
 // note to self - open up a local server to make fetch work locally, eg cmd -> python -m http.server 8000
 // and then access it at http://localhost:8000/
 
@@ -1116,6 +1118,19 @@ function buildCollapsible(collName) {
 };
 
 
+function buildFooter() {
+	var footer = document.createElement("div");
+	
+	footer.innerHTML += "v." + version;
+	
+	footer.style.position = "absolute";
+	footer.style.bottom = 0;
+	footer.style.right = 0;
+	footer.style.margin = "10px";
+	footer.style.color = "grey";
+	document.body.appendChild(footer);
+};
+
 // utility array of id strings for the two checkboxes, which will be called "check(string)"
 const arrCheckboxes = [
 	"Expert",
@@ -1191,6 +1206,7 @@ buildCollapsible("Technical");
 buildCollapsible("Other");
 buildHeadline("Heart dialogue tree viewer",1,true);
 buildCheckBoxes();
+buildFooter();
 
 //getting the JSON data and then building the first dropdown
 //getting main JSON data
