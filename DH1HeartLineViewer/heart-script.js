@@ -682,8 +682,6 @@ function createFriendlyTerm_DisSpeaker(inputName, rowN) {
 	return(outputName);
 };
 
-//wip: Null branches are broken again
-
 function createFriendlyTerm_StoryFlag(inputName) {
 	var prevVal = currentState.arrDisplayed[(currentState.arrDisplayed.length - 1)];
 	
@@ -854,25 +852,25 @@ function buildThisDropdown(type, rowN) {
 	return(thisSelect)
 };
 
-function buildDefaultOptions(rowN, thisSelectNormal , thisSelectExpert) {
+function buildOptions(rowN, expertType, mode, optionText , optionValue, thisSelects) {
 	// adding the default starting "option", which is blank and can't be selected again later
-	expertTypes.forEach((element) => {
-		var option = document.createElement("option");
+	
+	var option = document.createElement("option");
+	option.text = optionText;
+	option.value = optionValue;
+	
+	if (mode == "default") {
 		option.disabled = true;
 		option.selected = true;
-		if (rowN == 0) {
-			option.text = "Dlg_HeartGadget";
-		} else {
-			option.text = "";
-		};
-		option.value = -1;
-		
-		if (element == "Normal") {
-			thisSelectNormal.appendChild(option);
-		} else {
-			thisSelectExpert.appendChild(option);
-		};
-	});
+	};
+	
+	if (thisSelects.length == 1) {
+		thisSelects[0].appendChild(option);
+	} else {
+		console.log("appending to: ");
+		console.log(thisSelects[ expertTypes.indexOf(expertType) ]);
+		thisSelects[ expertTypes.indexOf(expertType) ].appendChild(option);
+	};
 };
 
 // splitting this up into two functions for readability even though it's slower since we do the if rowN == 0 check each time
@@ -899,8 +897,6 @@ function getThisItem(prevSelectVal) {
 	
 	return(thisItem);
 };
-
-//wip: make data global
 
 function createThisOptionText(thisItem , n, rowN) {
 	var thisBranch = thisItem.branchPaths[n];
@@ -949,7 +945,6 @@ function createThisOptionText(thisItem , n, rowN) {
 			expertText = expertText + " (" + conditionVal + "% chance)";
 			normalText = conditionVal + "% chance → " + normalText;
 		} else {
-			//wip
 			expertText = expertText + " (if " + conditionVal + ")";
 			
 			if (normalText.slice(0,3) == " → ") {
@@ -969,7 +964,15 @@ function buildDropdown(rowN) {
 	var thisSelectExpert = buildThisDropdown("Expert", rowN)
 	
 	// adding the default starting "option", which is blank and can't be selected again later
-	buildDefaultOptions(rowN , thisSelectNormal , thisSelectExpert);
+	if (rowN == 0) {
+		var thisText = "Dlg_HeartGadget";
+	} else {
+		var thisText = "";
+	};
+	
+	expertTypes.forEach((element) => {
+		buildOptions(rowN , element , "default", thisText, -1, [thisSelectNormal , thisSelectExpert]);
+	});
 		
 	// creating all dropdown options, which is the branchPathName and branchPathValue items of the item's branchPaths item
 	
@@ -989,7 +992,6 @@ function buildDropdown(rowN) {
 			[normalText, expertText , thisBranchPathValue] = createThisOptionText(thisItem , n, rowN);
 			
 			// adding the resulting text as a new option to both ddropdown types
-			//wip: replace this with buildDefaultOptions reworked to work for this too
 			expertTypes.forEach((element) => {
 				if (element == "Normal") {
 					var thisText = normalText;
@@ -999,10 +1001,7 @@ function buildDropdown(rowN) {
 					var thisSelect = thisSelectExpert;
 				};
 				
-				var option = document.createElement("option");
-				option.text = thisText;
-				option.value = thisBranchPathValue;
-				thisSelect.appendChild(option);
+				buildOptions(rowN, element, "", thisText , thisBranchPathValue, [thisSelect]);
 			});
 			
 		};
