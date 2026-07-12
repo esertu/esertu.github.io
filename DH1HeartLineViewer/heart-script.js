@@ -395,7 +395,7 @@ function buildBlurbHTML(thisSelect , thisBlurbText , thisBlurbHash) {
 				newTextNorm += "<ol>";
 				
 				newTextExp += "</ul>";
-				newTextExp += buildHeadline("\"" + thisBlurbText[n] + "\"",2)
+				newTextExp += buildHeadline("Switching to " + thisBlurbText[n],2)
 				newTextExp += "<ol>";
 			};
 		};
@@ -980,6 +980,7 @@ function buildDropdown(rowN) {
 	if (prevSelectVal == "[Null]") {
 		buildBlurbDisplay(rowN + 1 , true , "blurb");
 		setVisibilityBothDropdownsInRow(rowN, "none");
+		showOnlyThis("blurbDisplay" + currentState.blurbState , currentState.expertState);
 	} else {
 		// looking for the previous dropdown's value in the data array
 	
@@ -1194,12 +1195,8 @@ buildCheckBoxes();
 //getting the JSON data and then building the first dropdown
 //getting main JSON data
 loadData().then(data => { 
-	console.log(data);
-	
 	//getting hash JSON data
 	loadHashData().then(hashData => { 
-		console.log(hashData);
-		
 		buildDropdown(0);
 	});
 });
