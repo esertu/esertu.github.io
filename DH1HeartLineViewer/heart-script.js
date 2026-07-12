@@ -10,8 +10,8 @@ async function loadData() {
 			throw new Error(`HTTP error ${response.status}`);
 		}
 
-		const data = await response.json();
-		return data
+		const fetchedData = await response.json();
+		data.dialogueData = fetchedData;
 
 	} catch (err) {
 		console.error('Failed to load data JSON:', err);
@@ -28,7 +28,7 @@ async function loadHashData() {
 		}
 
 		const hashData = await response.json();
-		return hashData
+		data.hashData = hashData;
 
 	} catch (err) {
 		console.error('Failed to load hashdata JSON:', err);
@@ -36,7 +36,7 @@ async function loadHashData() {
 };
 
 // runs when change in drop-down menu occurs
-function changeHandler(type, rowN , data , hashData) {
+function changeHandler(type, rowN) {
 	console.log("");
 	console.log("changeHandler for rowN " + rowN);
 	const thisSelect = elms.get("select" + rowN + type);
@@ -61,7 +61,7 @@ function changeHandler(type, rowN , data , hashData) {
 			currentState.depthState["Single"] = rowN;
 			currentState.depthState.freezeFull = true;
 			
-			buildBlurbDisplay(rowN + 1 , data , hashData, false, "blurb");
+			buildBlurbDisplay(rowN + 1 , false, "blurb");
 			
 		} else {
 			currentState.depthState["Full"] = rowN;
@@ -69,16 +69,16 @@ function changeHandler(type, rowN , data , hashData) {
 			
 			currentState.depthState.freezeSingle = true;
 			
-			buildBlurbDisplay(rowN + 1 , data , hashData, false, "branch");
+			buildBlurbDisplay(rowN + 1 , false, "branch");
 			updateArrDisplayedd(rowN);
-			buildDropdown(rowN + 1 , data , hashData);
+			buildDropdown(rowN + 1);
 			applyChkExpert();
 			applyChkBlurb();
 		};
 	} else {
 		if (thisValue != "") {
 			updateArrDisplayedd(rowN);
-			buildDropdown(rowN + 1 , data , hashData);
+			buildDropdown(rowN + 1);
 			applyChkExpert();
 			
 			if (rowN < currentState.depthState["Single"] || rowN < currentState.depthState["Full"]) {
@@ -263,7 +263,6 @@ function setVisibilityBothDropdownsInRow(rowN, thisVisibility) {
 };
 
 // set the visibility of a thing to something (ie "none", "block", "list-item" etc.) if that thing exists. If blnCreateNew is true, then create the thing first if it doesn't exist
-//wip: use this more
 function setVisibility(thingName, thingVisibility, blnCreateNew) {
 	console.log("setting visibility for " + thingName + " to " + thingVisibility);
 	thisThing = getOrBuildThing(thingName, "", blnCreateNew);
@@ -290,7 +289,6 @@ function setVisibility(thingName, thingVisibility, blnCreateNew) {
 };
 
 // either fetch the reference to an element already on the page or build a new element and add it to the page. If blnCreateNew is false, do not build a new element and instead return null if the element does not already exist.
-//wip: use this more
 function getOrBuildThing(thingName, thingType, blnCreateNew) {
 	
 	if (document.getElementById(thingName) != null) {
@@ -353,14 +351,14 @@ function fillTerminatingBlurbDisplay() {
 	});
 };
 
-function getEntireBlurbTextAndHash(thisSelect , hashData , data) {
+function getEntireBlurbTextAndHash(thisSelect) {
 	//getting the blurb text
-	const thisBlurb = findInData(data.dialogItems,thisSelect.value);
+	const thisBlurb = findInData(data.dialogueData.dialogItems,thisSelect.value);
 	
 	if (thisSelect.value.includes("SequentialBranch") == false) {
-		var [thisBlurbText , thisBlurbHash] = getThisBlurbTextAndHash(thisBlurb , hashData , data , "single");
+		var [thisBlurbText , thisBlurbHash] = getThisBlurbTextAndHash(thisBlurb , "single");
 	} else {
-		var [thisBlurbText , thisBlurbHash] = getThisBlurbTextAndHash(thisBlurb , hashData , data , "branch");
+		var [thisBlurbText , thisBlurbHash] = getThisBlurbTextAndHash(thisBlurb , "branch");
 	};
 	
 	return([thisBlurbText , thisBlurbHash]);
@@ -419,7 +417,7 @@ function applyBlurbHTML(thisSelect, arrNewText) {
 		});
 };
 
-function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
+function buildBlurbDisplay(rowN, empty , originator) {
 	console.log("buildBlurbDisplay running for rowN " + rowN + " " + originator);
 	// making sure there aren't any more dropdowns below the blurblist
 	clearFurtherDropdowns(rowN);
@@ -434,7 +432,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 		
 		const thisSelect = elms.get("select" + (rowN - 1) + "Expert");
 		
-		[thisBlurbText , thisBlurbHash] = getEntireBlurbTextAndHash(thisSelect , hashData , data);
+		[thisBlurbText , thisBlurbHash] = getEntireBlurbTextAndHash(thisSelect);
 		
 		arrNewText = buildBlurbHTML(thisSelect, thisBlurbText , thisBlurbHash);
 		
@@ -450,7 +448,7 @@ function buildBlurbDisplay(rowN, data, hashData , empty , originator) {
 };
 
 
-function getThisBlurbTextAndHash(thisBlurb , hashData , data , mode) {
+function getThisBlurbTextAndHash(thisBlurb , mode) {
 	const thisBPaths = thisBlurb.branchPaths;
 	
 	var arrTexts = new Array();
@@ -458,24 +456,23 @@ function getThisBlurbTextAndHash(thisBlurb , hashData , data , mode) {
 	
 	for (var n = 0; n < thisBPaths.length; n++) {
 		var thisText = thisBPaths[n].branchPathValue;
-		var thisHash = findInHashData(hashData.hashItems, thisBlurb.itemName);
+		var thisHash = findInHashData(data.hashData.hashItems, thisBlurb.itemName);
 		
 		if (mode != "single") {
 			var thisName = thisBPaths[n].branchPathValue;
-			var thisItem = findInData(data.dialogItems, thisName);
+			var thisItem = findInData(data.dialogueData.dialogItems, thisName);
 			
 			thisText = thisItem.branchPaths[0].branchPathValue;
-			thisHash = findInHashData(hashData.hashItems, thisName);
+			thisHash = findInHashData(data.hashData.hashItems, thisName);
 			
-			//wip: further Branch
 			if (thisName.includes("SequentialBranch") == false) {
 				thisHash = thisHash.hashName;
 				
 				arrTexts.push(thisText);
 				arrHashes.push(thisHash);
 			} else {
-					var additionalBranch = findInData(data.dialogItems, thisName);
-					var [additionalTexts , additionalHashes] = getThisBlurbTextAndHash(additionalBranch , hashData , data , "branch");
+					var additionalBranch = findInData(data.dialogueData.dialogItems, thisName);
+					var [additionalTexts , additionalHashes] = getThisBlurbTextAndHash(additionalBranch , "branch");
 					arrTexts.push(thisName);
 					arrHashes.push("");
 					
@@ -715,9 +712,8 @@ function createFriendlyTerm_StoryFlag(inputName) {
 	return(outputName);
 };
 
-//wip: implement all classes 
 // creating a less filename-y more readable name for a class
-function createFriendlyName(inputName, rowN , data , thisBranchPathValue) {
+function createFriendlyName(inputName, rowN , thisBranchPathValue) {
 	var outputName = ""
 	
 	switch (inputName.slice(0,10)) {
@@ -795,12 +791,10 @@ function createFriendlyConditionName(inputName, rowN) {
 			};
 			break;
 			
-		//EDisDialogHook //wip
 		case "EDisDialog":
 			outputName = "Targeted NPC is none of the above";
 			break;
 			
-		//DisSpeakerStoryGroup //wip
 		case "DisSpeaker":
 			outputName = createFriendlyTerm_DisSpeaker(inputName, rowN);
 			break;
@@ -813,7 +807,7 @@ function createFriendlyConditionName(inputName, rowN) {
 }
 
 
-function buildThisDropdown(type, rowN , data , hashData) {
+function buildThisDropdown(type, rowN) {
 	// getting or building this drop-down menu
 	console.log("buildThisDropdown for row " + rowN);
 	const thisDropdownID = "select" + rowN + type;
@@ -841,7 +835,7 @@ function buildThisDropdown(type, rowN , data , hashData) {
 		
 		// adding the event listener to run things when the value fo this dropdown changes
 		thisSelect.addEventListener("change", function() {
-			changeHandler(type, rowN , data , hashData) ;
+			changeHandler(type, rowN) ;
 			});
 	
 		if (rowN > currentState.depthState["Maximum"]) {
@@ -887,12 +881,12 @@ function getPrevValue(rowN) {
 };
 
 // splitting this up into two functions for readability even though it's slower since we do the if rowN == 0 check each time
-function getThisItem(prevSelectVal , data) {
+function getThisItem(prevSelectVal) {
 	// first row is different because it's actually still the starting item
 	if (prevSelectVal == null) {
-		var thisItem = data.dialogItems[0];
+		var thisItem = data.dialogueData.dialogItems[0];
 	} else {
-		var thisItem = findInData(data.dialogItems, prevSelectVal);
+		var thisItem = findInData(data.dialogueData.dialogItems, prevSelectVal);
 	};
 	
 	return(thisItem);
@@ -900,7 +894,7 @@ function getThisItem(prevSelectVal , data) {
 
 //wip: make data global
 
-function createThisOptionText(thisItem , n, rowN , data) {
+function createThisOptionText(thisItem , n, rowN) {
 	var thisBranch = thisItem.branchPaths[n];
 	var thisBranchPathName = thisBranch.branchPathName;
 	var thisBranchPathValue = thisBranch.branchPathValue;
@@ -911,7 +905,7 @@ function createThisOptionText(thisItem , n, rowN , data) {
 	if (thisBranch.friendlyName != null) {
 		normalText = thisBranch.friendlyName;
 	} else {
-		normalText = createFriendlyName(thisBranchPathName, rowN , data , thisBranchPathValue);
+		normalText = createFriendlyName(thisBranchPathName, rowN , thisBranchPathValue);
 	};
 
 	// special: checkstoryflags
@@ -920,9 +914,9 @@ function createThisOptionText(thisItem , n, rowN , data) {
 		if (rowN > 0) {
 			if (thisBranch.branchPathCondition == null) {
 				normalText = normalText + " → ";
-				normalText = normalText + createFriendlyName(thisBranchPathValue, rowN , data);
+				normalText = normalText + createFriendlyName(thisBranchPathValue, rowN);
 			} else {
-				normalText = createFriendlyName(thisBranchPathValue, rowN , data , thisBranchPathValue);
+				normalText = createFriendlyName(thisBranchPathValue, rowN , thisBranchPathValue);
 			};
 		};
 	} else {
@@ -961,10 +955,10 @@ function createThisOptionText(thisItem , n, rowN , data) {
 	return([normalText, expertText , thisBranchPathValue]);
 };
 
-function buildDropdown(rowN , data , hashData) {
+function buildDropdown(rowN) {
 	// getting or building this drop-down menu
-	var thisSelectNormal = buildThisDropdown("Normal", rowN , data , hashData)
-	var thisSelectExpert = buildThisDropdown("Expert", rowN , data , hashData)
+	var thisSelectNormal = buildThisDropdown("Normal", rowN)
+	var thisSelectExpert = buildThisDropdown("Expert", rowN)
 	
 	// adding the default starting "option", which is blank and can't be selected again later
 	buildDefaultOptions(rowN , thisSelectNormal , thisSelectExpert);
@@ -973,17 +967,17 @@ function buildDropdown(rowN , data , hashData) {
 	
 	// fetching the previous dropdown's value and the current item (which is the previous dropdown's value looked up in the data map)
 	var prevSelectVal = getPrevValue(rowN);
-	var thisItem = getThisItem(prevSelectVal , data);
+	var thisItem = getThisItem(prevSelectVal);
 	
 	if (prevSelectVal == "[Null]") {
-		buildBlurbDisplay(rowN + 1 , data , hashData, true , "blurb");
+		buildBlurbDisplay(rowN + 1 , true , "blurb");
 		showOnlyThis("select" + rowN, currentState.expertState);
 	} else {
 		// looking for the previous dropdown's value in the data array
 	
 		// actually creating the dropdown options
 		for (var n = 0; n < thisItem.branchPaths.length; n++) {
-			[normalText, expertText , thisBranchPathValue] = createThisOptionText(thisItem , n, rowN , data);
+			[normalText, expertText , thisBranchPathValue] = createThisOptionText(thisItem , n, rowN);
 			
 			// adding the resulting text as a new option to both ddropdown types
 			//wip: replace this with buildDefaultOptions reworked to work for this too
@@ -1137,6 +1131,11 @@ const currentState = {
 	},
 };
 
+const data = {
+	dialogueData: null,
+	hashData: null
+};
+
 // utility container of page elements
 const elms = new Map();
 
@@ -1157,6 +1156,6 @@ loadData().then(data => {
 	loadHashData().then(hashData => { 
 		console.log(hashData);
 		
-		buildDropdown(0 , data , hashData);
+		buildDropdown(0);
 	});
 });
