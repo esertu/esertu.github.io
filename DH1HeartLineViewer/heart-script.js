@@ -1,4 +1,7 @@
-version = "1.0";
+version = {
+	v: "1.0",
+	date: "2026/07/12"
+};
 
 // note to self - open up a local server to make fetch work locally, eg cmd -> python -m http.server 8000
 // and then access it at http://localhost:8000/
@@ -1034,7 +1037,7 @@ function buildCheckBoxes() {
 		} else {
 			var descriptiveText = "Display all voicelines at the end of a branch at once instead of blurb by blurb"
 			label.title = descriptiveText;
-			label.appendChild(document.createTextNode("List mode"));
+			label.appendChild(document.createTextNode("List view mode"));
 			
 			check.addEventListener("change", function() { 
 				changeChkBlurb() 
@@ -1121,7 +1124,8 @@ function buildCollapsible(collName) {
 function buildFooter() {
 	var footer = document.createElement("div");
 	
-	footer.innerHTML += "v." + version;
+	footer.innerHTML += "v." + version.v;
+	footer.title = "last update: " + version.date;
 	
 	footer.style.position = "absolute";
 	footer.style.bottom = 0;
