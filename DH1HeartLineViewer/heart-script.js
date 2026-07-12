@@ -1089,6 +1089,7 @@ function buildCollapsible(collName) {
 		case "Other":
 			collContentArr.push("One voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five.")
 			collContentArr.push("Overseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions. Since I couldn't determine the actual function of the two groups in the release version of the game I simply named them \"1st\" (Twk_ID) and \"2nd\" (SG_Ovrsr) group after the order they appear in the SpeakerInStoryGroup check.")
+			collContentArr.push("Longer text inside drop-downs might be cut off when the drop-down is open on certain browsers. Selecting an option should still display the entire text, as will going through the dropdown's options with the arrow keys.")
 			break;
 	};
 	
