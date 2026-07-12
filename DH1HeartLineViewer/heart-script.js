@@ -130,6 +130,8 @@ function showOnlyThis(strIDStart, strIDType) {
 			setVisibility(strIDStart.replace("Full","Single") + strIDType , "none");
 			setVisibility(strIDStart.replace("Full","Single") + expertTypeOpposite[strIDType] , "none");
 		} else {
+			setVisibility(strIDStart.replace("Single","Full") + strIDType , "none");
+			setVisibility(strIDStart.replace("Single","Full") + expertTypeOpposite[strIDType] , "none");
 		};
 	};
 };
@@ -977,7 +979,7 @@ function buildDropdown(rowN) {
 	
 	if (prevSelectVal == "[Null]") {
 		buildBlurbDisplay(rowN + 1 , true , "blurb");
-		showOnlyThis("select" + rowN, currentState.expertState);
+		setVisibilityBothDropdownsInRow(rowN, "none");
 	} else {
 		// looking for the previous dropdown's value in the data array
 	
