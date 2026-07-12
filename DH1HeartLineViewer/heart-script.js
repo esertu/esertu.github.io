@@ -11,7 +11,7 @@ async function loadData() {
 		}
 
 		const fetchedData = await response.json();
-		data.dialogueData = fetchedData;
+		data.dialogData = fetchedData;
 
 	} catch (err) {
 		console.error('Failed to load data JSON:', err);
@@ -92,10 +92,10 @@ function changeHandler(type, rowN) {
 					currentState.depthState.freezeFull = false;
 				};
 			} else {
-			  if (currentState.depthState.freezeFull == false) {
+				if (currentState.depthState.freezeFull == false) {
 					currentState.depthState["Full"] = rowN;
 				};
-			  if (currentState.depthState.freezeSingle == false) {
+				if (currentState.depthState.freezeSingle == false) {
 					currentState.depthState["Single"] = rowN;
 				};
 			};
@@ -353,7 +353,7 @@ function fillTerminatingBlurbDisplay() {
 
 function getEntireBlurbTextAndHash(thisSelect) {
 	//getting the blurb text
-	const thisBlurb = findInData(data.dialogueData.dialogItems,thisSelect.value);
+	const thisBlurb = findInData(data.dialogData.dialogItems,thisSelect.value);
 	
 	if (thisSelect.value.includes("SequentialBranch") == false) {
 		var [thisBlurbText , thisBlurbHash] = getThisBlurbTextAndHash(thisBlurb , "single");
@@ -383,11 +383,11 @@ function buildBlurbHTML(thisSelect , thisBlurbText , thisBlurbHash) {
 				
 			} else {
 				newTextNorm += "</ul>";
-				newTextNorm += "<h2>" + "Switching to additional branch" + "</h2>";
+				newTextNorm += buildHeadline("Switching to additional branch",2);
 				newTextNorm += "<ol>";
 				
 				newTextExp += "</ul>";
-				newTextExp += "<h2>" +"\"" + thisBlurbText[n] + "\"</h2>";
+				newTextExp += buildHeadline("\"" + thisBlurbText[n] + "\"",2)
 				newTextExp += "<ol>";
 			};
 		};
@@ -460,7 +460,7 @@ function getThisBlurbTextAndHash(thisBlurb , mode) {
 		
 		if (mode != "single") {
 			var thisName = thisBPaths[n].branchPathValue;
-			var thisItem = findInData(data.dialogueData.dialogItems, thisName);
+			var thisItem = findInData(data.dialogData.dialogItems, thisName);
 			
 			thisText = thisItem.branchPaths[0].branchPathValue;
 			thisHash = findInHashData(data.hashData.hashItems, thisName);
@@ -471,7 +471,7 @@ function getThisBlurbTextAndHash(thisBlurb , mode) {
 				arrTexts.push(thisText);
 				arrHashes.push(thisHash);
 			} else {
-					var additionalBranch = findInData(data.dialogueData.dialogItems, thisName);
+					var additionalBranch = findInData(data.dialogData.dialogItems, thisName);
 					var [additionalTexts , additionalHashes] = getThisBlurbTextAndHash(additionalBranch , "branch");
 					arrTexts.push(thisName);
 					arrHashes.push("");
@@ -884,9 +884,9 @@ function getPrevValue(rowN) {
 function getThisItem(prevSelectVal) {
 	// first row is different because it's actually still the starting item
 	if (prevSelectVal == null) {
-		var thisItem = data.dialogueData.dialogItems[0];
+		var thisItem = data.dialogData.dialogItems[0];
 	} else {
-		var thisItem = findInData(data.dialogueData.dialogItems, prevSelectVal);
+		var thisItem = findInData(data.dialogData.dialogItems, prevSelectVal);
 	};
 	
 	return(thisItem);
@@ -1009,23 +1009,41 @@ function buildCheckBoxes() {
 		check.id = 'check' + element;
 		check.type = 'checkbox';
 		
+		var label = document.createElement("label");
+		label.appendChild(check);
+		
 		if (element == "Expert") {
+			var descriptiveText = "Display game object names instead of descriptive names"
+			label.title = descriptiveText;
+			label.appendChild(document.createTextNode("Expert mode"));
+			
 			check.addEventListener("change", function() { 
 				changeChkExpert() 
 				});
+				
 		} else {
+			var descriptiveText = "Display all voicelines at the end of a branch at once instead of blurb by blurb"
+			label.title = descriptiveText;
+			label.appendChild(document.createTextNode("List mode"));
+			
 			check.addEventListener("change", function() { 
 				changeChkBlurb() 
 				});
 		};
 		
-		var label = document.createElement("label");
-		label.appendChild(check);
-		label.appendChild(document.createTextNode(element));
 		document.body.appendChild(label);
-		
 	});
 			
+};
+
+function buildHeadline(str,num,append) {
+	if (append) {
+		var thisHeadline = document.createElement("h" + num);
+		thisHeadline.innerHTML = str;
+		document.body.appendChild(thisHeadline);
+	} else {
+		return("<h" + num + ">" + str + "</h" + num + ">");
+	};
 };
 
 function changeHandlerColl(collName){
@@ -1034,36 +1052,52 @@ function changeHandlerColl(collName){
 
 // inspired by https://stackoverflow.com/a/27698406 and https://medium.com/@jordanfinners/creating-a-collapsible-section-with-nothing-but-html-199f04f13377
 function buildCollapsible(collName) {
-	var collContent = "";
+	var collContentArr = new Array();
+	strTitle = "";
 	
 	switch (collName) {
 		case "Start":
-			collContent = "The starting point of all Heart lines is the DisDialogTree type object Dlg_HeartGadget.Dlg_HeartGadget in Startup.upk"
-			collContent += "\nDisDialogTree Dlg_HeartGadget.Dlg_HeartGadget has three conversation hooks which watch for inputs in order to fire dialogue."
-			collContent += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_DialogHook fires if this was a non-targeted, i.e. ambient, whisper."
-			collContent += "\nDlg_HeartGadget.Dlg_HeartGadget.DisConv_Hook_HeartTargeted as well as DisConv_Hook_HeartTargeted_2 fire if this was a targeted whisper targeting an NPC. I'm not quite certain if the EDisDialogHook check is actually relevant, as both hooks have the exact same output branches - when targeting any human NPC they both go to DisConv_SpeakerInStoryGroup. The two HeartTargeted events ensure that rat and river krust lines play whether you're targeting an unique or non-unique NPC (which kind of implies the devs wanted to keep the possibility of adding unique rats/river krusts to the game). The following chain of checks first checks for unique NPCs, then, once all unique NPCs have been exhausted, for non-unique NPC groups. I get the feeling the devs initially wanted to check against the EDisDialogHook property to check whether unique or non-unique NPCs were being targeted but later decided to just run the same function in both cases."
-			collContent += "\nThe latter two hooks are also used to fire off rat and riverkrust lines if those creatures are targeted." //wip: check if those are actually used
+			collContentArr.push("The starting point of all Heart lines is the DisDialogTree type object Dlg_HeartGadget.Dlg_HeartGadget in Startup.upk")
+			collContentArr.push("DisDialogTree Dlg_HeartGadget.Dlg_HeartGadget has three conversation hooks which watch for inputs in order to fire dialogue.")
+			collContentArr.push("Dlg_HeartGadget.Dlg_HeartGadget.DisConv_DialogHook fires if this was a non-targeted, i.e. ambient, whisper.")
+			collContentArr.push("Dlg_HeartGadget.Dlg_HeartGadget.DisConv_Hook_HeartTargeted as well as DisConv_Hook_HeartTargeted_2 fire if this was a targeted whisper targeting an NPC. I'm not quite certain if the EDisDialogHook check is actually relevant, as both hooks have the exact same output branches - when targeting any human NPC they both go to DisConv_SpeakerInStoryGroup. The two HeartTargeted events ensure that rat and river krust lines play whether you're targeting an unique or non-unique NPC (which kind of implies the devs wanted to keep the possibility of adding unique rats/river krusts to the game). The following chain of checks first checks for unique NPCs, then, once all unique NPCs have been exhausted, for non-unique NPC groups. I get the feeling the devs initially wanted to check against the EDisDialogHook property to check whether unique or non-unique NPCs were being targeted but later decided to just run the same function in both cases.")
+			collContentArr.push("The latter two hooks are also used to fire off rat and riverkrust lines if those creatures are targeted.") //wip: check if those are actually used
+			
+			strTitle = "Start of the dialogue tree";
 			break;
 			
 		case "Classes":
-			collContent = "\nDisConv_SequentialBranch: lines will always play sequentially, i.e. one after the other."
-			collContent += "\nDisConv_RandomBranch: game chooses one out of the available branches at random using the specified numbers as each branch's chance."
+			collContentArr.push("DisConv_SequentialBranch: lines will always play sequentially, i.e. one after the other.")
+			collContentArr.push("DisConv_RandomBranch: game chooses one out of the available branches at random using the specified numbers as each branch's chance.")
+			strTitle = "Some object classes";
 			break;
 			
 		case "Technical":
-			collContent = "\nThis site uses the UE Explorer naming convention of naming items \"[item name].[export table index]\", and of having zero-indexed items of a Class being named \"[Class]\" instead of \"[Class]_0\"."
-			collContent += "\nThe drop-down menu items are formatted as [source] → [destination], with the destination being an object on the ExportTable and the source being a property of the object displayed as the destination in the previous dropdown."
-			collContent += "\nText saying \"Play_...\" under voiceline text is the name of the audio file belonging to that line."
+			collContentArr.push("This site uses the UE Explorer naming convention of naming items \"[item name].[export table index]\", and of having zero-indexed items of a Class being named \"[Class]\" instead of \"[Class]_0\".")
+			collContentArr.push("The drop-down menu items are formatted as [source] → [destination] or [source] → [effect]. The destination is an object on the ExportTable and the source is a property of the object displayed as the destination in the previous dropdown.")
+			collContentArr.push("Text saying \"Play_...\" under voiceline text is the name of the audio file belonging to that line.")
 			break;
 	
 		case "Other":
-			collContent = "\nOne voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five."
-			collContent += "\nOverseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions. Since I couldn't determine the actual function of the two groups in the release version of the game I simply named them \"1st\" (Twk_ID) and \"2nd\" (SG_Ovrsr) group after the order they appear in the SpeakerInStoryGroup check."
+			collContentArr.push("One voiceline exists in Dlg_HeartGadget which isn't called by any branch of the dialogue tree. This voiceline is DisConv_Blurb_93 wth the text \"Callista. Yes, she is caretaker to the child.\". It most likely would have been part of DisConv_SequentialBranch_18, which is Callista's branch of targeted lines, and which conspicuously only has four lines in the final game where every other unique NPC has five.")
+			collContentArr.push("Overseers have two DisSpeakerStoryGroups associated with them, one being SG_Ovrsr_Overseers_Twk and one being the more normally named Twk_ID_Overseers. The naming of the SG_Ovrsr group implies it was meant specifically and exclusively for Overseers in the High Overseer's Office, but in practice that map uses a mix of both factions. Since I couldn't determine the actual function of the two groups in the release version of the game I simply named them \"1st\" (Twk_ID) and \"2nd\" (SG_Ovrsr) group after the order they appear in the SpeakerInStoryGroup check.")
 			break;
 	};
 	
+	// collating the array into a single HTML string
+	var collContent = "<ul>";
+	collContentArr.forEach((element) => {
+		collContent = collContent + "<li>" + element + "</li>";
+	});
+	collContent = collContent + "</ul>";
+	
 	var coll = document.createElement("details");
-	coll.innerHTML = "<summary>" + collName + "</summary>";
+	if (strTitle == "") {
+		coll.innerHTML = "<summary>" + collName + "</summary>";
+	} else {
+		coll.innerHTML = "<summary>" + strTitle + "</summary>";
+	};
+	
 	coll.innerHTML += collContent;
 	document.body.appendChild(coll);
 	
@@ -1132,7 +1166,7 @@ const currentState = {
 };
 
 const data = {
-	dialogueData: null,
+	dialogData: null,
 	hashData: null
 };
 
@@ -1141,10 +1175,12 @@ const elms = new Map();
 
 //running everything
 //building the basic page
+buildHeadline("Info",1,true);
 buildCollapsible("Start");
 buildCollapsible("Classes");
 buildCollapsible("Technical");
 buildCollapsible("Other");
+buildHeadline("Heart dialogue tree viewer",1,true);
 buildCheckBoxes();
 
 //getting the JSON data and then building the first dropdown
